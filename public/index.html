@@ -55,6 +55,10 @@
             outline: none;
         }
 
+        input:focus {
+            border-color: #65a9ff;
+        }
+
         button {
             width: 100%;
             padding: 15px;
@@ -77,6 +81,11 @@
             margin-top: 20px;
             text-align: center;
             color: #f3c969;
+            overflow-wrap: anywhere;
+        }
+
+        .error {
+            color: #ff7777 !important;
         }
 
         .result {
@@ -128,15 +137,18 @@
             text-decoration: none;
         }
 
-        .error {
-            color: #ff7777 !important;
-        }
-
         #description {
             white-space: pre-wrap;
             overflow-wrap: anywhere;
             color: #c5d0df;
             line-height: 1.6;
+        }
+
+        .footer {
+            text-align: center;
+            color: #718198;
+            font-size: 12px;
+            margin-top: 25px;
         }
     </style>
 </head>
@@ -148,7 +160,7 @@
     <h1>Virifixo</h1>
 
     <p class="subtitle">
-        YouTube Channel Verification
+        YouTube Channel & Video Verification
     </p>
 
     <form id="verifyForm">
@@ -156,8 +168,9 @@
         <input
             type="url"
             id="channelInput"
-            placeholder="Enter YouTube channel URL"
+            placeholder="Enter YouTube channel or video URL"
             maxlength="300"
+            autocomplete="url"
             required
         >
 
@@ -167,7 +180,7 @@
 
     </form>
 
-    <div id="message"></div>
+    <div id="message" role="status" aria-live="polite"></div>
 
     <div class="result" id="result">
 
@@ -193,6 +206,11 @@
         <div class="info">
             <span>Created Date</span>
             <span id="createdDate">Loading...</span>
+        </div>
+
+        <div class="info">
+            <span>Date Source</span>
+            <span id="dateSource"></span>
         </div>
 
         <div class="info">
@@ -229,339 +247,401 @@
 
     </div>
 
+    <div class="footer">
+        Virifixo &copy; 2026
+    </div>
+
 </div>
 
 <script>
+"use strict";
 
-// ======================================
-// DATE FORMATTER
-// ======================================
+// ==========================================
+// ELEMENTS
+// ==========================================
 
-function formatChannelDate(value) {
+const form = document.getElementById("verifyForm");
 
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-        return "Date unavailable";
+const input = document.getElementById("channelInput");
+
+const button = document.getElementById("verifyButton");
+
+const message = document.getElementById("message");
+
+const result = document.getElementById("result");
+
+
+// ==========================================
+// YOUTUBE URL VALIDATION
+// ==========================================
+
+function validateYouTubeUrl(value) {
+
+    try {
+
+        const url = new URL(value);
+
+        const host = url.hostname.toLowerCase();
+
+        const allowedHosts = [
+            "youtube.com",
+            "www.youtube.com",
+            "m.youtube.com",
+            "youtu.be",
+            "www.youtu.be"
+        ];
+
+        if (!allowedHosts.includes(host)) {
+            return false;
+        }
+
+        // Short video URL
+        if (host.endsWith("youtu.be")) {
+
+            const videoId = url.pathname.split("/")[1];
+
+            return /^[a-zA-Z0-9_-]{11}$/.test(videoId || "");
+
+        }
+
+        // Standard video URL
+        if (url.pathname === "/watch") {
+
+            const videoId = url.searchParams.get("v");
+
+            return /^[a-zA-Z0-9_-]{11}$/.test(videoId || "");
+
+        }
+
+        // Channel handle
+        if (/^\/@[a-zA-Z0-9._-]+\/?$/.test(url.pathname)) {
+            return true;
+        }
+
+        // Channel ID
+        if (/^\/channel\/UC[a-zA-Z0-9_-]{22}\/?$/.test(url.pathname)) {
+            return true;
+        }
+
+        return false;
+
+    } catch (error) {
+
+        return false;
+
     }
-
-    let date;
-
-    if (typeof value === "number") {
-
-        // Support Unix timestamps in seconds or milliseconds
-        date = new Date(
-            value < 100000000000
-                ? value * 1000
-                : value
-        );
-
-    } else {
-
-        date = new Date(String(value).trim());
-
-    }
-
-    if (isNaN(date.getTime())) {
-        return "Date unavailable";
-    }
-
-    if (
-        date.getTime() <= 0 ||
-        date.getUTCFullYear() < 2005
-    ) {
-        return "Date unavailable";
-    }
-
-    return new Intl.DateTimeFormat("en-GB", {
-        day: "2-digit",
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC"
-    }).format(date);
 }
 
 
-// ======================================
-// SAFE TEXT OUTPUT
-// ======================================
+// ==========================================
+// TEXT OUTPUT
+// ==========================================
 
 function setText(id, value) {
 
     const element = document.getElementById(id);
 
     if (!element) {
-        console.error("Element not found:", id);
         return;
     }
 
     element.textContent =
-        value === null || value === undefined
+        value === null ||
+        value === undefined ||
+        value === ""
             ? "Not available"
             : String(value);
 }
 
 
-// ======================================
-// DISPLAY CHANNEL CREATION DATE
-// ======================================
+// ==========================================
+// DATE FORMATTER
+// ==========================================
+
+function formatChannelDate(value) {
+
+    if (!value) {
+        return "Date unavailable";
+    }
+
+    const date = new Date(value);
+
+    if (
+        !Number.isFinite(date.getTime()) ||
+        date.getUTCFullYear() < 2005
+    ) {
+        return "Date unavailable";
+    }
+
+    return new Intl.DateTimeFormat("en-GB", {
+
+        day: "2-digit",
+
+        month: "long",
+
+        year: "numeric",
+
+        timeZone: "UTC"
+
+    }).format(date);
+}
+
+
+// ==========================================
+// DISPLAY CHANNEL DATE
+// ==========================================
 
 function displayChannelDate(channel) {
-
-    const dateElement =
-        document.getElementById("createdDate");
-
-    if (!dateElement) {
-        console.error("Created date element not found.");
-        return;
-    }
 
     const originalDate =
         channel.publishedAt ??
         channel.createdDate ??
         null;
 
-    console.log("VIRIFIXO DATE DIAGNOSTIC:", {
+    console.log("VIRIFIXO DATE:", {
         publishedAt: channel.publishedAt,
         createdDate: channel.createdDate,
-        selectedDate: originalDate
+        dateSource: channel.dateSource
     });
 
-    dateElement.textContent =
-        formatChannelDate(originalDate);
+    setText(
+        "createdDate",
+        formatChannelDate(originalDate)
+    );
+
+    setText(
+        "dateSource",
+        channel.dateSource
+    );
 }
 
 
-// ======================================
-// VERIFY CHANNEL
-// ======================================
+// ==========================================
+// DISPLAY CHANNEL INFORMATION
+// ==========================================
 
-document
-    .getElementById("verifyForm")
-    .addEventListener("submit", async function(event) {
+function displayChannel(channel) {
 
-        event.preventDefault();
+    setText(
+        "channelTitle",
+        channel.title || "Unknown Channel"
+    );
 
-        const input =
-            document.getElementById("channelInput");
+    setText(
+        "channelId",
+        channel.channelId
+    );
 
-        const button =
-            document.getElementById("verifyButton");
+    setText(
+        "customUrl",
+        channel.customUrl
+    );
 
-        const message =
-            document.getElementById("message");
+    // Creation date
 
-        const result =
-            document.getElementById("result");
+    displayChannelDate(channel);
 
-        const channelUrl = input.value.trim();
+    // Subscribers
 
-        message.textContent = "Verifying channel...";
+    setText(
+        "subscribers",
 
-        message.classList.remove("error");
+        channel.subscriberCountHidden
+            ? "Hidden"
+            : Number(
+                channel.subscribers || 0
+            ).toLocaleString("en-US")
+    );
 
-        result.style.display = "none";
+    // Videos
 
-        button.disabled = true;
+    setText(
+        "videoCount",
 
-        button.textContent = "Checking...";
+        Number(
+            channel.videoCount || 0
+        ).toLocaleString("en-US")
+    );
 
-        try {
+    // Views
 
-            // Send verification request
+    setText(
+        "viewCount",
 
-            const response = await fetch("/api/verify", {
+        Number(
+            channel.viewCount || 0
+        ).toLocaleString("en-US")
+    );
 
-                method: "POST",
+    // Country
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+    setText(
+        "country",
+        channel.country
+    );
 
-                body: JSON.stringify({
-                    channel: channelUrl
-                })
+    // Description
 
-            });
+    setText(
+        "description",
+        channel.description || "No description"
+    );
+
+    // Thumbnail
+
+    const thumbnail =
+        document.getElementById("thumbnail");
+
+    if (channel.thumbnail) {
+
+        thumbnail.src = channel.thumbnail;
+
+        thumbnail.style.display = "inline-block";
+
+    } else {
+
+        thumbnail.removeAttribute("src");
+
+        thumbnail.style.display = "none";
+
+    }
+
+    // Channel URL
+
+    const channelLink =
+        document.getElementById("channelLink");
+
+    channelLink.href =
+        channel.channelUrl ||
+        "https://www.youtube.com/channel/" +
+        encodeURIComponent(channel.channelId);
+
+    // Show result
+
+    result.style.display = "block";
+}
 
 
-            // Read server response
+// ==========================================
+// ERROR HANDLING
+// ==========================================
 
-            const data = await response.json();
+function showError(text) {
 
-            if (!response.ok || !data.success) {
+    message.textContent = text;
 
-                throw new Error(
-                    data.message || "Verification failed."
-                );
+    message.classList.add("error");
 
-            }
-
-
-            const channel = data.channel;
-
-            if (!channel) {
-                throw new Error("Channel information is missing.");
-            }
+    result.style.display = "none";
+}
 
 
-            // ======================================
-            // CHANNEL INFORMATION
-            // ======================================
+// ==========================================
+// VERIFY CHANNEL OR VIDEO
+// ==========================================
 
-            setText(
-                "channelTitle",
-                channel.title || "Unknown Channel"
+form.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const channelUrl = input.value.trim();
+
+    // Validate URL
+
+    if (!validateYouTubeUrl(channelUrl)) {
+
+        showError(
+            "Please enter a valid YouTube channel or video URL."
+        );
+
+        return;
+    }
+
+    // Loading
+
+    button.disabled = true;
+
+    button.textContent = "Checking...";
+
+    message.classList.remove("error");
+
+    message.textContent = "Connecting to Virifixo...";
+
+    result.style.display = "none";
+
+    try {
+
+        // Send request
+
+        const response = await fetch("/api/verify", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                channel: channelUrl
+            })
+
+        });
+
+        // Read response
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+
+            throw new Error(
+                data.message ||
+                "Verification failed. HTTP " + response.status
             );
-
-            setText(
-                "channelId",
-                channel.channelId
-            );
-
-            setText(
-                "customUrl",
-                channel.customUrl || "No custom URL"
-            );
-
-
-            // ======================================
-            // ORIGINAL YOUTUBE CREATION DATE
-            // ======================================
-
-            displayChannelDate(channel);
-
-
-            // ======================================
-            // SUBSCRIBERS
-            // ======================================
-
-            setText(
-                "subscribers",
-
-                channel.subscriberCountHidden
-                    ? "Hidden"
-                    : Number(
-                        channel.subscribers || 0
-                    ).toLocaleString("en-US")
-            );
-
-
-            // ======================================
-            // VIDEO COUNT
-            // ======================================
-
-            setText(
-                "videoCount",
-
-                Number(
-                    channel.videoCount || 0
-                ).toLocaleString("en-US")
-            );
-
-
-            // ======================================
-            // TOTAL VIEWS
-            // ======================================
-
-            setText(
-                "viewCount",
-
-                Number(
-                    channel.viewCount || 0
-                ).toLocaleString("en-US")
-            );
-
-
-            // ======================================
-            // COUNTRY
-            // ======================================
-
-            setText(
-                "country",
-                channel.country || "Not available"
-            );
-
-
-            // ======================================
-            // DESCRIPTION
-            // ======================================
-
-            setText(
-                "description",
-                channel.description || "No description"
-            );
-
-
-            // ======================================
-            // THUMBNAIL
-            // ======================================
-
-            const thumbnail =
-                document.getElementById("thumbnail");
-
-            if (channel.thumbnail) {
-
-                thumbnail.src = channel.thumbnail;
-
-                thumbnail.style.display = "inline-block";
-
-            } else {
-
-                thumbnail.removeAttribute("src");
-
-                thumbnail.style.display = "none";
-
-            }
-
-
-            // ======================================
-            // CHANNEL LINK
-            // ======================================
-
-            const channelLink =
-                document.getElementById("channelLink");
-
-            channelLink.href =
-                channel.channelUrl ||
-                "https://www.youtube.com/channel/" +
-                encodeURIComponent(channel.channelId);
-
-
-            // ======================================
-            // SHOW RESULTS
-            // ======================================
-
-            result.style.display = "block";
-
-            message.textContent =
-                "Channel verified successfully!";
-
-
-        } catch (error) {
-
-            console.error(
-                "VIRIFIXO ERROR:",
-                error
-            );
-
-            message.textContent =
-                error.message || "Something went wrong.";
-
-            message.classList.add("error");
-
-
-        } finally {
-
-            button.disabled = false;
-
-            button.textContent = "Verify Channel";
 
         }
 
-    });
+        // Get channel
+
+        const channel = data.channel;
+
+        if (!channel) {
+
+            throw new Error(
+                "Channel information is missing."
+            );
+
+        }
+
+        // Display information
+
+        displayChannel(channel);
+
+        message.textContent =
+            "Channel verified successfully!";
+
+        message.classList.remove("error");
+
+    } catch (error) {
+
+        console.error(
+            "VIRIFIXO ERROR:",
+            error
+        );
+
+        showError(
+            error.message ||
+            "Unable to verify channel."
+        );
+
+    } finally {
+
+        button.disabled = false;
+
+        button.textContent = "Verify Channel";
+
+    }
+
+});
 
 </script>
 
