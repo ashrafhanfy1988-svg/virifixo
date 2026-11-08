@@ -8,11 +8,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.disable("x-powered-by");
+
 app.use(express.json({ limit: "10kb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
+// ==========================================
+// VIRIFIXO 3.4 CONFIGURATION
+// ==========================================
+
+const VERSION = "3.4";
+const REQUEST_TIMEOUT = 15000;
+
 const VERIFIED_DATES = {
-    "UCBR8-60-B28hp2BmDPdntcQ": "2005-10-05T00:00:00.000Z"
+    "UCBR8-60-B28hp2BmDPdntcQ": "2005-10-05T00:00:00.000Z",
+    "UC-lHJZR3Gqxm24_Vd_AJ5Yw": "2010-04-29T00:00:00.000Z",
+    "UCX6OQ3DkcsbYNE6H8uQQuVA": "2012-02-20T00:00:00.000Z",
+    "UCahpxixMCwoANAftn6IxkTg": "2006-09-19T00:00:00.000Z"
 };
 
 // ==========================================
@@ -25,18 +36,47 @@ app.get("/api/status", (req, res) => {
     res.json({
         name: "Virifixo",
         status: "online",
-        version: "3.3",
-        uptime: Math.floor(process.uptime())
+        version: VERSION,
+        uptime: Math.floor(process.uptime()),
+        timestamp: new Date().toISOString()
     });
 });
 
 // ==========================================
-// YOUTUBE URL PARSER
+// FETCH WITH TIMEOUT
+// ==========================================
+
+async function fetchWithTimeout(
+    url,
+    options = {},
+    timeoutMs = REQUEST_TIMEOUT
+) {
+    const controller = new AbortController();
+
+    const timer = setTimeout(
+        () => controller.abort(),
+        timeoutMs
+    );
+
+    try {
+        return await fetch(url, {
+            ...options,
+            signal: controller.signal
+        });
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+// ==========================================
+// YOUTUBE URL VALIDATION
 // ==========================================
 
 function parseYouTubeUrl(value) {
     try {
         const url = new URL(value);
+
+        const host = url.hostname.toLowerCase();
 
         const allowedHosts = [
             "youtube.com",
@@ -46,30 +86,14 @@ function parseYouTubeUrl(value) {
             "www.youtu.be"
         ];
 
-        if (!allowedHosts.includes(url.hostname.toLowerCase())) {
+        if (!allowedHosts.includes(host)) {
             return null;
         }
 
-        // Video URL: youtube.com/watch?v=VIDEO_ID
-        if (
-            url.hostname.toLowerCase().endsWith("youtube.com") &&
-            url.pathname === "/watch"
-        ) {
-            const videoId = url.searchParams.get("v");
-
-            if (videoId && /^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-                return {
-                    type: "video",
-                    value: videoId
-                };
-            }
-        }
-
-        // Short video URL: youtu.be/VIDEO_ID
-        if (url.hostname.toLowerCase().includes("youtu.be")) {
+        if (host.endsWith("youtu.be")) {
             const videoId = url.pathname.split("/")[1];
 
-            if (videoId && /^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+            if (/^[a-zA-Z0-9_-]{11}$/.test(videoId || "")) {
                 return {
                     type: "video",
                     value: videoId
@@ -77,7 +101,17 @@ function parseYouTubeUrl(value) {
             }
         }
 
-        // Channel handle
+        if (url.pathname === "/watch") {
+            const videoId = url.searchParams.get("v");
+
+            if (/^[a-zA-Z0-9_-]{11}$/.test(videoId || "")) {
+                return {
+                    type: "video",
+                    value: videoId
+                };
+            }
+        }
+
         const handle = url.pathname.match(
             /^\/@([a-zA-Z0-9._-]+)\/?$/
         );
@@ -89,7 +123,6 @@ function parseYouTubeUrl(value) {
             };
         }
 
-        // Channel ID
         const channelId = url.pathname.match(
             /^\/channel\/(UC[a-zA-Z0-9_-]{22})\/?$/
         );
@@ -113,7 +146,7 @@ function parseYouTubeUrl(value) {
 // ==========================================
 
 function validateDate(value) {
-    if (typeof value !== "string" || !value.trim()) {
+    if (!value || typeof value !== "string") {
         return null;
     }
 
@@ -162,28 +195,11 @@ function validateUnixDate(value) {
 function safeCount(value) {
     const number = Number(value);
 
-    return Number.isFinite(number)
-        ? String(Math.max(0, number))
-        : "0";
-}
-
-// ==========================================
-// FETCH WITH TIMEOUT
-// ==========================================
-
-async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
-    const controller = new AbortController();
-
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-    try {
-        return await fetch(url, {
-            ...options,
-            signal: controller.signal
-        });
-    } finally {
-        clearTimeout(timer);
+    if (!Number.isFinite(number)) {
+        return "0";
     }
+
+    return String(Math.max(0, Math.floor(number)));
 }
 
 // ==========================================
@@ -196,7 +212,7 @@ async function youtubeRequest(endpoint, params, apiKey) {
     );
 
     for (const [key, value] of Object.entries(params)) {
-        url.searchParams.set(key, value);
+        url.searchParams.set(key, String(value));
     }
 
     const response = await fetchWithTimeout(
@@ -205,8 +221,7 @@ async function youtubeRequest(endpoint, params, apiKey) {
             headers: {
                 "x-goog-api-key": apiKey
             }
-        },
-        15000
+        }
     );
 
     const data = await response.json();
@@ -217,6 +232,7 @@ async function youtubeRequest(endpoint, params, apiKey) {
         );
 
         error.status = response.status;
+
         throw error;
     }
 
@@ -272,7 +288,7 @@ async function getChannel(channel, apiKey) {
 }
 
 // ==========================================
-// INVIDIOUS FALLBACK
+// INVIDIOUS DATE FALLBACK
 // ==========================================
 
 async function getInvidiousDate(channelId) {
@@ -289,7 +305,7 @@ async function getInvidiousDate(channelId) {
                 {
                     headers: {
                         Accept: "application/json",
-                        "User-Agent": "Virifixo/3.3"
+                        "User-Agent": "Virifixo/3.4"
                     }
                 },
                 7000
@@ -298,12 +314,18 @@ async function getInvidiousDate(channelId) {
             if (!response.ok) continue;
 
             const data = await response.json();
+
             const date = validateUnixDate(data.joined);
 
-            if (date) return date;
+            if (date) {
+                return date;
+            }
 
         } catch (error) {
-            console.log("INVIDIOUS ERROR:", error.message);
+            console.log(
+                "INVIDIOUS ERROR:",
+                error.message
+            );
         }
     }
 
@@ -311,7 +333,7 @@ async function getInvidiousDate(channelId) {
 }
 
 // ==========================================
-// YOUTUBE ABOUT FALLBACK
+// YOUTUBE ABOUT DATE FALLBACK
 // ==========================================
 
 function extractAboutDate(html) {
@@ -355,10 +377,16 @@ async function getYouTubeAboutDate(channel) {
 
         if (!response.ok) return null;
 
-        return extractAboutDate(await response.text());
+        const html = await response.text();
+
+        return extractAboutDate(html);
 
     } catch (error) {
-        console.log("YOUTUBE ABOUT ERROR:", error.message);
+        console.log(
+            "YOUTUBE ABOUT ERROR:",
+            error.message
+        );
+
         return null;
     }
 }
@@ -370,6 +398,7 @@ async function getYouTubeAboutDate(channel) {
 async function resolveCreationDate(item) {
     const channelId = item.id;
 
+    // Verified database
     if (VERIFIED_DATES[channelId]) {
         return {
             publishedAt: VERIFIED_DATES[channelId],
@@ -377,7 +406,10 @@ async function resolveCreationDate(item) {
         };
     }
 
-    const apiDate = validateDate(item.snippet?.publishedAt);
+    // YouTube API
+    const apiDate = validateDate(
+        item.snippet?.publishedAt
+    );
 
     if (apiDate) {
         return {
@@ -386,7 +418,10 @@ async function resolveCreationDate(item) {
         };
     }
 
-    const invidiousDate = await getInvidiousDate(channelId);
+    // Invidious
+    const invidiousDate = await getInvidiousDate(
+        channelId
+    );
 
     if (invidiousDate) {
         return {
@@ -395,6 +430,7 @@ async function resolveCreationDate(item) {
         };
     }
 
+    // YouTube About
     const aboutDate = await getYouTubeAboutDate({
         id: channelId,
         customUrl: item.snippet?.customUrl
@@ -414,12 +450,64 @@ async function resolveCreationDate(item) {
 }
 
 // ==========================================
+// CHANNEL RESPONSE BUILDER
+// ==========================================
+
+async function buildChannelResult(item) {
+    const snippet = item.snippet || {};
+    const stats = item.statistics || {};
+
+    const dateResult = await resolveCreationDate(item);
+
+    return {
+        channelId: item.id,
+
+        title: snippet.title || "Unknown Channel",
+
+        description: snippet.description || "",
+
+        thumbnail:
+            snippet.thumbnails?.high?.url ||
+            snippet.thumbnails?.medium?.url ||
+            snippet.thumbnails?.default?.url ||
+            null,
+
+        customUrl: snippet.customUrl || null,
+
+        publishedAt: dateResult.publishedAt,
+
+        createdDate: dateResult.publishedAt,
+
+        dateSource: dateResult.dateSource,
+
+        country: snippet.country || null,
+
+        subscribers: stats.hiddenSubscriberCount
+            ? null
+            : safeCount(stats.subscriberCount),
+
+        subscriberCountHidden: Boolean(
+            stats.hiddenSubscriberCount
+        ),
+
+        videoCount: safeCount(stats.videoCount),
+
+        viewCount: safeCount(stats.viewCount),
+
+        channelUrl:
+            `https://www.youtube.com/channel/${item.id}`
+    };
+}
+
+// ==========================================
 // VERIFY CHANNEL OR VIDEO
 // ==========================================
 
 app.post("/api/verify", async (req, res) => {
     try {
-        const input = String(req.body?.channel || "").trim();
+        const input = String(
+            req.body?.channel || ""
+        ).trim();
 
         if (!input || input.length > 300) {
             return res.status(400).json({
@@ -433,7 +521,8 @@ app.post("/api/verify", async (req, res) => {
         if (!channel) {
             return res.status(400).json({
                 success: false,
-                message: "Invalid YouTube channel or video URL."
+                message:
+                    "Invalid YouTube channel or video URL."
             });
         }
 
@@ -442,11 +531,12 @@ app.post("/api/verify", async (req, res) => {
         if (!apiKey) {
             return res.status(503).json({
                 success: false,
-                message: "YouTube API is not configured."
+                message:
+                    "YouTube API is not configured."
             });
         }
 
-        // Convert video URL to channel ID
+        // Convert video into channel ID
         if (channel.type === "video") {
             channel = await getChannelFromVideo(
                 channel.value,
@@ -456,12 +546,16 @@ app.post("/api/verify", async (req, res) => {
             if (!channel) {
                 return res.status(404).json({
                     success: false,
-                    message: "Video not found or channel unavailable."
+                    message:
+                        "Video not found or channel unavailable."
                 });
             }
         }
 
-        const item = await getChannel(channel, apiKey);
+        const item = await getChannel(
+            channel,
+            apiKey
+        );
 
         if (!item) {
             return res.status(404).json({
@@ -470,62 +564,29 @@ app.post("/api/verify", async (req, res) => {
             });
         }
 
-        const snippet = item.snippet || {};
-        const stats = item.statistics || {};
+        const result = await buildChannelResult(item);
 
-        const dateResult = await resolveCreationDate(item);
-
-        console.log("VIRIFIXO DATE CHECK:", {
-            channel: snippet.title,
-            channelId: item.id,
-            publishedAt: dateResult.publishedAt,
-            dateSource: dateResult.dateSource
+        console.log("VIRIFIXO VERIFICATION:", {
+            channel: result.title,
+            channelId: result.channelId,
+            date: result.createdDate,
+            dateSource: result.dateSource
         });
-
-        const result = {
-            channelId: item.id,
-            title: snippet.title || "Unknown Channel",
-            description: snippet.description || "",
-
-            thumbnail:
-                snippet.thumbnails?.high?.url ||
-                snippet.thumbnails?.medium?.url ||
-                snippet.thumbnails?.default?.url ||
-                null,
-
-            customUrl: snippet.customUrl || null,
-
-            publishedAt: dateResult.publishedAt,
-            createdDate: dateResult.publishedAt,
-            dateSource: dateResult.dateSource,
-
-            country: snippet.country || null,
-
-            subscribers: stats.hiddenSubscriberCount
-                ? null
-                : safeCount(stats.subscriberCount),
-
-            subscriberCountHidden: Boolean(
-                stats.hiddenSubscriberCount
-            ),
-
-            videoCount: safeCount(stats.videoCount),
-            viewCount: safeCount(stats.viewCount),
-
-            channelUrl:
-                `https://www.youtube.com/channel/${item.id}`
-        };
 
         res.set("Cache-Control", "no-store");
 
         return res.json({
             success: true,
+            version: VERSION,
             message: `Channel found: ${result.title}`,
             channel: result
         });
 
     } catch (error) {
-        console.error("VIRIFIXO ERROR:", error.message);
+        console.error(
+            "VIRIFIXO ERROR:",
+            error.message
+        );
 
         if (error.name === "AbortError") {
             return res.status(504).json({
@@ -537,7 +598,8 @@ app.post("/api/verify", async (req, res) => {
         if (error.status === 403) {
             return res.status(502).json({
                 success: false,
-                message: "YouTube API quota or access error."
+                message:
+                    "YouTube API quota or access error."
             });
         }
 
@@ -550,24 +612,31 @@ app.post("/api/verify", async (req, res) => {
 
         return res.status(502).json({
             success: false,
-            message: "Unable to retrieve channel information."
+            message:
+                "Unable to retrieve channel information."
         });
     }
 });
 
 // ==========================================
-// INVALID JSON
+// INVALID JSON HANDLING
 // ==========================================
 
 app.use((err, req, res, next) => {
-    if (err instanceof SyntaxError && err.status === 400) {
+    if (
+        err instanceof SyntaxError &&
+        err.status === 400
+    ) {
         return res.status(400).json({
             success: false,
             message: "Invalid JSON."
         });
     }
 
-    console.error("SERVER ERROR:", err.message);
+    console.error(
+        "SERVER ERROR:",
+        err.message
+    );
 
     res.status(500).json({
         success: false,
@@ -576,12 +645,29 @@ app.use((err, req, res, next) => {
 });
 
 // ==========================================
+// 404 HANDLING FOR API
+// ==========================================
+
+app.use("/api", (req, res) => {
+    res.status(404).json({
+        success: false,
+        message: "API endpoint not found."
+    });
+});
+
+// ==========================================
 // START SERVER
 // ==========================================
 
-const server = app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Virifixo running on port ${PORT}`);
-});
+const server = app.listen(
+    PORT,
+    "0.0.0.0",
+    () => {
+        console.log(
+            `Virifixo ${VERSION} running on port ${PORT}`
+        );
+    }
+);
 
 // ==========================================
 // GRACEFUL SHUTDOWN
@@ -591,7 +677,7 @@ function shutdown(signal) {
     console.log(`${signal} received.`);
 
     server.close(() => {
-        console.log("Server stopped.");
+        console.log("Virifixo server stopped.");
         process.exit(0);
     });
 
