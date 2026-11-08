@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#101827">
+
     <title>Virifixo - YouTube Channel Verification</title>
 
     <style>
@@ -130,6 +131,13 @@
         .error {
             color: #ff7777 !important;
         }
+
+        #description {
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            color: #c5d0df;
+            line-height: 1.6;
+        }
     </style>
 </head>
 
@@ -165,7 +173,11 @@
 
         <div class="profile">
 
-            <img id="thumbnail" src="" alt="Channel thumbnail">
+            <img
+                id="thumbnail"
+                src=""
+                alt="Channel thumbnail"
+            >
 
             <h2 id="channelTitle"></h2>
 
@@ -221,29 +233,46 @@
 
 <script>
 
-// Format original YouTube channel creation date
+// ======================================
+// DATE FORMATTER
+// ======================================
+
 function formatChannelDate(value) {
 
     if (
-        typeof value !== "string" ||
-        !value.trim()
+        value === null ||
+        value === undefined ||
+        value === ""
     ) {
         return "Date unavailable";
     }
 
-    const timestamp = Date.parse(value);
+    let date;
 
-    if (!Number.isFinite(timestamp)) {
-        return "Invalid date";
+    if (typeof value === "number") {
+
+        // Support Unix timestamps in seconds or milliseconds
+        date = new Date(
+            value < 100000000000
+                ? value * 1000
+                : value
+        );
+
+    } else {
+
+        date = new Date(String(value).trim());
+
     }
 
-    const date = new Date(timestamp);
+    if (isNaN(date.getTime())) {
+        return "Date unavailable";
+    }
 
     if (
         date.getTime() <= 0 ||
         date.getUTCFullYear() < 2005
     ) {
-        return "Invalid date";
+        return "Date unavailable";
     }
 
     return new Intl.DateTimeFormat("en-GB", {
@@ -255,38 +284,93 @@ function formatChannelDate(value) {
 }
 
 
-// Safe text output
+// ======================================
+// SAFE TEXT OUTPUT
+// ======================================
+
 function setText(id, value) {
 
-    document.getElementById(id).textContent =
-        value ?? "Not available";
+    const element = document.getElementById(id);
 
+    if (!element) {
+        console.error("Element not found:", id);
+        return;
+    }
+
+    element.textContent =
+        value === null || value === undefined
+            ? "Not available"
+            : String(value);
 }
 
 
-// Verify channel
+// ======================================
+// DISPLAY CHANNEL CREATION DATE
+// ======================================
+
+function displayChannelDate(channel) {
+
+    const dateElement =
+        document.getElementById("createdDate");
+
+    if (!dateElement) {
+        console.error("Created date element not found.");
+        return;
+    }
+
+    const originalDate =
+        channel.publishedAt ??
+        channel.createdDate ??
+        null;
+
+    console.log("VIRIFIXO DATE DIAGNOSTIC:", {
+        publishedAt: channel.publishedAt,
+        createdDate: channel.createdDate,
+        selectedDate: originalDate
+    });
+
+    dateElement.textContent =
+        formatChannelDate(originalDate);
+}
+
+
+// ======================================
+// VERIFY CHANNEL
+// ======================================
+
 document
     .getElementById("verifyForm")
     .addEventListener("submit", async function(event) {
 
         event.preventDefault();
 
-        const input = document.getElementById("channelInput");
-        const button = document.getElementById("verifyButton");
-        const message = document.getElementById("message");
-        const result = document.getElementById("result");
+        const input =
+            document.getElementById("channelInput");
+
+        const button =
+            document.getElementById("verifyButton");
+
+        const message =
+            document.getElementById("message");
+
+        const result =
+            document.getElementById("result");
 
         const channelUrl = input.value.trim();
 
         message.textContent = "Verifying channel...";
+
         message.classList.remove("error");
 
         result.style.display = "none";
 
         button.disabled = true;
+
         button.textContent = "Checking...";
 
         try {
+
+            // Send verification request
 
             const response = await fetch("/api/verify", {
 
@@ -302,97 +386,177 @@ document
 
             });
 
+
+            // Read server response
+
             const data = await response.json();
 
             if (!response.ok || !data.success) {
+
                 throw new Error(
                     data.message || "Verification failed."
                 );
+
             }
+
 
             const channel = data.channel;
 
-            // Channel information
-            setText("channelTitle", channel.title);
+            if (!channel) {
+                throw new Error("Channel information is missing.");
+            }
 
-            setText("channelId", channel.channelId);
+
+            // ======================================
+            // CHANNEL INFORMATION
+            // ======================================
+
+            setText(
+                "channelTitle",
+                channel.title || "Unknown Channel"
+            );
+
+            setText(
+                "channelId",
+                channel.channelId
+            );
 
             setText(
                 "customUrl",
                 channel.customUrl || "No custom URL"
             );
 
-            // IMPORTANT: Use original publishedAt
-            // Do not use the current date or upload date.
 
-            const originalDate =
-                channel.publishedAt || channel.createdDate;
+            // ======================================
+            // ORIGINAL YOUTUBE CREATION DATE
+            // ======================================
 
-            setText(
-                "createdDate",
-                formatChannelDate(originalDate)
-            );
+            displayChannelDate(channel);
 
-            // Subscriber information
+
+            // ======================================
+            // SUBSCRIBERS
+            // ======================================
+
             setText(
                 "subscribers",
+
                 channel.subscriberCountHidden
                     ? "Hidden"
-                    : Number(channel.subscribers || 0).toLocaleString("en-US")
+                    : Number(
+                        channel.subscribers || 0
+                    ).toLocaleString("en-US")
             );
+
+
+            // ======================================
+            // VIDEO COUNT
+            // ======================================
 
             setText(
                 "videoCount",
-                Number(channel.videoCount || 0).toLocaleString("en-US")
+
+                Number(
+                    channel.videoCount || 0
+                ).toLocaleString("en-US")
             );
+
+
+            // ======================================
+            // TOTAL VIEWS
+            // ======================================
 
             setText(
                 "viewCount",
-                Number(channel.viewCount || 0).toLocaleString("en-US")
+
+                Number(
+                    channel.viewCount || 0
+                ).toLocaleString("en-US")
             );
+
+
+            // ======================================
+            // COUNTRY
+            // ======================================
 
             setText(
                 "country",
                 channel.country || "Not available"
             );
 
+
+            // ======================================
+            // DESCRIPTION
+            // ======================================
+
             setText(
                 "description",
                 channel.description || "No description"
             );
 
-            // Thumbnail
-            const thumbnail = document.getElementById("thumbnail");
+
+            // ======================================
+            // THUMBNAIL
+            // ======================================
+
+            const thumbnail =
+                document.getElementById("thumbnail");
 
             if (channel.thumbnail) {
+
                 thumbnail.src = channel.thumbnail;
+
                 thumbnail.style.display = "inline-block";
+
             } else {
+
                 thumbnail.removeAttribute("src");
+
                 thumbnail.style.display = "none";
+
             }
 
-            // Channel link
+
+            // ======================================
+            // CHANNEL LINK
+            // ======================================
+
             const channelLink =
                 document.getElementById("channelLink");
 
             channelLink.href =
-                channel.channelUrl;
+                channel.channelUrl ||
+                "https://www.youtube.com/channel/" +
+                encodeURIComponent(channel.channelId);
+
+
+            // ======================================
+            // SHOW RESULTS
+            // ======================================
 
             result.style.display = "block";
 
-            message.textContent = "Channel verified successfully!";
+            message.textContent =
+                "Channel verified successfully!";
+
 
         } catch (error) {
+
+            console.error(
+                "VIRIFIXO ERROR:",
+                error
+            );
 
             message.textContent =
                 error.message || "Something went wrong.";
 
             message.classList.add("error");
 
+
         } finally {
 
             button.disabled = false;
+
             button.textContent = "Verify Channel";
 
         }
