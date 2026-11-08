@@ -1,70 +1,156 @@
 
+"use strict";
+
 const express = require("express");
 const path = require("path");
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
+const API_TIMEOUT = 15000;
+
+app.disable("x-powered-by");
 
 app.use(express.json({ limit: "10kb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // Server status
 app.get("/api/status", (req, res) => {
+  res.set("Cache-Control", "no-store");
+
   res.json({
     name: "Virifixo",
     status: "online",
-    version: "2.0"
+    version: "2.1",
+    uptime: Math.floor(process.uptime())
   });
 });
 
-// Extract YouTube channel identifier
+// Parse YouTube channel URL
 function parseChannelUrl(value) {
-  let url;
-
   try {
-    url = new URL(value);
+    const url = new URL(value);
+
+    const hostname = url.hostname.toLowerCase();
+
+    if (
+      ![
+        "youtube.com",
+        "www.youtube.com",
+        "m.youtube.com"
+      ].includes(hostname)
+    ) {
+      return null;
+    }
+
+    const handleMatch = url.pathname.match(
+      /^\/@([a-zA-Z0-9._-]+)\/?$/
+    );
+
+    if (handleMatch) {
+      return {
+        type: "handle",
+        value: handleMatch[1]
+      };
+    }
+
+    const channelMatch = url.pathname.match(
+      /^\/channel\/(UC[a-zA-Z0-9_-]{22})\/?$/
+    );
+
+    if (channelMatch) {
+      return {
+        type: "id",
+        value: channelMatch[1]
+      };
+    }
+
+    return null;
   } catch {
     return null;
   }
+}
 
-  const hostname = url.hostname.toLowerCase();
+// Safe number conversion
+function safeCount(value) {
+  if (value === undefined || value === null) {
+    return "0";
+  }
+
+  const number = Number(value);
+
+  return Number.isFinite(number)
+    ? String(Math.max(0, number))
+    : "0";
+}
+
+// Format channel creation date
+function formatDate(value) {
+  if (!value) return null;
+
+  const date = new Date(value);
 
   if (
-    !["youtube.com", "www.youtube.com", "m.youtube.com"]
-      .includes(hostname)
+    Number.isNaN(date.getTime()) ||
+    date.getTime() <= 0
   ) {
     return null;
   }
 
-  const handleMatch = url.pathname.match(
-    /^\/@([a-zA-Z0-9._-]+)\/?$/
-  );
-
-  if (handleMatch) {
-    return {
-      type: "handle",
-      value: handleMatch[1]
-    };
-  }
-
-  const channelMatch = url.pathname.match(
-    /^\/channel\/(UC[a-zA-Z0-9_-]+)\/?$/
-  );
-
-  if (channelMatch) {
-    return {
-      type: "id",
-      value: channelMatch[1]
-    };
-  }
-
-  return null;
+  return date.toISOString();
 }
 
-// Verify and retrieve real channel information
+// YouTube API request
+async function getChannel(channel, apiKey) {
+  const params = new URLSearchParams({
+    part: "snippet,statistics",
+    [channel.type === "handle" ? "forHandle" : "id"]:
+      channel.value
+  });
+
+  const controller = new AbortController();
+
+  const timeout = setTimeout(
+    () => controller.abort(),
+    API_TIMEOUT
+  );
+
+  try {
+    const response = await fetch(
+      `https://www.googleapis.com/youtube/v3/channels?${params}`,
+      {
+        method: "GET",
+        headers: {
+          "x-goog-api-key": apiKey
+        },
+        signal: controller.signal
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      const error = new Error(
+        data.error?.message || "YouTube API request failed"
+      );
+
+      error.status = response.status;
+      throw error;
+    }
+
+    return data.items?.[0] || null;
+
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+// Verify channel
 app.post("/api/verify", async (req, res) => {
   try {
-    const channelUrl = String(req.body.channel || "").trim();
+    const channelUrl = String(
+      req.body?.channel || ""
+    ).trim();
 
     if (!channelUrl) {
       return res.status(400).json({
@@ -73,13 +159,19 @@ app.post("/api/verify", async (req, res) => {
       });
     }
 
+    if (channelUrl.length > 300) {
+      return res.status(400).json({
+        success: false,
+        message: "Channel URL is too long."
+      });
+    }
+
     const channel = parseChannelUrl(channelUrl);
 
     if (!channel) {
       return res.status(400).json({
         success: false,
-        message:
-          "Invalid channel URL. Use a YouTube @handle or /channel/UC... URL."
+        message: "Invalid YouTube channel URL."
       });
     }
 
@@ -88,77 +180,56 @@ app.post("/api/verify", async (req, res) => {
     if (!apiKey) {
       return res.status(503).json({
         success: false,
-        message: "YouTube API is not configured on the server."
+        message: "YouTube API is not configured."
       });
     }
 
-    const params = new URLSearchParams({
-      part: "snippet,statistics",
-      [channel.type === "handle" ? "forHandle" : "id"]:
-        channel.value
-    });
+    const item = await getChannel(channel, apiKey);
 
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/channels?${params}`,
-      {
-        headers: {
-          "x-goog-api-key": apiKey
-        },
-        signal: AbortSignal.timeout(15000)
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      const reason = data.error?.errors?.[0]?.reason;
-
-      console.error("YouTube API error:", reason || response.status);
-
-      if (response.status === 403) {
-        return res.status(502).json({
-          success: false,
-          message:
-            "YouTube API access failed. Check your API key, restrictions and quota."
-        });
-      }
-
-      return res.status(502).json({
-        success: false,
-        message: "Unable to retrieve YouTube channel information."
-      });
-    }
-
-    if (!data.items || data.items.length === 0) {
+    if (!item) {
       return res.status(404).json({
         success: false,
         message: "YouTube channel not found."
       });
     }
 
-    const item = data.items[0];
-    const snippet = item.snippet;
-    const stats = item.statistics;
+    const snippet = item.snippet || {};
+    const stats = item.statistics || {};
 
     const result = {
       channelId: item.id,
-      title: snippet.title,
-      description: snippet.description,
+      title: snippet.title || "Unknown Channel",
+      description: snippet.description || "",
+
       thumbnail:
         snippet.thumbnails?.high?.url ||
+        snippet.thumbnails?.medium?.url ||
         snippet.thumbnails?.default?.url ||
         null,
+
       customUrl: snippet.customUrl || null,
-      publishedAt: snippet.publishedAt,
+
+      publishedAt: formatDate(snippet.publishedAt),
+
       country: snippet.country || null,
+
       subscribers: stats.hiddenSubscriberCount
         ? null
-        : stats.subscriberCount || null,
-      subscriberCountHidden: Boolean(stats.hiddenSubscriberCount),
-      videoCount: stats.videoCount || "0",
-      viewCount: stats.viewCount || "0",
-      channelUrl: `https://www.youtube.com/channel/${item.id}`
+        : safeCount(stats.subscriberCount),
+
+      subscriberCountHidden: Boolean(
+        stats.hiddenSubscriberCount
+      ),
+
+      videoCount: safeCount(stats.videoCount),
+
+      viewCount: safeCount(stats.viewCount),
+
+      channelUrl:
+        `https://www.youtube.com/channel/${item.id}`
     };
+
+    res.set("Cache-Control", "no-store");
 
     return res.json({
       success: true,
@@ -167,15 +238,67 @@ app.post("/api/verify", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Verification error:", error.message);
+    console.error(
+      "Verification error:",
+      error.message
+    );
 
-    return res.status(500).json({
+    if (error.name === "AbortError") {
+      return res.status(504).json({
+        success: false,
+        message: "YouTube request timed out. Please try again."
+      });
+    }
+
+    if (error.status === 403) {
+      return res.status(502).json({
+        success: false,
+        message: "YouTube API access or quota error."
+      });
+    }
+
+    return res.status(502).json({
       success: false,
-      message: "An unexpected server error occurred. Please try again."
+      message: "Unable to retrieve channel information."
     });
   }
 });
 
-app.listen(PORT, "0.0.0.0", () => {
+// Handle invalid JSON
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid JSON request."
+    });
+  }
+
+  console.error("Server middleware error:", err.message);
+
+  res.status(500).json({
+    success: false,
+    message: "Internal server error."
+  });
+});
+
+// Start server
+const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`Virifixo running on port ${PORT}`);
 });
+
+// Graceful shutdown
+function shutdown(signal) {
+  console.log(`${signal} received. Closing server...`);
+
+  server.close(() => {
+    console.log("Virifixo server stopped.");
+    process.exit(0);
+  });
+
+  setTimeout(() => {
+    process.exit(1);
+  }, 10000).unref();
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
