@@ -1,32 +1,4 @@
 
-Go to file
-t
-T
-public
-index.html
-README.md
-package.json
-server.js
-virifixo
-/server.js
-ashrafhanfy1988-svg
-ashrafhanfy1988-svg
-Create server.js
-bb212a7
- · 
-2 minutes ago
-
-Code
-
-Blame
-21 lines (16 loc) · 443 Bytes
-Older
-Newer
-ashrafhanfy1988-svg
-2 minutes ago
-
-Create server.js
-
 const express = require("express");
 const path = require("path");
 
@@ -44,6 +16,25 @@ app.get("/api/status", (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+app.post("/api/verify", (req, res) => {
+  const channel = String(req.body.channel || "").trim();
+
+  const valid =
+    /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(channel);
+
+  if (!valid) {
+    return res.status(400).json({
+      success: false,
+      message: "Please enter a valid YouTube channel URL."
+    });
+  }
+
+  return res.json({
+    success: true,
+    message: "YouTube URL format is valid. Official channel verification is not confirmed."
+  });
+});
+
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Virifixo running on port ${PORT}`);
 });
