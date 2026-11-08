@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Virifixo | YouTube Channel Verification</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b1020;
+      color: white;
+    }
+
+    header {
+      padding: 25px 8%;
+      border-bottom: 1px solid #252d43;
+      font-size: 25px;
+      font-weight: bold;
+      color: #8b9cff;
+    }
+
+    main {
+      max-width: 750px;
+      margin: 100px auto;
+      padding: 25px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 42px;
+    }
+
+    p {
+      color: #aab4ca;
+      line-height: 1.7;
+    }
+
+    input {
+      width: 100%;
+      padding: 18px;
+      border-radius: 10px;
+      border: 1px solid #39445f;
+      background: #151d31;
+      color: white;
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 15px 35px;
+      background: #6578ff;
+      color: white;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #result {
+      margin-top: 25px;
+      padding: 20px;
+      background: #151d31;
+      border-radius: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>Virifixo</header>
+
+<main>
+  <h1>YouTube Channel Verification</h1>
+
+  <p>
+    Check YouTube channel information
+    with Virifixo.
+  </p>
+
+  <input
+    id="channel"
+    type="text"
+    placeholder="Enter YouTube channel URL"
+  >
+
+  <button onclick="verifyChannel()">
+    Verify Channel
+  </button>
+
+  <div id="result"></div>
+</main>
+
+<script>
+async function verifyChannel() {
+  const channel = document.getElementById("channel").value.trim();
+  const result = document.getElementById("result");
+
+  result.style.display = "block";
+
+  if (!channel) {
+    result.textContent = "Please enter a YouTube channel URL.";
+    return;
+  }
+
+  result.textContent = "Checking channel information...";
+
+  try {
+    const response = await fetch("/api/verify", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({channel})
+    });
+
+    const data = await response.json();
+    result.textContent = data.message;
+  } catch (error) {
+    result.textContent = "Unable to check the channel.";
+  }
+}
+</script>
+
+</body>
+</html>
