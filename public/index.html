@@ -1,689 +1,403 @@
 
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#080b18">
-<meta name="description" content="Virifixo - YouTube Channel Intelligence and Public Statistics">
-<title>Virifixo — YouTube Channel Intelligence</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101827">
+    <title>Virifixo - YouTube Channel Verification</title>
 
-<style>
-*{box-sizing:border-box}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-body{
- margin:0;
- background:#080b18;
- color:#f8f9ff;
- font-family:Arial,Helvetica,sans-serif;
- min-height:100vh;
- background-image:radial-gradient(ellipse at 50% 0%,#29205b 0%,transparent 50%);
-}
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            min-height: 100vh;
+            background: #101827;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
 
-nav{
- min-height:76px;
- padding:12px 7%;
- display:flex;
- align-items:center;
- justify-content:space-between;
- border-bottom:1px solid #ffffff15;
- gap:15px;
-}
+        .container {
+            width: 100%;
+            max-width: 650px;
+            margin: 40px auto;
+            padding: 28px;
+            background: #1b2638;
+            border-radius: 16px;
+            border: 1px solid #344258;
+        }
 
-.logo{font-size:25px;font-weight:800;letter-spacing:-1px}
-.logo span{color:#9876ff}
+        h1 {
+            text-align: center;
+            color: #65a9ff;
+            margin-bottom: 10px;
+        }
 
-.nav-actions{display:flex;align-items:center;gap:20px}
-nav a{color:#aaa;text-decoration:none;font-size:13px}
+        .subtitle {
+            text-align: center;
+            color: #aab7ca;
+            margin-bottom: 28px;
+        }
 
-.lang-btn{
- background:#1c2440;
- border:1px solid #ffffff25;
- color:white;
- border-radius:9px;
- padding:10px 15px;
- cursor:pointer;
-}
+        input {
+            width: 100%;
+            padding: 15px;
+            background: #101827;
+            border: 1px solid #40516b;
+            border-radius: 8px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+        }
 
-.hero{text-align:center;padding:85px 18px 45px}
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            background: #2879e8;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-.tag{
- display:inline-block;
- color:#c4aaff;
- background:#8b5cf620;
- border:1px solid #8b5cf655;
- padding:9px 16px;
- border-radius:30px;
- font-size:12px;
- margin-bottom:22px;
-}
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
 
-h1{
- font-size:clamp(37px,6vw,64px);
- letter-spacing:-2px;
- margin:0 auto 20px;
- line-height:1.15;
-}
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            color: #f3c969;
+        }
 
-.gradient{
- background:linear-gradient(90deg,#b08aff,#7194ff);
- -webkit-background-clip:text;
- background-clip:text;
- color:transparent;
-}
+        .result {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background: #101827;
+            border-radius: 12px;
+        }
 
-.subtitle{
- color:#9ba5bd;
- line-height:1.8;
- margin:0 auto 35px;
- max-width:590px;
-}
+        .profile {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-.search{
- max-width:680px;
- margin:auto;
- padding:9px;
- display:flex;
- gap:10px;
- border:1px solid #8966ed77;
- border-radius:15px;
- background:#141a30;
-}
+        .profile img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
 
-input{
- flex:1;
- min-width:0;
- padding:15px;
- border:0;
- outline:0;
- color:white;
- background:transparent;
- font-size:14px;
-}
+        .profile h2 {
+            margin-bottom: 5px;
+        }
 
-input::placeholder{color:#8490a9}
+        .info {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 13px 0;
+            border-bottom: 1px solid #344258;
+        }
 
-button{
- border:0;
- border-radius:10px;
- padding:15px 22px;
- color:white;
- font-weight:bold;
- cursor:pointer;
- background:linear-gradient(110deg,#8659ed,#527aff);
-}
+        .info span:first-child {
+            color: #aab7ca;
+        }
 
-button:disabled{opacity:.6;cursor:wait}
+        .info span:last-child {
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
 
-#result{
- max-width:760px;
- margin:25px auto 0;
- padding:0 18px;
-}
+        .channel-link {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #65a9ff;
+            text-decoration: none;
+        }
 
-.card{
- background:linear-gradient(145deg,#171e35,#101529);
- border:1px solid #ffffff17;
- border-radius:18px;
- padding:24px;
- text-align:start;
-}
-
-.card-head{
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:10px;
- flex-wrap:wrap;
-}
-
-.status{
- color:#75e0ac;
- background:#1c81552b;
- padding:7px 12px;
- border-radius:20px;
- font-size:11px;
-}
-
-.profile{
- display:flex;
- align-items:center;
- gap:17px;
- margin:25px 0;
-}
-
-.profile img{
- width:85px;
- height:85px;
- border-radius:50%;
- object-fit:cover;
- background:#252b45;
- border:2px solid #8b6bf8;
-}
-
-.profile h2{margin:0 0 7px;font-size:22px}
-.profile p{margin:0;color:#a0abc1;font-size:13px;overflow-wrap:anywhere}
-
-.stats{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:12px;
-}
-
-.stat{
- background:#ffffff08;
- border:1px solid #ffffff12;
- padding:19px;
- border-radius:12px;
- min-width:0;
-}
-
-.stat strong{
- display:block;
- font-size:clamp(18px,4vw,25px);
- margin-bottom:8px;
- overflow-wrap:anywhere;
-}
-
-.stat span{font-size:12px;color:#9ba5bd}
-
-.description{
- color:#aab4c9;
- line-height:1.8;
- font-size:13px;
- margin-top:20px;
- white-space:pre-wrap;
- overflow-wrap:anywhere;
-}
-
-.message{
- padding:20px;
- border-radius:12px;
- background:#151c32;
- border:1px solid #ffffff17;
- color:#c5cde0;
- line-height:1.7;
-}
-
-.features{
- max-width:1000px;
- margin:70px auto;
- padding:0 20px;
-}
-
-.features h2{text-align:center;margin-bottom:30px}
-
-.grid{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:16px;
-}
-
-.feature{
- background:#131a2e;
- border:1px solid #ffffff12;
- border-radius:15px;
- padding:25px;
- text-align:start;
-}
-
-.feature h3{font-size:16px}
-.feature p{font-size:13px;color:#9ba5bd;line-height:1.8}
-
-footer{
- border-top:1px solid #ffffff15;
- text-align:center;
- padding:30px;
- color:#8792aa;
- font-size:12px;
- line-height:1.8;
-}
-
-[dir="rtl"]{font-family:Tahoma,Arial,sans-serif}
-[dir="rtl"] .logo{letter-spacing:0}
-[dir="rtl"] .profile{text-align:right}
-[dir="rtl"] .card{text-align:right}
-[dir="rtl"] .feature{text-align:right}
-[dir="rtl"] .search input{text-align:right}
-
-@media(max-width:650px){
- .hero{padding-top:60px}
- .search{flex-direction:column}
- .search button{width:100%}
- .grid{grid-template-columns:1fr}
- .stats{grid-template-columns:1fr 1fr}
- .card{padding:17px}
- nav{padding:12px 5%}
- .nav-actions{gap:10px}
-}
-</style>
+        .error {
+            color: #ff7777 !important;
+        }
+    </style>
 </head>
 
 <body>
 
-<nav>
- <div class="logo">Viri<span>fixo</span></div>
- <div class="nav-actions">
-  <a href="#features" id="navFeatures">Features</a>
-  <button class="lang-btn" id="langButton" type="button">العربية</button>
- </div>
-</nav>
+<div class="container">
 
-<main>
+    <h1>Virifixo</h1>
 
-<section class="hero">
+    <p class="subtitle">
+        YouTube Channel Verification
+    </p>
 
- <div class="tag" id="tag">✦ YOUTUBE CHANNEL INTELLIGENCE</div>
+    <form id="verifyForm">
 
- <h1 id="heading">
- Discover and Check
- <span class="gradient">YouTube Channels</span>
- </h1>
+        <input
+            type="url"
+            id="channelInput"
+            placeholder="Enter YouTube channel URL"
+            maxlength="300"
+            required
+        >
 
- <p class="subtitle" id="subtitle">
- Explore real YouTube channel information with Virifixo.
- Enter a channel URL to discover its public statistics.
- </p>
+        <button type="submit" id="verifyButton">
+            Verify Channel
+        </button>
 
- <form class="search" id="verifyForm">
-  <input id="channel" type="text"
-   placeholder="Paste YouTube channel URL here..." required>
-  <button id="verifyButton" type="submit">Analyze Channel →</button>
- </form>
+    </form>
 
-</section>
+    <div id="message"></div>
 
-<section id="result" aria-live="polite"></section>
+    <div class="result" id="result">
 
-<section class="features" id="features">
+        <div class="profile">
 
- <h2 id="featuresTitle">
- Built for <span class="gradient">Creators</span>
- </h2>
+            <img id="thumbnail" src="" alt="Channel thumbnail">
 
- <div class="grid">
+            <h2 id="channelTitle"></h2>
 
-  <div class="feature">
-   <h3 id="feature1Title">🔎 Channel Analysis</h3>
-   <p id="feature1Text">
-    Retrieve public channel information directly from YouTube.
-   </p>
-  </div>
+            <p id="customUrl"></p>
 
-  <div class="feature">
-   <h3 id="feature2Title">📊 Real Statistics</h3>
-   <p id="feature2Text">
-    Explore subscriber counts, videos and channel views.
-   </p>
-  </div>
+        </div>
 
-  <div class="feature">
-   <h3 id="feature3Title">🛡️ Clear Information</h3>
-   <p id="feature3Text">
-    Understand channel data without claiming official YouTube verification.
-   </p>
-  </div>
+        <div class="info">
+            <span>Channel ID</span>
+            <span id="channelId"></span>
+        </div>
 
- </div>
-</section>
+        <div class="info">
+            <span>Created Date</span>
+            <span id="createdDate">Loading...</span>
+        </div>
 
-</main>
+        <div class="info">
+            <span>Subscribers</span>
+            <span id="subscribers"></span>
+        </div>
 
-<footer>
- <div class="logo">Viri<span>fixo</span></div>
+        <div class="info">
+            <span>Videos</span>
+            <span id="videoCount"></span>
+        </div>
 
- <p id="footerText">
- Independent YouTube channel information platform.
- <br>
- Not affiliated with or endorsed by YouTube or Google.
- </p>
+        <div class="info">
+            <span>Total Views</span>
+            <span id="viewCount"></span>
+        </div>
 
- © 2026 Virifixo. All rights reserved.
-</footer>
+        <div class="info">
+            <span>Country</span>
+            <span id="country"></span>
+        </div>
+
+        <p id="description"></p>
+
+        <a
+            id="channelLink"
+            class="channel-link"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Open YouTube Channel
+        </a>
+
+    </div>
+
+</div>
 
 <script>
-"use strict";
 
-const form = document.getElementById("verifyForm");
-const input = document.getElementById("channel");
-const result = document.getElementById("result");
-const button = document.getElementById("verifyButton");
-const langButton = document.getElementById("langButton");
+// Format original YouTube channel creation date
+function formatChannelDate(value) {
 
-let currentLang = "en";
-let lastChannel = null;
+    if (
+        typeof value !== "string" ||
+        !value.trim()
+    ) {
+        return "Date unavailable";
+    }
 
-const translations = {
- en: {
-  features:"Features",
-  tag:"✦ YOUTUBE CHANNEL INTELLIGENCE",
-  heading:'Discover and Check <span class="gradient">YouTube Channels</span>',
-  subtitle:"Explore real YouTube channel information with Virifixo. Enter a channel URL to discover its public statistics.",
-  placeholder:"Paste YouTube channel URL here...",
-  analyze:"Analyze Channel →",
-  loading:"Analyzing...",
-  connecting:"Connecting to YouTube...",
-  featuresTitle:'Built for <span class="gradient">Creators</span>',
-  feature1Title:"🔎 Channel Analysis",
-  feature1Text:"Retrieve public channel information directly from YouTube.",
-  feature2Title:"📊 Real Statistics",
-  feature2Text:"Explore subscriber counts, videos and channel views.",
-  feature3Title:"🛡️ Clear Information",
-  feature3Text:"Understand channel data without claiming official YouTube verification.",
-  footer:"Independent YouTube channel information platform.<br>Not affiliated with or endorsed by YouTube or Google.",
-  found:"✓ Channel Found",
-  subscribers:"Subscribers",
-  videos:"Total Videos",
-  views:"Total Views",
-  created:"Created Date",
-  hidden:"Hidden",
-  unavailable:"Not available",
-  description:"No public description available.",
-  apiNote:"Channel data retrieved from YouTube Data API. This does not confirm an official verification badge.",
-  open:"Open YouTube Channel ↗",
-  genericError:"Unable to find channel. Please try again."
- },
+    const timestamp = Date.parse(value);
 
- ar: {
-  features:"المميزات",
-  tag:"✦ ذكاء وتحليل قنوات يوتيوب",
-  heading:'اكتشف وحلّل <span class="gradient">قنوات يوتيوب</span>',
-  subtitle:"استكشف معلومات قنوات يوتيوب الحقيقية باستخدام Virifixo. أدخل رابط القناة لاكتشاف إحصائياتها العامة.",
-  placeholder:"ضع رابط قناة يوتيوب هنا...",
-  analyze:"حلّل القناة ←",
-  loading:"جارٍ التحليل...",
-  connecting:"جارٍ الاتصال بيوتيوب...",
-  featuresTitle:'صُممت من أجل <span class="gradient">صنّاع المحتوى</span>',
-  feature1Title:"🔎 تحليل القنوات",
-  feature1Text:"استخراج المعلومات العامة للقناة مباشرة من يوتيوب.",
-  feature2Title:"📊 إحصائيات حقيقية",
-  feature2Text:"اكتشف عدد المشتركين والفيديوهات والمشاهدات.",
-  feature3Title:"🛡️ معلومات واضحة",
-  feature3Text:"افهم بيانات القناة دون الادعاء بوجود توثيق رسمي.",
-  footer:"منصة مستقلة لمعلومات وتحليل قنوات يوتيوب.<br>لسنا تابعين ليوتيوب أو جوجل ولا نحظى بتأييدهما.",
-  found:"✓ تم العثور على القناة",
-  subscribers:"المشتركون",
-  videos:"إجمالي الفيديوهات",
-  views:"إجمالي المشاهدات",
-  created:"تاريخ الإنشاء",
-  hidden:"مخفي",
-  unavailable:"غير متاح",
-  description:"لا يوجد وصف عام متاح.",
-  apiNote:"تم جلب بيانات القناة من YouTube Data API. هذا لا يؤكد وجود شارة توثيق رسمية.",
-  open:"افتح قناة يوتيوب ↗",
-  genericError:"تعذر العثور على القناة. حاول مرة أخرى."
- }
-};
+    if (!Number.isFinite(timestamp)) {
+        return "Invalid date";
+    }
 
-function t(key) {
- return translations[currentLang][key];
+    const date = new Date(timestamp);
+
+    if (
+        date.getTime() <= 0 ||
+        date.getUTCFullYear() < 2005
+    ) {
+        return "Invalid date";
+    }
+
+    return new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        timeZone: "UTC"
+    }).format(date);
 }
 
-function escapeHTML(value) {
- return String(value ?? "").replace(/[&<>"']/g, char => ({
-  "&":"&amp;",
-  "<":"&lt;",
-  ">":"&gt;",
-  '"':"&quot;",
-  "'":"&#39;"
- }[char]));
+
+// Safe text output
+function setText(id, value) {
+
+    document.getElementById(id).textContent =
+        value ?? "Not available";
+
 }
 
-function formatNumber(value) {
- if (value === null || value === undefined || value === "") {
-  return t("unavailable");
- }
-
- const number = Number(value);
-
- return Number.isFinite(number)
-  ? new Intl.NumberFormat(
-      currentLang === "ar" ? "ar-SA" : "en-US"
-    ).format(number)
-  : t("unavailable");
-}
-
-// FIXED: Supports both publishedAt and createdDate
-function formatDate(value) {
- if (!value) return t("unavailable");
-
- const date = new Date(value);
-
- if (
-  Number.isNaN(date.getTime()) ||
-  date.getUTCFullYear() < 2005
- ) {
-  return t("unavailable");
- }
-
- return new Intl.DateTimeFormat(
-  currentLang === "ar" ? "ar-SA" : "en-GB",
-  {
-   day:"numeric",
-   month:"long",
-   year:"numeric",
-   timeZone:"UTC"
-  }
- ).format(date);
-}
-
-function renderChannel(channel) {
-
- lastChannel = channel;
-
- const subscribers = channel.subscriberCountHidden
-  ? t("hidden")
-  : formatNumber(channel.subscribers);
-
- // Read the date from either API field
- const rawCreatedDate =
-  channel.createdDate ||
-  channel.publishedAt ||
-  channel.createdAt ||
-  null;
-
- const created = formatDate(rawCreatedDate);
-
- const safeChannelUrl =
-  channel.channelUrl &&
-  /^https:\/\/www\.youtube\.com\/channel\/UC[\w-]+$/i.test(
-   channel.channelUrl
-  )
-  ? channel.channelUrl
-  : "#";
-
- const thumbnail = channel.thumbnail &&
-  /^https:\/\/[\w.-]+\//.test(channel.thumbnail)
-  ? channel.thumbnail
-  : null;
 
- result.innerHTML = `
- <div class="card">
+// Verify channel
+document
+    .getElementById("verifyForm")
+    .addEventListener("submit", async function(event) {
 
-  <div class="card-head">
-   <strong>Virifixo Analysis</strong>
-   <span class="status">${t("found")}</span>
-  </div>
+        event.preventDefault();
 
-  <div class="profile">
+        const input = document.getElementById("channelInput");
+        const button = document.getElementById("verifyButton");
+        const message = document.getElementById("message");
+        const result = document.getElementById("result");
 
-   ${thumbnail
-    ? `<img src="${escapeHTML(thumbnail)}" alt="Channel image">`
-    : ""}
+        const channelUrl = input.value.trim();
 
-   <div>
-    <h2>${escapeHTML(channel.title)}</h2>
-    <p>${escapeHTML(channel.customUrl || channel.channelId)}</p>
-   </div>
+        message.textContent = "Verifying channel...";
+        message.classList.remove("error");
 
-  </div>
+        result.style.display = "none";
 
-  <div class="stats">
+        button.disabled = true;
+        button.textContent = "Checking...";
 
-   <div class="stat">
-    <strong>${subscribers}</strong>
-    <span>${t("subscribers")}</span>
-   </div>
+        try {
 
-   <div class="stat">
-    <strong>${formatNumber(channel.videoCount)}</strong>
-    <span>${t("videos")}</span>
-   </div>
+            const response = await fetch("/api/verify", {
 
-   <div class="stat">
-    <strong>${formatNumber(channel.viewCount)}</strong>
-    <span>${t("views")}</span>
-   </div>
+                method: "POST",
 
-   <div class="stat">
-    <strong>${escapeHTML(created)}</strong>
-    <span>${t("created")}</span>
-   </div>
+                headers: {
+                    "Content-Type": "application/json"
+                },
 
-  </div>
+                body: JSON.stringify({
+                    channel: channelUrl
+                })
 
-  <div class="description">
-   ${escapeHTML(channel.description || t("description"))}
-  </div>
+            });
 
-  <p style="font-size:12px;color:#9ba5bd;margin-top:20px">
-   ${t("apiNote")}
-  </p>
+            const data = await response.json();
 
-  <a href="${escapeHTML(safeChannelUrl)}"
-   target="_blank"
-   rel="noopener noreferrer"
-   style="color:#ac95ff;font-size:13px">
-   ${t("open")}
-  </a>
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.message || "Verification failed."
+                );
+            }
 
- </div>`;
-}
+            const channel = data.channel;
 
-function setLanguage(lang) {
+            // Channel information
+            setText("channelTitle", channel.title);
 
- currentLang = lang;
+            setText("channelId", channel.channelId);
 
- document.documentElement.lang = lang;
- document.documentElement.dir =
-  lang === "ar" ? "rtl" : "ltr";
+            setText(
+                "customUrl",
+                channel.customUrl || "No custom URL"
+            );
 
- document.getElementById("navFeatures").textContent = t("features");
- document.getElementById("tag").textContent = t("tag");
- document.getElementById("heading").innerHTML = t("heading");
- document.getElementById("subtitle").textContent = t("subtitle");
+            // IMPORTANT: Use original publishedAt
+            // Do not use the current date or upload date.
 
- input.placeholder = t("placeholder");
+            const originalDate =
+                channel.publishedAt || channel.createdDate;
 
- button.textContent = t("analyze");
+            setText(
+                "createdDate",
+                formatChannelDate(originalDate)
+            );
 
- document.getElementById("featuresTitle").innerHTML =
-  t("featuresTitle");
+            // Subscriber information
+            setText(
+                "subscribers",
+                channel.subscriberCountHidden
+                    ? "Hidden"
+                    : Number(channel.subscribers || 0).toLocaleString("en-US")
+            );
 
- document.getElementById("feature1Title").textContent =
-  t("feature1Title");
+            setText(
+                "videoCount",
+                Number(channel.videoCount || 0).toLocaleString("en-US")
+            );
 
- document.getElementById("feature1Text").textContent =
-  t("feature1Text");
+            setText(
+                "viewCount",
+                Number(channel.viewCount || 0).toLocaleString("en-US")
+            );
 
- document.getElementById("feature2Title").textContent =
-  t("feature2Title");
+            setText(
+                "country",
+                channel.country || "Not available"
+            );
 
- document.getElementById("feature2Text").textContent =
-  t("feature2Text");
+            setText(
+                "description",
+                channel.description || "No description"
+            );
 
- document.getElementById("feature3Title").textContent =
-  t("feature3Title");
+            // Thumbnail
+            const thumbnail = document.getElementById("thumbnail");
 
- document.getElementById("feature3Text").textContent =
-  t("feature3Text");
+            if (channel.thumbnail) {
+                thumbnail.src = channel.thumbnail;
+                thumbnail.style.display = "inline-block";
+            } else {
+                thumbnail.removeAttribute("src");
+                thumbnail.style.display = "none";
+            }
 
- document.getElementById("footerText").innerHTML =
-  t("footer");
+            // Channel link
+            const channelLink =
+                document.getElementById("channelLink");
 
- langButton.textContent =
-  lang === "en" ? "العربية" : "English";
+            channelLink.href =
+                channel.channelUrl;
 
- if (lastChannel) {
-  renderChannel(lastChannel);
- }
-}
+            result.style.display = "block";
 
-langButton.addEventListener("click", () => {
- setLanguage(currentLang === "en" ? "ar" : "en");
-});
+            message.textContent = "Channel verified successfully!";
 
-form.addEventListener("submit", async event => {
+        } catch (error) {
 
- event.preventDefault();
+            message.textContent =
+                error.message || "Something went wrong.";
 
- const channel = input.value.trim();
+            message.classList.add("error");
 
- if (!channel) return;
+        } finally {
 
- button.disabled = true;
- button.textContent = t("loading");
+            button.disabled = false;
+            button.textContent = "Verify Channel";
 
- result.innerHTML =
-  `<div class="message">${t("connecting")}</div>`;
+        }
 
- try {
-
-  const controller = new AbortController();
-
-  const timeout = setTimeout(
-   () => controller.abort(),
-   20000
-  );
-
-  let response;
-
-  try {
-   response = await fetch("/api/verify", {
-    method:"POST",
-    headers:{
-     "Content-Type":"application/json"
-    },
-    body:JSON.stringify({channel}),
-    signal:controller.signal
-   });
-  } finally {
-   clearTimeout(timeout);
-  }
-
-  const data = await response.json();
-
-  if (!response.ok || !data.success) {
-   throw new Error(
-    data.message || t("genericError")
-   );
-  }
-
-  if (!data.channel) {
-   throw new Error(t("genericError"));
-  }
-
-  renderChannel(data.channel);
-
- } catch (error) {
-
-  const message = error.name === "AbortError"
-   ? "Request timed out. Please try again."
-   : error.message || t("genericError");
-
-  result.innerHTML =
-   `<div class="message">${escapeHTML(message)}</div>`;
-
- } finally {
-
-  button.disabled = false;
-  button.textContent = t("analyze");
-
- }
-
-});
-
-setLanguage("en");
+    });
 
 </script>
 
