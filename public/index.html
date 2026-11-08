@@ -1,10 +1,11 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080b18">
+<meta name="description" content="Virifixo - YouTube Channel Intelligence and Public Statistics">
 <title>Virifixo — YouTube Channel Intelligence</title>
 
 <style>
@@ -16,19 +17,26 @@ body{
  background-image:radial-gradient(ellipse at 50% 0%,#29205b 0%,transparent 50%);
 }
 nav{
- height:76px;padding:0 7%;display:flex;align-items:center;
+ min-height:76px;padding:12px 7%;display:flex;align-items:center;
  justify-content:space-between;border-bottom:1px solid #ffffff15;
+ gap:15px
 }
 .logo{font-size:25px;font-weight:800;letter-spacing:-1px}
 .logo span{color:#9876ff}
+.nav-actions{display:flex;align-items:center;gap:20px}
 nav a{color:#aaa;text-decoration:none;font-size:13px}
+.lang-btn{
+ background:#1c2440;border:1px solid #ffffff25;
+ color:white;border-radius:9px;padding:10px 15px;
+ cursor:pointer
+}
 .hero{text-align:center;padding:85px 18px 45px}
 .tag{
  display:inline-block;color:#c4aaff;background:#8b5cf620;
  border:1px solid #8b5cf655;padding:9px 16px;
  border-radius:30px;font-size:12px;margin-bottom:22px
 }
-h1{font-size:clamp(37px,6vw,64px);letter-spacing:-2px;margin:0 auto 20px}
+h1{font-size:clamp(37px,6vw,64px);letter-spacing:-2px;margin:0 auto 20px;line-height:1.15}
 .gradient{
  background:linear-gradient(90deg,#b08aff,#7194ff);
  -webkit-background-clip:text;background-clip:text;color:transparent
@@ -52,9 +60,9 @@ button:disabled{opacity:.6;cursor:wait}
 #result{max-width:760px;margin:25px auto 0;padding:0 18px}
 .card{
  background:linear-gradient(145deg,#171e35,#101529);
- border:1px solid #ffffff17;border-radius:18px;padding:24px;text-align:left
+ border:1px solid #ffffff17;border-radius:18px;padding:24px;text-align:start
 }
-.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .status{
  color:#75e0ac;background:#1c81552b;padding:7px 12px;
  border-radius:20px;font-size:11px
@@ -65,13 +73,13 @@ button:disabled{opacity:.6;cursor:wait}
  background:#252b45;border:2px solid #8b6bf8
 }
 .profile h2{margin:0 0 7px;font-size:22px}
-.profile p{margin:0;color:#a0abc1;font-size:13px}
+.profile p{margin:0;color:#a0abc1;font-size:13px;overflow-wrap:anywhere}
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .stat{
  background:#ffffff08;border:1px solid #ffffff12;
- padding:19px;border-radius:12px
+ padding:19px;border-radius:12px;min-width:0
 }
-.stat strong{display:block;font-size:25px;margin-bottom:8px;overflow-wrap:anywhere}
+.stat strong{display:block;font-size:clamp(18px,4vw,25px);margin-bottom:8px;overflow-wrap:anywhere}
 .stat span{font-size:12px;color:#9ba5bd}
 .description{
  color:#aab4c9;line-height:1.8;font-size:13px;
@@ -86,7 +94,7 @@ button:disabled{opacity:.6;cursor:wait}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .feature{
  background:#131a2e;border:1px solid #ffffff12;
- border-radius:15px;padding:25px
+ border-radius:15px;padding:25px;text-align:start
 }
 .feature h3{font-size:16px}
 .feature p{font-size:13px;color:#9ba5bd;line-height:1.8}
@@ -94,6 +102,12 @@ footer{
  border-top:1px solid #ffffff15;text-align:center;
  padding:30px;color:#8792aa;font-size:12px;line-height:1.8
 }
+[dir="rtl"]{font-family:Tahoma,Arial,sans-serif}
+[dir="rtl"] .logo{letter-spacing:0}
+[dir="rtl"] .profile{text-align:right}
+[dir="rtl"] .card{text-align:right}
+[dir="rtl"] .feature{text-align:right}
+[dir="rtl"] .search input{text-align:right}
 @media(max-width:650px){
  .hero{padding-top:60px}
  .search{flex-direction:column}
@@ -101,6 +115,8 @@ footer{
  .grid{grid-template-columns:1fr}
  .stats{grid-template-columns:1fr 1fr}
  .card{padding:17px}
+ nav{padding:12px 5%}
+ .nav-actions{gap:10px}
 }
 </style>
 </head>
@@ -108,14 +124,17 @@ footer{
 <body>
 <nav>
  <div class="logo">Viri<span>fixo</span></div>
- <a href="#features">Features</a>
+ <div class="nav-actions">
+  <a href="#features" id="navFeatures">Features</a>
+  <button class="lang-btn" id="langButton" type="button">العربية</button>
+ </div>
 </nav>
 
 <main>
 <section class="hero">
- <div class="tag">✦ YOUTUBE CHANNEL INTELLIGENCE</div>
- <h1>Discover and Check <span class="gradient">YouTube Channels</span></h1>
- <p class="subtitle">
+ <div class="tag" id="tag">✦ YOUTUBE CHANNEL INTELLIGENCE</div>
+ <h1 id="heading">Discover and Check <span class="gradient">YouTube Channels</span></h1>
+ <p class="subtitle" id="subtitle">
  Explore real YouTube channel information with Virifixo.
  Enter a channel URL to discover its public statistics.
  </p>
@@ -130,19 +149,19 @@ footer{
 <section id="result" aria-live="polite"></section>
 
 <section class="features" id="features">
- <h2>Built for <span class="gradient">Creators</span></h2>
+ <h2 id="featuresTitle">Built for <span class="gradient">Creators</span></h2>
  <div class="grid">
   <div class="feature">
-   <h3>🔎 Channel Analysis</h3>
-   <p>Retrieve public channel information directly from YouTube.</p>
+   <h3 id="feature1Title">🔎 Channel Analysis</h3>
+   <p id="feature1Text">Retrieve public channel information directly from YouTube.</p>
   </div>
   <div class="feature">
-   <h3>📊 Real Statistics</h3>
-   <p>Explore subscriber counts, videos and channel views.</p>
+   <h3 id="feature2Title">📊 Real Statistics</h3>
+   <p id="feature2Text">Explore subscriber counts, videos and channel views.</p>
   </div>
   <div class="feature">
-   <h3>🛡️ Clear Information</h3>
-   <p>Understand channel data without claiming official YouTube verification.</p>
+   <h3 id="feature3Title">🛡️ Clear Information</h3>
+   <p id="feature3Text">Understand channel data without claiming official YouTube verification.</p>
   </div>
  </div>
 </section>
@@ -150,8 +169,10 @@ footer{
 
 <footer>
  <div class="logo">Viri<span>fixo</span></div>
+ <p id="footerText">
  Independent YouTube channel information platform.<br>
- Not affiliated with or endorsed by YouTube or Google.<br>
+ Not affiliated with or endorsed by YouTube or Google.
+ </p>
  © 2026 Virifixo. All rights reserved.
 </footer>
 
@@ -160,6 +181,74 @@ const form = document.getElementById("verifyForm");
 const input = document.getElementById("channel");
 const result = document.getElementById("result");
 const button = document.getElementById("verifyButton");
+const langButton = document.getElementById("langButton");
+
+let currentLang = "en";
+
+const translations = {
+ en: {
+  features:"Features",
+  tag:"✦ YOUTUBE CHANNEL INTELLIGENCE",
+  heading:'Discover and Check <span class="gradient">YouTube Channels</span>',
+  subtitle:"Explore real YouTube channel information with Virifixo. Enter a channel URL to discover its public statistics.",
+  placeholder:"Paste YouTube channel URL here...",
+  analyze:"Analyze Channel →",
+  loading:"Analyzing...",
+  connecting:"Connecting to YouTube...",
+  featuresTitle:'Built for <span class="gradient">Creators</span>',
+  feature1Title:"🔎 Channel Analysis",
+  feature1Text:"Retrieve public channel information directly from YouTube.",
+  feature2Title:"📊 Real Statistics",
+  feature2Text:"Explore subscriber counts, videos and channel views.",
+  feature3Title:"🛡️ Clear Information",
+  feature3Text:"Understand channel data without claiming official YouTube verification.",
+  footer:"Independent YouTube channel information platform.<br>Not affiliated with or endorsed by YouTube or Google.",
+  found:"✓ Channel Found",
+  subscribers:"Subscribers",
+  videos:"Total Videos",
+  views:"Total Views",
+  created:"Created Date",
+  hidden:"Hidden",
+  unavailable:"Not available",
+  description:"No public description available.",
+  apiNote:"Channel data retrieved from YouTube Data API. This does not confirm an official verification badge.",
+  open:"Open YouTube Channel ↗",
+  genericError:"Unable to find channel. Please try again."
+ },
+ ar: {
+  features:"المميزات",
+  tag:"✦ ذكاء وتحليل قنوات يوتيوب",
+  heading:'اكتشف وحلّل <span class="gradient">قنوات يوتيوب</span>',
+  subtitle:"استكشف معلومات قنوات يوتيوب الحقيقية باستخدام Virifixo. أدخل رابط القناة لاكتشاف إحصائياتها العامة.",
+  placeholder:"ضع رابط قناة يوتيوب هنا...",
+  analyze:"حلّل القناة ←",
+  loading:"جارٍ التحليل...",
+  connecting:"جارٍ الاتصال بيوتيوب...",
+  featuresTitle:'صُممت من أجل <span class="gradient">صنّاع المحتوى</span>',
+  feature1Title:"🔎 تحليل القنوات",
+  feature1Text:"استخراج المعلومات العامة للقناة مباشرة من يوتيوب.",
+  feature2Title:"📊 إحصائيات حقيقية",
+  feature2Text:"اكتشف عدد المشتركين والفيديوهات والمشاهدات.",
+  feature3Title:"🛡️ معلومات واضحة",
+  feature3Text:"افهم بيانات القناة دون الادعاء بوجود توثيق رسمي.",
+  footer:"منصة مستقلة لمعلومات وتحليل قنوات يوتيوب.<br>لسنا تابعين ليوتيوب أو جوجل ولا نحظى بتأييدهما.",
+  found:"✓ تم العثور على القناة",
+  subscribers:"المشتركون",
+  videos:"إجمالي الفيديوهات",
+  views:"إجمالي المشاهدات",
+  created:"تاريخ الإنشاء",
+  hidden:"مخفي",
+  unavailable:"غير متاح",
+  description:"لا يوجد وصف عام متاح.",
+  apiNote:"تم جلب بيانات القناة من YouTube Data API. هذا لا يؤكد وجود شارة توثيق رسمية.",
+  open:"افتح قناة يوتيوب ↗",
+  genericError:"تعذر العثور على القناة. حاول مرة أخرى."
+ }
+};
+
+function t(key) {
+ return translations[currentLang][key];
+}
 
 function escapeHTML(value) {
  return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -169,25 +258,55 @@ function escapeHTML(value) {
 }
 
 function formatNumber(value) {
- if (value === null || value === undefined) return "Hidden";
+ if (value === null || value === undefined || value === "") {
+  return t("unavailable");
+ }
  const number = Number(value);
- return Number.isFinite(number) ? number.toLocaleString() : "—";
+ return Number.isFinite(number)
+  ? new Intl.NumberFormat(currentLang === "ar" ? "ar-SA" : "en-US").format(number)
+  : t("unavailable");
 }
 
+function formatDate(value) {
+ if (!value) return t("unavailable");
+
+ const date = new Date(value);
+
+ // Prevent invalid dates and the Unix epoch fallback.
+ if (
+  Number.isNaN(date.getTime()) ||
+  date.getUTCFullYear() < 2005
+ ) {
+  return t("unavailable");
+ }
+
+ return new Intl.DateTimeFormat(
+  currentLang === "ar" ? "ar-SA" : "en-US",
+  {year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}
+ ).format(date);
+}
+
+let lastChannel = null;
+
 function renderChannel(channel) {
+ lastChannel = channel;
+
  const subscribers = channel.subscriberCountHidden
-  ? "Hidden"
+  ? t("hidden")
   : formatNumber(channel.subscribers);
 
- const created = channel.publishedAt
-  ? new Date(channel.publishedAt).toLocaleDateString()
-  : "—";
+ const created = formatDate(channel.publishedAt);
+
+ const safeChannelUrl = channel.channelUrl &&
+  /^https:\/\/www\.youtube\.com\/channel\/UC[\w-]+$/i.test(channel.channelUrl)
+  ? channel.channelUrl
+  : "#";
 
  result.innerHTML = `
  <div class="card">
   <div class="card-head">
    <strong>Virifixo Analysis</strong>
-   <span class="status">✓ Channel Found</span>
+   <span class="status">${t("found")}</span>
   </div>
 
   <div class="profile">
@@ -203,37 +322,69 @@ function renderChannel(channel) {
   <div class="stats">
    <div class="stat">
     <strong>${subscribers}</strong>
-    <span>Subscribers</span>
+    <span>${t("subscribers")}</span>
    </div>
    <div class="stat">
     <strong>${formatNumber(channel.videoCount)}</strong>
-    <span>Total Videos</span>
+    <span>${t("videos")}</span>
    </div>
    <div class="stat">
     <strong>${formatNumber(channel.viewCount)}</strong>
-    <span>Total Views</span>
+    <span>${t("views")}</span>
    </div>
    <div class="stat">
     <strong>${escapeHTML(created)}</strong>
-    <span>Created Date</span>
+    <span>${t("created")}</span>
    </div>
   </div>
 
   <div class="description">
-   ${escapeHTML(channel.description || "No public description available.")}
+   ${escapeHTML(channel.description || t("description"))}
   </div>
 
   <p style="font-size:12px;color:#9ba5bd;margin-top:20px">
-   Channel data retrieved from YouTube Data API.
-   This does not confirm an official verification badge.
+   ${t("apiNote")}
   </p>
-  <a href="${escapeHTML(channel.channelUrl)}"
+
+  <a href="${escapeHTML(safeChannelUrl)}"
    target="_blank" rel="noopener noreferrer"
    style="color:#ac95ff;font-size:13px">
-   Open YouTube Channel ↗
+   ${t("open")}
   </a>
  </div>`;
 }
+
+function setLanguage(lang) {
+ currentLang = lang;
+ document.documentElement.lang = lang;
+ document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+
+ document.getElementById("navFeatures").textContent = t("features");
+ document.getElementById("tag").textContent = t("tag");
+ document.getElementById("heading").innerHTML = t("heading");
+ document.getElementById("subtitle").textContent = t("subtitle");
+ document.getElementById("channel").placeholder = t("placeholder");
+ document.getElementById("verifyButton").textContent = t("analyze");
+ document.getElementById("featuresTitle").innerHTML = t("featuresTitle");
+
+ document.getElementById("feature1Title").textContent = t("feature1Title");
+ document.getElementById("feature1Text").textContent = t("feature1Text");
+ document.getElementById("feature2Title").textContent = t("feature2Title");
+ document.getElementById("feature2Text").textContent = t("feature2Text");
+ document.getElementById("feature3Title").textContent = t("feature3Title");
+ document.getElementById("feature3Text").textContent = t("feature3Text");
+ document.getElementById("footerText").innerHTML = t("footer");
+
+ langButton.textContent = lang === "en" ? "العربية" : "English";
+
+ if (lastChannel) {
+  renderChannel(lastChannel);
+ }
+}
+
+langButton.addEventListener("click", () => {
+ setLanguage(currentLang === "en" ? "ar" : "en");
+});
 
 form.addEventListener("submit", async event => {
  event.preventDefault();
@@ -242,36 +393,38 @@ form.addEventListener("submit", async event => {
  if (!channel) return;
 
  button.disabled = true;
- button.textContent = "Analyzing...";
- result.innerHTML = '<div class="message">Connecting to YouTube...</div>';
+ button.textContent = t("loading");
+ result.innerHTML = `<div class="message">${t("connecting")}</div>`;
 
  try {
   const response = await fetch("/api/verify", {
-   method: "POST",
-   headers: {"Content-Type":"application/json"},
-   body: JSON.stringify({channel})
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({channel})
   });
 
   const data = await response.json();
 
   if (!response.ok || !data.success) {
-   throw new Error(data.message || "Unable to find channel.");
+   throw new Error(data.message || t("genericError"));
   }
 
   if (!data.channel) {
-   throw new Error("Channel information was not returned.");
+   throw new Error(t("genericError"));
   }
 
   renderChannel(data.channel);
 
  } catch (error) {
   result.innerHTML =
-   `<div class="message">${escapeHTML(error.message)}</div>`;
+   `<div class="message">${escapeHTML(error.message || t("genericError"))}</div>`;
  } finally {
   button.disabled = false;
-  button.textContent = "Analyze Channel →";
+  button.textContent = t("analyze");
  }
 });
+
+setLanguage("en");
 </script>
 </body>
 </html>
