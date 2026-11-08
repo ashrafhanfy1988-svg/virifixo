@@ -10,104 +10,242 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
- margin:0;background:#080b18;color:#f8f9ff;
+ margin:0;
+ background:#080b18;
+ color:#f8f9ff;
  font-family:Arial,Helvetica,sans-serif;
  min-height:100vh;
  background-image:radial-gradient(ellipse at 50% 0%,#29205b 0%,transparent 50%);
 }
+
 nav{
- min-height:76px;padding:12px 7%;display:flex;align-items:center;
- justify-content:space-between;border-bottom:1px solid #ffffff15;
- gap:15px
+ min-height:76px;
+ padding:12px 7%;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ border-bottom:1px solid #ffffff15;
+ gap:15px;
 }
+
 .logo{font-size:25px;font-weight:800;letter-spacing:-1px}
 .logo span{color:#9876ff}
+
 .nav-actions{display:flex;align-items:center;gap:20px}
 nav a{color:#aaa;text-decoration:none;font-size:13px}
+
 .lang-btn{
- background:#1c2440;border:1px solid #ffffff25;
- color:white;border-radius:9px;padding:10px 15px;
- cursor:pointer
+ background:#1c2440;
+ border:1px solid #ffffff25;
+ color:white;
+ border-radius:9px;
+ padding:10px 15px;
+ cursor:pointer;
 }
+
 .hero{text-align:center;padding:85px 18px 45px}
+
 .tag{
- display:inline-block;color:#c4aaff;background:#8b5cf620;
- border:1px solid #8b5cf655;padding:9px 16px;
- border-radius:30px;font-size:12px;margin-bottom:22px
+ display:inline-block;
+ color:#c4aaff;
+ background:#8b5cf620;
+ border:1px solid #8b5cf655;
+ padding:9px 16px;
+ border-radius:30px;
+ font-size:12px;
+ margin-bottom:22px;
 }
-h1{font-size:clamp(37px,6vw,64px);letter-spacing:-2px;margin:0 auto 20px;line-height:1.15}
+
+h1{
+ font-size:clamp(37px,6vw,64px);
+ letter-spacing:-2px;
+ margin:0 auto 20px;
+ line-height:1.15;
+}
+
 .gradient{
  background:linear-gradient(90deg,#b08aff,#7194ff);
- -webkit-background-clip:text;background-clip:text;color:transparent
+ -webkit-background-clip:text;
+ background-clip:text;
+ color:transparent;
 }
-.subtitle{color:#9ba5bd;line-height:1.8;margin:0 auto 35px;max-width:590px}
+
+.subtitle{
+ color:#9ba5bd;
+ line-height:1.8;
+ margin:0 auto 35px;
+ max-width:590px;
+}
+
 .search{
- max-width:680px;margin:auto;padding:9px;display:flex;gap:10px;
- border:1px solid #8966ed77;border-radius:15px;background:#141a30;
+ max-width:680px;
+ margin:auto;
+ padding:9px;
+ display:flex;
+ gap:10px;
+ border:1px solid #8966ed77;
+ border-radius:15px;
+ background:#141a30;
 }
+
 input{
- flex:1;min-width:0;padding:15px;border:0;outline:0;
- color:white;background:transparent;font-size:14px
+ flex:1;
+ min-width:0;
+ padding:15px;
+ border:0;
+ outline:0;
+ color:white;
+ background:transparent;
+ font-size:14px;
 }
+
 input::placeholder{color:#8490a9}
+
 button{
- border:0;border-radius:10px;padding:15px 22px;
- color:white;font-weight:bold;cursor:pointer;
- background:linear-gradient(110deg,#8659ed,#527aff)
+ border:0;
+ border-radius:10px;
+ padding:15px 22px;
+ color:white;
+ font-weight:bold;
+ cursor:pointer;
+ background:linear-gradient(110deg,#8659ed,#527aff);
 }
+
 button:disabled{opacity:.6;cursor:wait}
-#result{max-width:760px;margin:25px auto 0;padding:0 18px}
+
+#result{
+ max-width:760px;
+ margin:25px auto 0;
+ padding:0 18px;
+}
+
 .card{
  background:linear-gradient(145deg,#171e35,#101529);
- border:1px solid #ffffff17;border-radius:18px;padding:24px;text-align:start
+ border:1px solid #ffffff17;
+ border-radius:18px;
+ padding:24px;
+ text-align:start;
 }
-.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+
+.card-head{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ flex-wrap:wrap;
+}
+
 .status{
- color:#75e0ac;background:#1c81552b;padding:7px 12px;
- border-radius:20px;font-size:11px
+ color:#75e0ac;
+ background:#1c81552b;
+ padding:7px 12px;
+ border-radius:20px;
+ font-size:11px;
 }
-.profile{display:flex;align-items:center;gap:17px;margin:25px 0}
+
+.profile{
+ display:flex;
+ align-items:center;
+ gap:17px;
+ margin:25px 0;
+}
+
 .profile img{
- width:85px;height:85px;border-radius:50%;object-fit:cover;
- background:#252b45;border:2px solid #8b6bf8
+ width:85px;
+ height:85px;
+ border-radius:50%;
+ object-fit:cover;
+ background:#252b45;
+ border:2px solid #8b6bf8;
 }
+
 .profile h2{margin:0 0 7px;font-size:22px}
 .profile p{margin:0;color:#a0abc1;font-size:13px;overflow-wrap:anywhere}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+
+.stats{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:12px;
+}
+
 .stat{
- background:#ffffff08;border:1px solid #ffffff12;
- padding:19px;border-radius:12px;min-width:0
+ background:#ffffff08;
+ border:1px solid #ffffff12;
+ padding:19px;
+ border-radius:12px;
+ min-width:0;
 }
-.stat strong{display:block;font-size:clamp(18px,4vw,25px);margin-bottom:8px;overflow-wrap:anywhere}
+
+.stat strong{
+ display:block;
+ font-size:clamp(18px,4vw,25px);
+ margin-bottom:8px;
+ overflow-wrap:anywhere;
+}
+
 .stat span{font-size:12px;color:#9ba5bd}
+
 .description{
- color:#aab4c9;line-height:1.8;font-size:13px;
- margin-top:20px;white-space:pre-wrap;overflow-wrap:anywhere
+ color:#aab4c9;
+ line-height:1.8;
+ font-size:13px;
+ margin-top:20px;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
 }
+
 .message{
- padding:20px;border-radius:12px;background:#151c32;
- border:1px solid #ffffff17;color:#c5cde0;line-height:1.7
+ padding:20px;
+ border-radius:12px;
+ background:#151c32;
+ border:1px solid #ffffff17;
+ color:#c5cde0;
+ line-height:1.7;
 }
-.features{max-width:1000px;margin:70px auto;padding:0 20px}
+
+.features{
+ max-width:1000px;
+ margin:70px auto;
+ padding:0 20px;
+}
+
 .features h2{text-align:center;margin-bottom:30px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.feature{
- background:#131a2e;border:1px solid #ffffff12;
- border-radius:15px;padding:25px;text-align:start
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:16px;
 }
+
+.feature{
+ background:#131a2e;
+ border:1px solid #ffffff12;
+ border-radius:15px;
+ padding:25px;
+ text-align:start;
+}
+
 .feature h3{font-size:16px}
 .feature p{font-size:13px;color:#9ba5bd;line-height:1.8}
+
 footer{
- border-top:1px solid #ffffff15;text-align:center;
- padding:30px;color:#8792aa;font-size:12px;line-height:1.8
+ border-top:1px solid #ffffff15;
+ text-align:center;
+ padding:30px;
+ color:#8792aa;
+ font-size:12px;
+ line-height:1.8;
 }
+
 [dir="rtl"]{font-family:Tahoma,Arial,sans-serif}
 [dir="rtl"] .logo{letter-spacing:0}
 [dir="rtl"] .profile{text-align:right}
 [dir="rtl"] .card{text-align:right}
 [dir="rtl"] .feature{text-align:right}
 [dir="rtl"] .search input{text-align:right}
+
 @media(max-width:650px){
  .hero{padding-top:60px}
  .search{flex-direction:column}
@@ -122,6 +260,7 @@ footer{
 </head>
 
 <body>
+
 <nav>
  <div class="logo">Viri<span>fixo</span></div>
  <div class="nav-actions">
@@ -131,9 +270,16 @@ footer{
 </nav>
 
 <main>
+
 <section class="hero">
+
  <div class="tag" id="tag">✦ YOUTUBE CHANNEL INTELLIGENCE</div>
- <h1 id="heading">Discover and Check <span class="gradient">YouTube Channels</span></h1>
+
+ <h1 id="heading">
+ Discover and Check
+ <span class="gradient">YouTube Channels</span>
+ </h1>
+
  <p class="subtitle" id="subtitle">
  Explore real YouTube channel information with Virifixo.
  Enter a channel URL to discover its public statistics.
@@ -144,39 +290,60 @@ footer{
    placeholder="Paste YouTube channel URL here..." required>
   <button id="verifyButton" type="submit">Analyze Channel →</button>
  </form>
+
 </section>
 
 <section id="result" aria-live="polite"></section>
 
 <section class="features" id="features">
- <h2 id="featuresTitle">Built for <span class="gradient">Creators</span></h2>
+
+ <h2 id="featuresTitle">
+ Built for <span class="gradient">Creators</span>
+ </h2>
+
  <div class="grid">
+
   <div class="feature">
    <h3 id="feature1Title">🔎 Channel Analysis</h3>
-   <p id="feature1Text">Retrieve public channel information directly from YouTube.</p>
+   <p id="feature1Text">
+    Retrieve public channel information directly from YouTube.
+   </p>
   </div>
+
   <div class="feature">
    <h3 id="feature2Title">📊 Real Statistics</h3>
-   <p id="feature2Text">Explore subscriber counts, videos and channel views.</p>
+   <p id="feature2Text">
+    Explore subscriber counts, videos and channel views.
+   </p>
   </div>
+
   <div class="feature">
    <h3 id="feature3Title">🛡️ Clear Information</h3>
-   <p id="feature3Text">Understand channel data without claiming official YouTube verification.</p>
+   <p id="feature3Text">
+    Understand channel data without claiming official YouTube verification.
+   </p>
   </div>
+
  </div>
 </section>
+
 </main>
 
 <footer>
  <div class="logo">Viri<span>fixo</span></div>
+
  <p id="footerText">
- Independent YouTube channel information platform.<br>
+ Independent YouTube channel information platform.
+ <br>
  Not affiliated with or endorsed by YouTube or Google.
  </p>
+
  © 2026 Virifixo. All rights reserved.
 </footer>
 
 <script>
+"use strict";
+
 const form = document.getElementById("verifyForm");
 const input = document.getElementById("channel");
 const result = document.getElementById("result");
@@ -184,6 +351,7 @@ const button = document.getElementById("verifyButton");
 const langButton = document.getElementById("langButton");
 
 let currentLang = "en";
+let lastChannel = null;
 
 const translations = {
  en: {
@@ -215,6 +383,7 @@ const translations = {
   open:"Open YouTube Channel ↗",
   genericError:"Unable to find channel. Please try again."
  },
+
  ar: {
   features:"المميزات",
   tag:"✦ ذكاء وتحليل قنوات يوتيوب",
@@ -252,8 +421,11 @@ function t(key) {
 
 function escapeHTML(value) {
  return String(value ?? "").replace(/[&<>"']/g, char => ({
-  "&":"&amp;","<":"&lt;",">":"&gt;",
-  '"':"&quot;","'":"&#39;"
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#39;"
  }[char]));
 }
 
@@ -261,18 +433,22 @@ function formatNumber(value) {
  if (value === null || value === undefined || value === "") {
   return t("unavailable");
  }
+
  const number = Number(value);
+
  return Number.isFinite(number)
-  ? new Intl.NumberFormat(currentLang === "ar" ? "ar-SA" : "en-US").format(number)
+  ? new Intl.NumberFormat(
+      currentLang === "ar" ? "ar-SA" : "en-US"
+    ).format(number)
   : t("unavailable");
 }
 
+// FIXED: Supports both publishedAt and createdDate
 function formatDate(value) {
  if (!value) return t("unavailable");
 
  const date = new Date(value);
 
- // Prevent invalid dates and the Unix epoch fallback.
  if (
   Number.isNaN(date.getTime()) ||
   date.getUTCFullYear() < 2005
@@ -281,61 +457,89 @@ function formatDate(value) {
  }
 
  return new Intl.DateTimeFormat(
-  currentLang === "ar" ? "ar-SA" : "en-US",
-  {year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}
+  currentLang === "ar" ? "ar-SA" : "en-GB",
+  {
+   day:"numeric",
+   month:"long",
+   year:"numeric",
+   timeZone:"UTC"
+  }
  ).format(date);
 }
 
-let lastChannel = null;
-
 function renderChannel(channel) {
+
  lastChannel = channel;
 
  const subscribers = channel.subscriberCountHidden
   ? t("hidden")
   : formatNumber(channel.subscribers);
 
- const created = formatDate(channel.publishedAt);
+ // Read the date from either API field
+ const rawCreatedDate =
+  channel.createdDate ||
+  channel.publishedAt ||
+  channel.createdAt ||
+  null;
 
- const safeChannelUrl = channel.channelUrl &&
-  /^https:\/\/www\.youtube\.com\/channel\/UC[\w-]+$/i.test(channel.channelUrl)
+ const created = formatDate(rawCreatedDate);
+
+ const safeChannelUrl =
+  channel.channelUrl &&
+  /^https:\/\/www\.youtube\.com\/channel\/UC[\w-]+$/i.test(
+   channel.channelUrl
+  )
   ? channel.channelUrl
   : "#";
 
+ const thumbnail = channel.thumbnail &&
+  /^https:\/\/[\w.-]+\//.test(channel.thumbnail)
+  ? channel.thumbnail
+  : null;
+
  result.innerHTML = `
  <div class="card">
+
   <div class="card-head">
    <strong>Virifixo Analysis</strong>
    <span class="status">${t("found")}</span>
   </div>
 
   <div class="profile">
-   ${channel.thumbnail
-    ? `<img src="${escapeHTML(channel.thumbnail)}" alt="Channel image">`
+
+   ${thumbnail
+    ? `<img src="${escapeHTML(thumbnail)}" alt="Channel image">`
     : ""}
+
    <div>
     <h2>${escapeHTML(channel.title)}</h2>
     <p>${escapeHTML(channel.customUrl || channel.channelId)}</p>
    </div>
+
   </div>
 
   <div class="stats">
+
    <div class="stat">
     <strong>${subscribers}</strong>
     <span>${t("subscribers")}</span>
    </div>
+
    <div class="stat">
     <strong>${formatNumber(channel.videoCount)}</strong>
     <span>${t("videos")}</span>
    </div>
+
    <div class="stat">
     <strong>${formatNumber(channel.viewCount)}</strong>
     <span>${t("views")}</span>
    </div>
+
    <div class="stat">
     <strong>${escapeHTML(created)}</strong>
     <span>${t("created")}</span>
    </div>
+
   </div>
 
   <div class="description">
@@ -347,35 +551,58 @@ function renderChannel(channel) {
   </p>
 
   <a href="${escapeHTML(safeChannelUrl)}"
-   target="_blank" rel="noopener noreferrer"
+   target="_blank"
+   rel="noopener noreferrer"
    style="color:#ac95ff;font-size:13px">
    ${t("open")}
   </a>
+
  </div>`;
 }
 
 function setLanguage(lang) {
+
  currentLang = lang;
+
  document.documentElement.lang = lang;
- document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+ document.documentElement.dir =
+  lang === "ar" ? "rtl" : "ltr";
 
  document.getElementById("navFeatures").textContent = t("features");
  document.getElementById("tag").textContent = t("tag");
  document.getElementById("heading").innerHTML = t("heading");
  document.getElementById("subtitle").textContent = t("subtitle");
- document.getElementById("channel").placeholder = t("placeholder");
- document.getElementById("verifyButton").textContent = t("analyze");
- document.getElementById("featuresTitle").innerHTML = t("featuresTitle");
 
- document.getElementById("feature1Title").textContent = t("feature1Title");
- document.getElementById("feature1Text").textContent = t("feature1Text");
- document.getElementById("feature2Title").textContent = t("feature2Title");
- document.getElementById("feature2Text").textContent = t("feature2Text");
- document.getElementById("feature3Title").textContent = t("feature3Title");
- document.getElementById("feature3Text").textContent = t("feature3Text");
- document.getElementById("footerText").innerHTML = t("footer");
+ input.placeholder = t("placeholder");
 
- langButton.textContent = lang === "en" ? "العربية" : "English";
+ button.textContent = t("analyze");
+
+ document.getElementById("featuresTitle").innerHTML =
+  t("featuresTitle");
+
+ document.getElementById("feature1Title").textContent =
+  t("feature1Title");
+
+ document.getElementById("feature1Text").textContent =
+  t("feature1Text");
+
+ document.getElementById("feature2Title").textContent =
+  t("feature2Title");
+
+ document.getElementById("feature2Text").textContent =
+  t("feature2Text");
+
+ document.getElementById("feature3Title").textContent =
+  t("feature3Title");
+
+ document.getElementById("feature3Text").textContent =
+  t("feature3Text");
+
+ document.getElementById("footerText").innerHTML =
+  t("footer");
+
+ langButton.textContent =
+  lang === "en" ? "العربية" : "English";
 
  if (lastChannel) {
   renderChannel(lastChannel);
@@ -387,26 +614,49 @@ langButton.addEventListener("click", () => {
 });
 
 form.addEventListener("submit", async event => {
+
  event.preventDefault();
 
  const channel = input.value.trim();
+
  if (!channel) return;
 
  button.disabled = true;
  button.textContent = t("loading");
- result.innerHTML = `<div class="message">${t("connecting")}</div>`;
+
+ result.innerHTML =
+  `<div class="message">${t("connecting")}</div>`;
 
  try {
-  const response = await fetch("/api/verify", {
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({channel})
-  });
+
+  const controller = new AbortController();
+
+  const timeout = setTimeout(
+   () => controller.abort(),
+   20000
+  );
+
+  let response;
+
+  try {
+   response = await fetch("/api/verify", {
+    method:"POST",
+    headers:{
+     "Content-Type":"application/json"
+    },
+    body:JSON.stringify({channel}),
+    signal:controller.signal
+   });
+  } finally {
+   clearTimeout(timeout);
+  }
 
   const data = await response.json();
 
   if (!response.ok || !data.success) {
-   throw new Error(data.message || t("genericError"));
+   throw new Error(
+    data.message || t("genericError")
+   );
   }
 
   if (!data.channel) {
@@ -416,15 +666,26 @@ form.addEventListener("submit", async event => {
   renderChannel(data.channel);
 
  } catch (error) {
+
+  const message = error.name === "AbortError"
+   ? "Request timed out. Please try again."
+   : error.message || t("genericError");
+
   result.innerHTML =
-   `<div class="message">${escapeHTML(error.message || t("genericError"))}</div>`;
+   `<div class="message">${escapeHTML(message)}</div>`;
+
  } finally {
+
   button.disabled = false;
   button.textContent = t("analyze");
+
  }
+
 });
 
 setLanguage("en");
+
 </script>
+
 </body>
 </html>
