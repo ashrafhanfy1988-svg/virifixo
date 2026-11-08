@@ -3,329 +3,275 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#080b18">
-<meta name="description" content="Virifixo - YouTube Channel Verification and Information Platform">
-<title>Virifixo — YouTube Channel Verification</title>
+<title>Virifixo — YouTube Channel Intelligence</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-:root {
-  --bg: #080b18;
-  --panel: #11162a;
-  --purple: #8b5cf6;
-  --blue: #6478ff;
-  --text: #f7f7ff;
-  --muted: #9ba5bd;
-  --border: rgba(255,255,255,.09);
+*{box-sizing:border-box}
+body{
+ margin:0;background:#080b18;color:#f8f9ff;
+ font-family:Arial,Helvetica,sans-serif;
+ min-height:100vh;
+ background-image:radial-gradient(ellipse at 50% 0%,#29205b 0%,transparent 50%);
 }
-
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: Inter, Arial, sans-serif;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(99,102,241,.18), transparent 45%),
-    var(--bg);
-  color: var(--text);
-  min-height: 100vh;
+nav{
+ height:76px;padding:0 7%;display:flex;align-items:center;
+ justify-content:space-between;border-bottom:1px solid #ffffff15;
 }
-
-nav {
-  height: 78px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 8%;
-  border-bottom: 1px solid var(--border);
-  background: rgba(8,11,24,.8);
+.logo{font-size:25px;font-weight:800;letter-spacing:-1px}
+.logo span{color:#9876ff}
+nav a{color:#aaa;text-decoration:none;font-size:13px}
+.hero{text-align:center;padding:85px 18px 45px}
+.tag{
+ display:inline-block;color:#c4aaff;background:#8b5cf620;
+ border:1px solid #8b5cf655;padding:9px 16px;
+ border-radius:30px;font-size:12px;margin-bottom:22px
 }
-
-.logo {
-  font-size: 25px;
-  font-weight: 800;
-  letter-spacing: -1px;
+h1{font-size:clamp(37px,6vw,64px);letter-spacing:-2px;margin:0 auto 20px}
+.gradient{
+ background:linear-gradient(90deg,#b08aff,#7194ff);
+ -webkit-background-clip:text;background-clip:text;color:transparent
 }
-
-.logo span { color: #9b7bff; }
-
-.nav-link {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 13px;
+.subtitle{color:#9ba5bd;line-height:1.8;margin:0 auto 35px;max-width:590px}
+.search{
+ max-width:680px;margin:auto;padding:9px;display:flex;gap:10px;
+ border:1px solid #8966ed77;border-radius:15px;background:#141a30;
 }
-
-.hero {
-  max-width: 1050px;
-  margin: 95px auto 70px;
-  padding: 0 22px;
-  text-align: center;
+input{
+ flex:1;min-width:0;padding:15px;border:0;outline:0;
+ color:white;background:transparent;font-size:14px
 }
-
-.tag {
-  display: inline-block;
-  border: 1px solid rgba(139,92,246,.4);
-  background: rgba(139,92,246,.12);
-  color: #c4adff;
-  padding: 9px 15px;
-  border-radius: 30px;
-  font-size: 12px;
-  margin-bottom: 25px;
+input::placeholder{color:#8490a9}
+button{
+ border:0;border-radius:10px;padding:15px 22px;
+ color:white;font-weight:bold;cursor:pointer;
+ background:linear-gradient(110deg,#8659ed,#527aff)
 }
-
-h1 {
-  font-size: clamp(38px, 6vw, 66px);
-  line-height: 1.12;
-  letter-spacing: -3px;
-  margin: 0 auto 22px;
-  max-width: 850px;
+button:disabled{opacity:.6;cursor:wait}
+#result{max-width:760px;margin:25px auto 0;padding:0 18px}
+.card{
+ background:linear-gradient(145deg,#171e35,#101529);
+ border:1px solid #ffffff17;border-radius:18px;padding:24px;text-align:left
 }
-
-.gradient {
-  background: linear-gradient(90deg,#a78bfa,#6d91ff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.status{
+ color:#75e0ac;background:#1c81552b;padding:7px 12px;
+ border-radius:20px;font-size:11px
 }
-
-.subtitle {
-  color: var(--muted);
-  font-size: 16px;
-  line-height: 1.8;
-  max-width: 600px;
-  margin: 0 auto 40px;
+.profile{display:flex;align-items:center;gap:17px;margin:25px 0}
+.profile img{
+ width:85px;height:85px;border-radius:50%;object-fit:cover;
+ background:#252b45;border:2px solid #8b6bf8
 }
-
-.search-box {
-  max-width: 680px;
-  margin: auto;
-  padding: 9px;
-  background: #131a30;
-  border: 1px solid rgba(139,92,246,.35);
-  border-radius: 17px;
-  display: flex;
-  gap: 10px;
-  box-shadow: 0 15px 65px rgba(76,50,180,.16);
+.profile h2{margin:0 0 7px;font-size:22px}
+.profile p{margin:0;color:#a0abc1;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat{
+ background:#ffffff08;border:1px solid #ffffff12;
+ padding:19px;border-radius:12px
 }
-
-input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  padding: 16px;
-  color: white;
-  font-size: 14px;
+.stat strong{display:block;font-size:25px;margin-bottom:8px;overflow-wrap:anywhere}
+.stat span{font-size:12px;color:#9ba5bd}
+.description{
+ color:#aab4c9;line-height:1.8;font-size:13px;
+ margin-top:20px;white-space:pre-wrap;overflow-wrap:anywhere
 }
-
-input::placeholder { color: #77819b; }
-
-button {
-  border: 0;
-  border-radius: 11px;
-  padding: 15px 23px;
-  background: linear-gradient(110deg,#7955e9,#537aff);
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-  transition: .2s;
+.message{
+ padding:20px;border-radius:12px;background:#151c32;
+ border:1px solid #ffffff17;color:#c5cde0;line-height:1.7
 }
-
-button:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.12);
+.features{max-width:1000px;margin:70px auto;padding:0 20px}
+.features h2{text-align:center;margin-bottom:30px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feature{
+ background:#131a2e;border:1px solid #ffffff12;
+ border-radius:15px;padding:25px
 }
-
-button:disabled {
-  opacity: .6;
-  cursor: wait;
-  transform: none;
+.feature h3{font-size:16px}
+.feature p{font-size:13px;color:#9ba5bd;line-height:1.8}
+footer{
+ border-top:1px solid #ffffff15;text-align:center;
+ padding:30px;color:#8792aa;font-size:12px;line-height:1.8
 }
-
-#result {
-  display: none;
-  max-width: 680px;
-  margin: 20px auto 0;
-  padding: 20px;
-  text-align: left;
-  background: #141b30;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  color: #cbd5e1;
-  line-height: 1.7;
-  overflow-wrap: anywhere;
-}
-
-.section {
-  max-width: 1050px;
-  margin: 75px auto;
-  padding: 0 22px;
-}
-
-.section-title {
-  text-align: center;
-  font-size: 28px;
-  margin-bottom: 35px;
-}
-
-.features {
-  display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 18px;
-}
-
-.feature {
-  padding: 27px;
-  background: linear-gradient(145deg,#141b31,#0e1325);
-  border: 1px solid var(--border);
-  border-radius: 17px;
-}
-
-.feature-icon {
-  font-size: 25px;
-  margin-bottom: 20px;
-}
-
-.feature h3 { font-size: 17px; }
-
-.feature p {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.8;
-}
-
-footer {
-  border-top: 1px solid var(--border);
-  text-align: center;
-  padding: 30px 15px;
-  color: #7e89a3;
-  font-size: 12px;
-  line-height: 1.8;
-}
-
-@media(max-width:700px) {
-  nav { padding: 0 20px; }
-  .hero { margin-top: 65px; }
-  .features { grid-template-columns: 1fr; }
-  .search-box { flex-direction: column; }
-  .search-box button { width: 100%; }
-  h1 { letter-spacing: -1.5px; }
+@media(max-width:650px){
+ .hero{padding-top:60px}
+ .search{flex-direction:column}
+ .search button{width:100%}
+ .grid{grid-template-columns:1fr}
+ .stats{grid-template-columns:1fr 1fr}
+ .card{padding:17px}
 }
 </style>
 </head>
 
 <body>
-
 <nav>
-  <div class="logo">Viri<span>fixo</span></div>
-  <a class="nav-link" href="#features">Features</a>
+ <div class="logo">Viri<span>fixo</span></div>
+ <a href="#features">Features</a>
 </nav>
 
 <main>
 <section class="hero">
-  <div class="tag">✦ YOUTUBE CHANNEL INTELLIGENCE</div>
+ <div class="tag">✦ YOUTUBE CHANNEL INTELLIGENCE</div>
+ <h1>Discover and Check <span class="gradient">YouTube Channels</span></h1>
+ <p class="subtitle">
+ Explore real YouTube channel information with Virifixo.
+ Enter a channel URL to discover its public statistics.
+ </p>
 
-  <h1>
-    Discover and Check
-    <span class="gradient">YouTube Channels</span>
-  </h1>
-
-  <p class="subtitle">
-    Explore YouTube channel information with Virifixo.
-    Enter a channel URL to begin checking its format.
-  </p>
-
-  <form class="search-box" id="verifyForm">
-    <input
-      id="channel"
-      type="url"
-      placeholder="Paste YouTube channel URL here..."
-      required
-    >
-    <button id="verifyButton" type="submit">
-      Verify Channel →
-    </button>
-  </form>
-
-  <div id="result" role="status" aria-live="polite"></div>
+ <form class="search" id="verifyForm">
+  <input id="channel" type="text"
+   placeholder="Paste YouTube channel URL here..." required>
+  <button id="verifyButton" type="submit">Analyze Channel →</button>
+ </form>
 </section>
 
-<section class="section" id="features">
-  <h2 class="section-title">
-    Built for <span class="gradient">Creators</span>
-  </h2>
+<section id="result" aria-live="polite"></section>
 
-  <div class="features">
-    <article class="feature">
-      <div class="feature-icon">🔎</div>
-      <h3>Channel Checking</h3>
-      <p>Check whether a submitted YouTube URL follows an accepted link format.</p>
-    </article>
-
-    <article class="feature">
-      <div class="feature-icon">📊</div>
-      <h3>Channel Insights</h3>
-      <p>Our next development stage will introduce channel information and insights.</p>
-    </article>
-
-    <article class="feature">
-      <div class="feature-icon">🛡️</div>
-      <h3>Clear Results</h3>
-      <p>Understand what has been checked and what still needs official confirmation.</p>
-    </article>
+<section class="features" id="features">
+ <h2>Built for <span class="gradient">Creators</span></h2>
+ <div class="grid">
+  <div class="feature">
+   <h3>🔎 Channel Analysis</h3>
+   <p>Retrieve public channel information directly from YouTube.</p>
   </div>
+  <div class="feature">
+   <h3>📊 Real Statistics</h3>
+   <p>Explore subscriber counts, videos and channel views.</p>
+  </div>
+  <div class="feature">
+   <h3>🛡️ Clear Information</h3>
+   <p>Understand channel data without claiming official YouTube verification.</p>
+  </div>
+ </div>
 </section>
 </main>
 
 <footer>
-  <div class="logo">Viri<span>fixo</span></div>
-  <p>Independent YouTube channel information platform.</p>
-  <p>Virifixo is not affiliated with or endorsed by YouTube or Google.</p>
-  © 2026 Virifixo. All rights reserved.
+ <div class="logo">Viri<span>fixo</span></div>
+ Independent YouTube channel information platform.<br>
+ Not affiliated with or endorsed by YouTube or Google.<br>
+ © 2026 Virifixo. All rights reserved.
 </footer>
 
 <script>
 const form = document.getElementById("verifyForm");
+const input = document.getElementById("channel");
 const result = document.getElementById("result");
 const button = document.getElementById("verifyButton");
 
-form.addEventListener("submit", async function(event) {
-  event.preventDefault();
+function escapeHTML(value) {
+ return String(value ?? "").replace(/[&<>"']/g, char => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ }[char]));
+}
 
-  const channel = document.getElementById("channel").value.trim();
+function formatNumber(value) {
+ if (value === null || value === undefined) return "Hidden";
+ const number = Number(value);
+ return Number.isFinite(number) ? number.toLocaleString() : "—";
+}
 
-  result.style.display = "block";
-  result.textContent = "Checking URL...";
+function renderChannel(channel) {
+ const subscribers = channel.subscriberCountHidden
+  ? "Hidden"
+  : formatNumber(channel.subscribers);
 
-  button.disabled = true;
-  button.textContent = "Checking...";
+ const created = channel.publishedAt
+  ? new Date(channel.publishedAt).toLocaleDateString()
+  : "—";
 
-  try {
-    const response = await fetch("/api/verify", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ channel })
-    });
+ result.innerHTML = `
+ <div class="card">
+  <div class="card-head">
+   <strong>Virifixo Analysis</strong>
+   <span class="status">✓ Channel Found</span>
+  </div>
 
-    const data = await response.json();
+  <div class="profile">
+   ${channel.thumbnail
+    ? `<img src="${escapeHTML(channel.thumbnail)}" alt="Channel image">`
+    : ""}
+   <div>
+    <h2>${escapeHTML(channel.title)}</h2>
+    <p>${escapeHTML(channel.customUrl || channel.channelId)}</p>
+   </div>
+  </div>
 
-    result.textContent = data.message ||
-      (response.ok ? "Check completed." : "Unable to check URL.");
+  <div class="stats">
+   <div class="stat">
+    <strong>${subscribers}</strong>
+    <span>Subscribers</span>
+   </div>
+   <div class="stat">
+    <strong>${formatNumber(channel.videoCount)}</strong>
+    <span>Total Videos</span>
+   </div>
+   <div class="stat">
+    <strong>${formatNumber(channel.viewCount)}</strong>
+    <span>Total Views</span>
+   </div>
+   <div class="stat">
+    <strong>${escapeHTML(created)}</strong>
+    <span>Created Date</span>
+   </div>
+  </div>
 
-  } catch (error) {
-    result.textContent =
-      "Connection error. Please try again.";
-  } finally {
-    button.disabled = false;
-    button.textContent = "Verify Channel →";
+  <div class="description">
+   ${escapeHTML(channel.description || "No public description available.")}
+  </div>
+
+  <p style="font-size:12px;color:#9ba5bd;margin-top:20px">
+   Channel data retrieved from YouTube Data API.
+   This does not confirm an official verification badge.
+  </p>
+  <a href="${escapeHTML(channel.channelUrl)}"
+   target="_blank" rel="noopener noreferrer"
+   style="color:#ac95ff;font-size:13px">
+   Open YouTube Channel ↗
+  </a>
+ </div>`;
+}
+
+form.addEventListener("submit", async event => {
+ event.preventDefault();
+
+ const channel = input.value.trim();
+ if (!channel) return;
+
+ button.disabled = true;
+ button.textContent = "Analyzing...";
+ result.innerHTML = '<div class="message">Connecting to YouTube...</div>';
+
+ try {
+  const response = await fetch("/api/verify", {
+   method: "POST",
+   headers: {"Content-Type":"application/json"},
+   body: JSON.stringify({channel})
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || !data.success) {
+   throw new Error(data.message || "Unable to find channel.");
   }
+
+  if (!data.channel) {
+   throw new Error("Channel information was not returned.");
+  }
+
+  renderChannel(data.channel);
+
+ } catch (error) {
+  result.innerHTML =
+   `<div class="message">${escapeHTML(error.message)}</div>`;
+ } finally {
+  button.disabled = false;
+  button.textContent = "Analyze Channel →";
+ }
 });
 </script>
-
 </body>
 </html>
