@@ -10,9 +10,9 @@ app.disable("x-powered-by");
 app.use(express.json({ limit: "10kb" }));
 app.use(express.static(path.join(__dirname, "public")));
 
-// =====================================
-// SERVER STATUS
-// =====================================
+// ==========================================
+// STATUS
+// ==========================================
 
 app.get("/api/status", (req, res) => {
     res.set("Cache-Control", "no-store");
@@ -20,24 +20,26 @@ app.get("/api/status", (req, res) => {
     res.json({
         name: "Virifixo",
         status: "online",
-        version: "3.0",
+        version: "3.1",
         uptime: Math.floor(process.uptime())
     });
 });
 
-// =====================================
-// PARSE YOUTUBE URL
-// =====================================
+// ==========================================
+// PARSE CHANNEL URL
+// ==========================================
 
 function parseChannelUrl(value) {
     try {
         const url = new URL(value);
 
-        if (![
+        const allowedHosts = [
             "youtube.com",
             "www.youtube.com",
             "m.youtube.com"
-        ].includes(url.hostname.toLowerCase())) {
+        ];
+
+        if (!allowedHosts.includes(url.hostname.toLowerCase())) {
             return null;
         }
 
@@ -69,11 +71,11 @@ function parseChannelUrl(value) {
     }
 }
 
-// =====================================
+// ==========================================
 // DATE VALIDATION
-// =====================================
+// ==========================================
 
-function formatDate(value) {
+function validateDate(value) {
     if (typeof value !== "string" || !value.trim()) {
         return null;
     }
@@ -96,7 +98,7 @@ function formatDate(value) {
     return date.toISOString();
 }
 
-function formatUnixDate(value) {
+function validateUnixDate(value) {
     const timestamp = Number(value);
 
     if (!Number.isFinite(timestamp) || timestamp <= 0) {
@@ -116,10 +118,6 @@ function formatUnixDate(value) {
     return date.toISOString();
 }
 
-// =====================================
-// SAFE COUNTS
-// =====================================
-
 function safeCount(value) {
     const number = Number(value);
 
@@ -128,31 +126,65 @@ function safeCount(value) {
         : "0";
 }
 
-// =====================================
+// ==========================================
 // FETCH WITH TIMEOUT
-// =====================================
+// ==========================================
 
-async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+async function fetchJson(url, options = {}, timeoutMs = 10000) {
     const controller = new AbortController();
 
-    const timeout = setTimeout(
+    const timer = setTimeout(
         () => controller.abort(),
         timeoutMs
     );
 
     try {
-        return await fetch(url, {
+        const response = await fetch(url, {
             ...options,
             signal: controller.signal
         });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+        return data;
     } finally {
-        clearTimeout(timeout);
+        clearTimeout(timer);
     }
 }
 
-// =====================================
+async function fetchText(url, options = {}, timeoutMs = 12000) {
+    const controller = new AbortController();
+
+    const timer = setTimeout(
+        () => controller.abort(),
+        timeoutMs
+    );
+
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        return await response.text();
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+// ==========================================
 // YOUTUBE API
-// =====================================
+// ==========================================
 
 async function getChannel(channel, apiKey) {
     const params = new URLSearchParams({
@@ -161,10 +193,9 @@ async function getChannel(channel, apiKey) {
             channel.value
     });
 
-    const response = await fetchWithTimeout(
+    const data = await fetchJson(
         `https://www.googleapis.com/youtube/v3/channels?${params}`,
         {
-            method: "GET",
             headers: {
                 "x-goog-api-key": apiKey
             }
@@ -172,81 +203,63 @@ async function getChannel(channel, apiKey) {
         15000
     );
 
-    const data = await response.json();
-
-    if (!response.ok) {
-        const error = new Error(
-            data.error?.message || "YouTube API error"
-        );
-
-        error.status = response.status;
-        throw error;
-    }
-
     return data.items?.[0] || null;
 }
 
-// =====================================
-// INVIDIOUS DATE SOURCE
-// =====================================
+// ==========================================
+// INVIDIOUS DATE FALLBACK
+// ==========================================
 
-async function getInvidiousJoinedDate(channelId) {
+async function getInvidiousDate(channelId) {
     const instances = [
         "https://inv.nadeko.net",
         "https://invidious.nerdvpn.de",
-        "https://yt.chocolatemoo53.com",
         "https://invidious.tiekoetter.com"
     ];
 
-    const results = await Promise.allSettled(
-        instances.map(async (base) => {
-            const response = await fetchWithTimeout(
+    for (const base of instances) {
+        try {
+            const data = await fetchJson(
                 `${base}/api/v1/channels/${encodeURIComponent(channelId)}`,
                 {
                     headers: {
                         "Accept": "application/json",
-                        "User-Agent": "Virifixo/3.0"
+                        "User-Agent": "Virifixo/3.1"
                     }
                 },
-                8000
+                7000
             );
 
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+            const date = validateUnixDate(data.joined);
+
+            if (date) {
+                console.log("DATE SOURCE: Invidious");
+                return date;
             }
-
-            const data = await response.json();
-            const date = formatUnixDate(data.joined);
-
-            if (!date) {
-                throw new Error("Date unavailable");
-            }
-
-            return date;
-        })
-    );
-
-    for (const result of results) {
-        if (result.status === "fulfilled") {
-            return result.value;
+        } catch (error) {
+            console.log(
+                "INVIDIOUS SOURCE FAILED:",
+                base,
+                error.message
+            );
         }
     }
 
     return null;
 }
 
-// =====================================
-// YOUTUBE ABOUT DATE EXTRACTION
-// =====================================
+// ==========================================
+// YOUTUBE ABOUT DATE FALLBACK
+// ==========================================
 
-function extractJoinedDate(html) {
-    if (typeof html !== "string" || !html) {
+function extractAboutDate(html) {
+    if (!html) {
         return null;
     }
 
     const patterns = [
-        /"content":"Joined ([A-Za-z]+\s+\d{1,2},?\s+\d{4})"/i,
-        /"simpleText":"Joined ([A-Za-z]+\s+\d{1,2},?\s+\d{4})"/i,
+        /"joinedDateText"\s*:\s*\{[^}]*"content"\s*:\s*"Joined ([^"]+)"/i,
+        /"content"\s*:\s*"Joined ([A-Za-z]+\s+\d{1,2},?\s+\d{4})"/i,
         /Joined\s+([A-Za-z]+\s+\d{1,2},?\s+\d{4})/i
     ];
 
@@ -254,7 +267,7 @@ function extractJoinedDate(html) {
         const match = html.match(pattern);
 
         if (match) {
-            const date = formatDate(match[1]);
+            const date = validateDate(match[1]);
 
             if (date) {
                 return date;
@@ -265,13 +278,13 @@ function extractJoinedDate(html) {
     return null;
 }
 
-async function getChannelCreationDate(channel) {
+async function getYouTubeAboutDate(channel) {
     const url = channel.type === "handle"
         ? `https://www.youtube.com/@${encodeURIComponent(channel.value)}/about`
         : `https://www.youtube.com/channel/${channel.value}/about`;
 
     try {
-        const response = await fetchWithTimeout(
+        const html = await fetchText(
             url,
             {
                 headers: {
@@ -283,27 +296,117 @@ async function getChannelCreationDate(channel) {
             12000
         );
 
-        if (!response.ok) {
-            return null;
+        const date = extractAboutDate(html);
+
+        if (date) {
+            console.log("DATE SOURCE: YouTube About");
         }
 
-        const html = await response.text();
-
-        return extractJoinedDate(html);
-
+        return date;
     } catch (error) {
-        console.error("ABOUT ERROR:", error.message);
+        console.log("YOUTUBE ABOUT FAILED:", error.message);
         return null;
     }
 }
 
-// =====================================
-// RESOLVE CREATION DATE
-// =====================================
+// ==========================================
+// OPTIONAL APIFY DATE SOURCE
+// ==========================================
 
-async function resolveCreationDate(item, channel) {
-    // Source 1: YouTube API
-    let date = formatDate(item.snippet?.publishedAt);
+async function getApifyDate(channelUrl) {
+    const token = process.env.APIFY_API_TOKEN;
+    const actorId = process.env.APIFY_ACTOR_ID;
+
+    if (!token || !actorId) {
+        return null;
+    }
+
+    try {
+        const actorUrl =
+            `https://api.apify.com/v2/acts/${encodeURIComponent(actorId)}/run-sync-get-dataset-items?token=${encodeURIComponent(token)}&format=json`;
+
+        const response = await fetchWithTimeout(
+            actorUrl,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    startUrls: [
+                        { url: channelUrl }
+                    ]
+                })
+            },
+            30000
+        );
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const items = await response.json();
+
+        if (!Array.isArray(items) || !items.length) {
+            return null;
+        }
+
+        const item = items[0];
+
+        const possibleDates = [
+            item.joinedDate,
+            item.createdDate,
+            item.channelCreatedAt,
+            item.publishedAt,
+            item.joined
+        ];
+
+        for (const value of possibleDates) {
+            const date =
+                typeof value === "number"
+                    ? validateUnixDate(value)
+                    : validateDate(value);
+
+            if (date) {
+                console.log("DATE SOURCE: Apify");
+                return date;
+            }
+        }
+
+        return null;
+
+    } catch (error) {
+        console.error("APIFY ERROR:", error.message);
+        return null;
+    }
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+    const controller = new AbortController();
+
+    const timer = setTimeout(
+        () => controller.abort(),
+        timeoutMs
+    );
+
+    try {
+        return await fetch(url, {
+            ...options,
+            signal: controller.signal
+        });
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+// ==========================================
+// RESOLVE CREATION DATE
+// ==========================================
+
+async function resolveCreationDate(item, channel, channelUrl) {
+    const originalDate = item.snippet?.publishedAt;
+
+    let date = validateDate(originalDate);
 
     if (date) {
         return {
@@ -314,32 +417,31 @@ async function resolveCreationDate(item, channel) {
 
     console.log("YouTube API date unavailable.");
 
-    // Source 2: Invidious
-    try {
-        date = await getInvidiousJoinedDate(item.id);
+    date = await getInvidiousDate(item.id);
 
-        if (date) {
-            return {
-                publishedAt: date,
-                dateSource: "invidious"
-            };
-        }
-    } catch (error) {
-        console.error("INVIDIOUS ERROR:", error.message);
+    if (date) {
+        return {
+            publishedAt: date,
+            dateSource: "invidious"
+        };
     }
 
-    // Source 3: YouTube About
-    try {
-        date = await getChannelCreationDate(channel);
+    date = await getYouTubeAboutDate(channel);
 
-        if (date) {
-            return {
-                publishedAt: date,
-                dateSource: "youtube_about"
-            };
-        }
-    } catch (error) {
-        console.error("YOUTUBE ABOUT ERROR:", error.message);
+    if (date) {
+        return {
+            publishedAt: date,
+            dateSource: "youtube_about"
+        };
+    }
+
+    date = await getApifyDate(channelUrl);
+
+    if (date) {
+        return {
+            publishedAt: date,
+            dateSource: "apify"
+        };
     }
 
     return {
@@ -348,9 +450,9 @@ async function resolveCreationDate(item, channel) {
     };
 }
 
-// =====================================
+// ==========================================
 // VERIFY CHANNEL
-// =====================================
+// ==========================================
 
 app.post("/api/verify", async (req, res) => {
     try {
@@ -395,9 +497,13 @@ app.post("/api/verify", async (req, res) => {
         const snippet = item.snippet || {};
         const stats = item.statistics || {};
 
+        const canonicalUrl =
+            `https://www.youtube.com/channel/${item.id}`;
+
         const dateResult = await resolveCreationDate(
             item,
-            channel
+            channel,
+            canonicalUrl
         );
 
         console.log("VIRIFIXO DATE CHECK:", {
@@ -409,9 +515,7 @@ app.post("/api/verify", async (req, res) => {
 
         const result = {
             channelId: item.id,
-
             title: snippet.title || "Unknown Channel",
-
             description: snippet.description || "",
 
             thumbnail:
@@ -423,9 +527,7 @@ app.post("/api/verify", async (req, res) => {
             customUrl: snippet.customUrl || null,
 
             publishedAt: dateResult.publishedAt,
-
             createdDate: dateResult.publishedAt,
-
             dateSource: dateResult.dateSource,
 
             country: snippet.country || null,
@@ -439,11 +541,9 @@ app.post("/api/verify", async (req, res) => {
             ),
 
             videoCount: safeCount(stats.videoCount),
-
             viewCount: safeCount(stats.viewCount),
 
-            channelUrl:
-                `https://www.youtube.com/channel/${item.id}`
+            channelUrl: canonicalUrl
         };
 
         res.set("Cache-Control", "no-store");
@@ -463,7 +563,7 @@ app.post("/api/verify", async (req, res) => {
         if (error.name === "AbortError") {
             return res.status(504).json({
                 success: false,
-                message: "YouTube request timed out."
+                message: "Request timed out."
             });
         }
 
@@ -481,12 +581,15 @@ app.post("/api/verify", async (req, res) => {
     }
 });
 
-// =====================================
+// ==========================================
 // INVALID JSON HANDLING
-// =====================================
+// ==========================================
 
 app.use((err, req, res, next) => {
-    if (err instanceof SyntaxError && err.status === 400) {
+    if (
+        err instanceof SyntaxError &&
+        err.status === 400
+    ) {
         return res.status(400).json({
             success: false,
             message: "Invalid JSON."
@@ -501,17 +604,17 @@ app.use((err, req, res, next) => {
     });
 });
 
-// =====================================
+// ==========================================
 // START SERVER
-// =====================================
+// ==========================================
 
 const server = app.listen(PORT, "0.0.0.0", () => {
     console.log(`Virifixo running on port ${PORT}`);
 });
 
-// =====================================
+// ==========================================
 // GRACEFUL SHUTDOWN
-// =====================================
+// ==========================================
 
 function shutdown(signal) {
     console.log(`${signal} received.`);
