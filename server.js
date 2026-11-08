@@ -1,13 +1,10 @@
-
 "use strict";
 
 const express = require("express");
 const path = require("path");
 
 const app = express();
-
 const PORT = process.env.PORT || 3000;
-const API_TIMEOUT = 15000;
 
 app.disable("x-powered-by");
 
@@ -21,7 +18,7 @@ app.get("/api/status", (req, res) => {
   res.json({
     name: "Virifixo",
     status: "online",
-    version: "2.3",
+    version: "3.0",
     uptime: Math.floor(process.uptime())
   });
 });
@@ -41,25 +38,25 @@ function parseChannelUrl(value) {
       return null;
     }
 
-    const handleMatch = url.pathname.match(
+    const handle = url.pathname.match(
       /^\/@([a-zA-Z0-9._-]+)\/?$/
     );
 
-    if (handleMatch) {
+    if (handle) {
       return {
         type: "handle",
-        value: handleMatch[1]
+        value: handle[1]
       };
     }
 
-    const channelMatch = url.pathname.match(
+    const id = url.pathname.match(
       /^\/channel\/(UC[a-zA-Z0-9_-]{22})\/?$/
     );
 
-    if (channelMatch) {
+    if (id) {
       return {
         type: "id",
-        value: channelMatch[1]
+        value: id[1]
       };
     }
 
@@ -70,7 +67,7 @@ function parseChannelUrl(value) {
   }
 }
 
-// Validate YouTube creation date
+// Validate YouTube published date
 function formatDate(value) {
   if (
     typeof value !== "string" ||
@@ -88,8 +85,8 @@ function formatDate(value) {
   const date = new Date(timestamp);
 
   if (
-    date.getUTCFullYear() < 2005 ||
-    date.getTime() <= 0
+    date.getTime() <= 0 ||
+    date.getUTCFullYear() < 2005
   ) {
     return null;
   }
@@ -99,10 +96,6 @@ function formatDate(value) {
 
 // Safe statistics
 function safeCount(value) {
-  if (value === undefined || value === null) {
-    return "0";
-  }
-
   const number = Number(value);
 
   return Number.isFinite(number)
@@ -110,7 +103,7 @@ function safeCount(value) {
     : "0";
 }
 
-// YouTube API request
+// Get YouTube channel
 async function getChannel(channel, apiKey) {
   const params = new URLSearchParams({
     part: "snippet,statistics",
@@ -122,7 +115,7 @@ async function getChannel(channel, apiKey) {
 
   const timeout = setTimeout(
     () => controller.abort(),
-    API_TIMEOUT
+    15000
   );
 
   try {
@@ -155,24 +148,17 @@ async function getChannel(channel, apiKey) {
   }
 }
 
-// Verify YouTube channel
+// Verify channel
 app.post("/api/verify", async (req, res) => {
   try {
     const channelUrl = String(
       req.body?.channel || ""
     ).trim();
 
-    if (!channelUrl) {
+    if (!channelUrl || channelUrl.length > 300) {
       return res.status(400).json({
         success: false,
-        message: "Please enter a YouTube channel URL."
-      });
-    }
-
-    if (channelUrl.length > 300) {
-      return res.status(400).json({
-        success: false,
-        message: "Channel URL is too long."
+        message: "Invalid channel URL."
       });
     }
 
@@ -199,31 +185,29 @@ app.post("/api/verify", async (req, res) => {
     if (!item) {
       return res.status(404).json({
         success: false,
-        message: "YouTube channel not found."
+        message: "Channel not found."
       });
     }
 
     const snippet = item.snippet || {};
     const stats = item.statistics || {};
 
-    // DATE DEBUGGING
-    console.log("YOUTUBE DATE DEBUG:", {
-      channelId: item.id,
-      title: snippet.title,
-      publishedAt: snippet.publishedAt,
-      parsedDate: formatDate(snippet.publishedAt)
-    });
+    // Read original YouTube creation date
+    const rawDate = snippet.publishedAt;
 
-    // Correct creation date
-    const publishedAt = formatDate(
-      snippet.publishedAt
-    );
+    // Validate original date without converting invalid values
+    const publishedAt = formatDate(rawDate);
+
+    // Diagnostic logs
+    console.log("VIRIFIXO DATE CHECK:", {
+      channel: snippet.title,
+      originalDate: rawDate,
+      correctedDate: publishedAt
+    });
 
     const result = {
       channelId: item.id,
-
       title: snippet.title || "Unknown Channel",
-
       description: snippet.description || "",
 
       thumbnail:
@@ -234,7 +218,6 @@ app.post("/api/verify", async (req, res) => {
 
       customUrl: snippet.customUrl || null,
 
-      // Both fields are provided for frontend compatibility
       publishedAt: publishedAt,
       createdDate: publishedAt,
 
@@ -249,7 +232,6 @@ app.post("/api/verify", async (req, res) => {
       ),
 
       videoCount: safeCount(stats.videoCount),
-
       viewCount: safeCount(stats.viewCount),
 
       channelUrl:
@@ -266,7 +248,7 @@ app.post("/api/verify", async (req, res) => {
 
   } catch (error) {
     console.error(
-      "Verification error:",
+      "Virifixo verification error:",
       error.message
     );
 
@@ -280,7 +262,7 @@ app.post("/api/verify", async (req, res) => {
     if (error.status === 403) {
       return res.status(502).json({
         success: false,
-        message: "YouTube API access or quota error."
+        message: "YouTube API quota or access error."
       });
     }
 
@@ -293,13 +275,10 @@ app.post("/api/verify", async (req, res) => {
 
 // Invalid JSON handling
 app.use((err, req, res, next) => {
-  if (
-    err instanceof SyntaxError &&
-    err.status === 400
-  ) {
+  if (err instanceof SyntaxError && err.status === 400) {
     return res.status(400).json({
       success: false,
-      message: "Invalid JSON request."
+      message: "Invalid JSON."
     });
   }
 
@@ -321,7 +300,7 @@ function shutdown(signal) {
   console.log(`${signal} received.`);
 
   server.close(() => {
-    console.log("Virifixo stopped.");
+    console.log("Server stopped.");
     process.exit(0);
   });
 
