@@ -5,282 +5,418 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101827">
-<title>Virifixo 3.4 - Video Verification</title>
+
+<title>Virifixo 3.5 - Video Verification</title>
 <meta name="description" content="Virifixo - منصة التحقق من مصادر الفيديوهات ومصداقيتها">
 
 <style>
-*{box-sizing:border-box}
-:root{
---bg:#101827;
---panel:#1b2638;
---border:#344258;
---blue:#2879e8;
---light:#65a9ff;
---text:#fff;
---muted:#aab7ca;
---green:#4ade80;
---red:#ff7777;
+* {
+    box-sizing: border-box;
 }
-body{
-margin:0;padding:20px;
-min-height:100vh;
-background:var(--bg);
-color:var(--text);
-font-family:Arial,sans-serif;
+
+:root {
+    --bg: #101827;
+    --panel: #1b2638;
+    --border: #344258;
+    --blue: #2879e8;
+    --light: #65a9ff;
+    --text: #ffffff;
+    --muted: #aab7ca;
+    --green: #4ade80;
+    --red: #ff7777;
+    --gold: #ffd166;
 }
-.container{max-width:850px;margin:25px auto}
-header{text-align:center;margin-bottom:30px}
-.logo{font-size:38px;font-weight:bold;color:var(--light)}
-.subtitle{color:var(--muted);font-size:15px}
-.panel{
-background:var(--panel);
-border:1px solid var(--border);
-border-radius:15px;
-padding:25px;
-margin-bottom:20px;
+
+body {
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Arial, sans-serif;
 }
-h2{font-size:20px;margin-top:0}
-label{display:block;margin:18px 0 8px;font-weight:bold}
-input,textarea{
-width:100%;padding:14px;
-background:var(--bg);
-border:1px solid var(--border);
-border-radius:8px;
-color:white;font-size:15px;
+
+.container {
+    max-width: 850px;
+    margin: 25px auto;
 }
-input:focus,textarea:focus{
-outline:2px solid var(--blue);
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
 }
-button{
-border:0;border-radius:8px;
-padding:13px 20px;
-background:var(--blue);
-color:white;font-size:16px;
-font-weight:bold;cursor:pointer;
+
+.logo {
+    font-size: 40px;
+    font-weight: bold;
+    color: var(--light);
+    letter-spacing: 2px;
 }
-button:hover{background:#1764cb}
-button:disabled{opacity:.5;cursor:wait}
-.primary{width:100%;margin-top:20px}
-.secondary{background:#344258}
-.status{
-padding:15px;border-radius:8px;
-background:var(--bg);
-margin-top:15px;color:var(--muted);
+
+.subtitle {
+    color: var(--muted);
+    font-size: 15px;
 }
-.result{display:none}
-.result h3{color:var(--light)}
-.item{
-padding:12px;margin:10px 0;
-background:var(--bg);
-border-radius:8px;
-border-right:3px solid var(--blue);
+
+.panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
 }
-.muted{color:var(--muted);font-size:13px}
-.warning{
-color:#ffd166;
-background:#42371f;
-padding:12px;border-radius:8px;
-margin-top:15px;
+
+h2 {
+    font-size: 20px;
+    margin-top: 0;
 }
-footer{text-align:center;color:var(--muted);padding:25px}
-.file-info{margin-top:10px;color:var(--green)}
-@media(max-width:600px){
-body{padding:12px}
-.panel{padding:17px}
-.logo{font-size:30px}
+
+label {
+    display: block;
+    margin: 18px 0 8px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: white;
+    font-size: 15px;
+}
+
+input:focus {
+    outline: 2px solid var(--blue);
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    padding: 13px 20px;
+    background: var(--blue);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1764cb;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: wait;
+}
+
+.primary {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.secondary {
+    background: #344258;
+}
+
+.status {
+    padding: 15px;
+    border-radius: 8px;
+    background: var(--bg);
+    margin-top: 15px;
+    color: var(--muted);
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.status.success {
+    color: var(--green);
+}
+
+.status.error {
+    color: var(--red);
+}
+
+.status.loading {
+    color: var(--gold);
+}
+
+.result {
+    display: none;
+}
+
+.result h3 {
+    color: var(--light);
+}
+
+.item {
+    padding: 13px;
+    margin: 10px 0;
+    background: var(--bg);
+    border-radius: 8px;
+    border-right: 3px solid var(--blue);
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.item strong {
+    color: var(--light);
+}
+
+.muted {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.warning {
+    color: var(--gold);
+    background: #42371f;
+    padding: 14px;
+    border-radius: 8px;
+    margin-top: 15px;
+    line-height: 1.8;
+}
+
+.file-info {
+    margin-top: 10px;
+    color: var(--green);
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+.channel-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.channel-header img {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--blue);
+}
+
+.channel-header h3 {
+    margin: 0 0 8px;
+}
+
+.channel-link {
+    color: var(--light);
+    text-decoration: none;
+}
+
+.channel-link:hover {
+    text-decoration: underline;
+}
+
+footer {
+    text-align: center;
+    color: var(--muted);
+    padding: 25px;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 12px;
+    }
+
+    .panel {
+        padding: 17px;
+    }
+
+    .logo {
+        font-size: 32px;
+    }
+
+    .channel-header img {
+        width: 65px;
+        height: 65px;
+    }
+}
+
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+
+    .panel {
+        background: white;
+        color: black;
+        border: 1px solid #ccc;
+    }
+
+    .item {
+        background: #f5f5f5;
+        color: black;
+    }
+
+    .item strong {
+        color: #174c91;
+    }
+
+    .status {
+        background: #f5f5f5;
+    }
+
+    button {
+        display: none;
+    }
+
+    .warning {
+        background: #fff5d8;
+        color: #705400;
+    }
+
+    footer {
+        color: #555;
+    }
 }
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
 <header>
-<div class="logo">VIRIFIXO</div>
-<div class="subtitle">منصة التحقق من الفيديوهات والمصادر الإعلامية</div>
-<p class="muted">Version 3.4</p>
+    <div class="logo">VIRIFIXO</div>
+
+    <div class="subtitle">
+        منصة التحقق من الفيديوهات والمصادر الإعلامية
+    </div>
+
+    <p class="muted">Version 3.5</p>
 </header>
 
-<section class="panel">
-<h2>🔎 فحص قناة YouTube</h2>
-
-<label for="channel">رابط القناة</label>
-<input id="channel" type="url"
-placeholder="https://www.youtube.com/@channel">
-
-<label for="video">رابط الفيديو</label>
-<input id="video" type="url"
-placeholder="https://www.youtube.com/watch?v=...">
-
-<button class="primary" id="verify">بدء الفحص الأولي</button>
-
-<div class="status" id="status">
-بانتظار إدخال بيانات الفيديو.
-</div>
-</section>
+<!-- VIDEO VERIFICATION -->
 
 <section class="panel">
-<h2>📁 فحص ملف فيديو</h2>
 
-<label for="file">اختر ملف الفيديو</label>
-<input id="file" type="file" accept="video/*">
+    <h2>🔎 فحص قناة أو فيديو YouTube</h2>
 
-<div id="fileInfo" class="file-info"></div>
+    <label for="channel">رابط القناة</label>
+
+    <input
+        id="channel"
+        type="url"
+        placeholder="https://www.youtube.com/@channel"
+        autocomplete="url"
+    >
+
+    <label for="video">رابط الفيديو</label>
+
+    <input
+        id="video"
+        type="url"
+        placeholder="https://www.youtube.com/watch?v=..."
+        autocomplete="url"
+    >
+
+    <p class="muted">
+        أدخل رابط القناة أو رابط الفيديو.
+        إذا أدخلت رابط فيديو، سيحاول النظام تحديد القناة الناشرة له.
+        أدخل رابطًا واحدًا فقط في كل عملية فحص.
+    </p>
+
+    <button class="primary" id="verify">
+        بدء الفحص والتحقق
+    </button>
+
+    <div
+        class="status"
+        id="status"
+        role="status"
+        aria-live="polite"
+    >
+        بانتظار إدخال بيانات الفحص.
+    </div>
+
 </section>
+
+<!-- VIDEO FILE INFORMATION -->
+
+<section class="panel">
+
+    <h2>📁 معلومات ملف الفيديو</h2>
+
+    <label for="file">اختر ملف الفيديو</label>
+
+    <input
+        id="file"
+        type="file"
+        accept="video/*"
+    >
+
+    <div id="fileInfo" class="file-info"></div>
+
+    <p class="muted">
+        هذه الوظيفة تعرض معلومات الملف فقط.
+        لم يتم تفعيل تحليل المحتوى أو كشف التلاعب في هذه المرحلة.
+    </p>
+
+</section>
+
+<!-- VERIFICATION REPORT -->
 
 <section class="panel result" id="result">
-<h2>📋 تقرير الفحص الأولي</h2>
 
-<div id="report"></div>
+    <h2>📋 تقرير Virifixo</h2>
 
-<div class="warning">
-تنبيه: هذه النتائج لا تمثل إثباتًا نهائيًا لصحة الفيديو أو زيفه.
-يلزم التحقق من المصدر الأصلي والأدلة الخارجية.
-</div>
+    <div
+        id="channelHeader"
+        class="channel-header"
+    ></div>
 
-<button class="secondary" onclick="window.print()">
-طباعة التقرير
-</button>
+    <div id="report"></div>
+
+    <div class="warning">
+        تنبيه مهني: هذا التقرير يعرض بيانات القناة التي يوفرها
+        YouTube ومصادر التاريخ المتاحة.
+        لا يمثل إثباتًا نهائيًا لأصالة الفيديو أو زيفه.
+        يجب التحقق من النسخة الأصلية وسياق النشر والأدلة المستقلة.
+    </div>
+
+    <p class="muted" id="reportTime"></p>
+
+    <button class="secondary" id="printReport">
+        طباعة التقرير
+    </button>
+
 </section>
 
+<!-- ABOUT -->
+
 <section class="panel">
-<h2>ℹ️ عن Virifixo</h2>
-<p>
-Virifixo منصة تهدف إلى مساعدة المؤسسات الإعلامية
-والصحفيين في فحص مصادر الفيديوهات، وتتبع أصلها،
-وتقييم مؤشرات المصداقية والتلاعب.
-</p>
-<p class="muted">
-الهدف هو دعم قرارات غرف الأخبار بالأدلة،
-وليس إصدار أحكام آلية غير موثقة.
-</p>
+
+    <h2>ℹ️ عن Virifixo</h2>
+
+    <p>
+        Virifixo منصة تهدف إلى مساعدة المؤسسات الإعلامية
+        والصحفيين في فحص مصادر الفيديوهات، وتتبع أصلها،
+        وتقييم مؤشرات المصداقية والتلاعب.
+    </p>
+
+    <p class="muted">
+        الهدف هو دعم قرارات غرف الأخبار بالأدلة،
+        وليس إصدار أحكام آلية غير موثقة.
+    </p>
+
 </section>
 
 <footer>
-VIRIFIXO © 2026
-<br>
-<small>Media Verification Platform</small>
+    VIRIFIXO © 2026
+    <br>
+    <small>Media Verification Platform</small>
 </footer>
 
 </div>
 
-<script>
-const channel = document.getElementById("channel");
-const video = document.getElementById("video");
-const verify = document.getElementById("verify");
-const statusBox = document.getElementById("status");
-const result = document.getElementById("result");
-const report = document.getElementById("report");
-const file = document.getElementById("file");
-const fileInfo = document.getElementById("fileInfo");
+<!-- JAVASCRIPT STARTS IN PART 3 -->
 
-function validYouTubeChannel(value){
-try{
-const u = new URL(value);
-return (
-["youtube.com","www.youtube.com","m.youtube.com"]
-.includes(u.hostname) &&
-(/^\/(@|channel\/|c\/|user\/)/.test(u.pathname))
-);
-}catch(e){return false}
-}
-
-function validYouTubeVideo(value){
-try{
-const u = new URL(value);
-return (
-(u.hostname === "youtu.be" && u.pathname.length > 1) ||
-(
-["youtube.com","www.youtube.com","m.youtube.com"]
-.includes(u.hostname) &&
-(u.pathname === "/watch" ||
-u.pathname.startsWith("/shorts/") ||
-u.pathname.startsWith("/embed/")) &&
-(u.searchParams.has("v") || u.pathname !== "/watch")
-)
-);
-}catch(e){return false}
-}
-
-verify.addEventListener("click",function(){
-
-const c = channel.value.trim();
-const v = video.value.trim();
-
-if(!c && !v){
-statusBox.textContent="أدخل رابط قناة أو رابط فيديو للبدء.";
-return;
-}
-
-if(c && !validYouTubeChannel(c)){
-statusBox.textContent="رابط القناة غير صالح أو غير معروف.";
-return;
-}
-
-if(v && !validYouTubeVideo(v)){
-statusBox.textContent="رابط الفيديو غير صالح أو غير معروف.";
-return;
-}
-
-verify.disabled=true;
-statusBox.textContent="تم فحص صيغة الروابط بنجاح.";
-
-const checks=[
-["صيغة رابط القناة",c?"صالح مبدئيًا":"لم يتم تقديم رابط قناة"],
-["صيغة رابط الفيديو",v?"صالح مبدئيًا":"لم يتم تقديم رابط فيديو"],
-["مصدر النشر","يحتاج إلى تحقق خارجي"],
-["تاريخ النشر الأصلي","لم يتم التحقق منه"],
-["البحث عن النسخة الأصلية","لم يتم تنفيذه بعد"],
-["مؤشرات التلاعب","لم يتم تحليلها بعد"]
-];
-
-report.innerHTML="";
-
-checks.forEach(function(item){
-const div=document.createElement("div");
-div.className="item";
-const strong=document.createElement("strong");
-strong.textContent=item[0]+": ";
-const span=document.createElement("span");
-span.textContent=item[1];
-div.appendChild(strong);
-div.appendChild(span);
-report.appendChild(div);
-});
-
-const note=document.createElement("p");
-note.className="muted";
-note.textContent="حالة التقرير: فحص أولي لصيغة المدخلات فقط.";
-report.appendChild(note);
-
-result.style.display="block";
-verify.disabled=false;
-result.scrollIntoView({behavior:"smooth"});
-
-});
-
-file.addEventListener("change",function(){
-
-const selected=file.files[0];
-fileInfo.textContent="";
-
-if(!selected)return;
-
-if(!selected.type.startsWith("video/")){
-fileInfo.textContent="الملف المحدد ليس ملف فيديو.";
-file.value="";
-return;
-}
-
-const size=(selected.size/1024/1024).toFixed(2);
-
-fileInfo.textContent=
-"اسم الملف: "+selected.name+
-" | الحجم: "+size+" MB"+
-" | النوع: "+selected.type;
-
-});
-
-</script>
-</body>
-</html>
+رسل الدفعة الثالثة
