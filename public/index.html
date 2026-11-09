@@ -1,53 +1,286 @@
-HTML
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#101827">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101827">
+<title>Virifixo 3.4 - Video Verification</title>
+<meta name="description" content="Virifixo - منصة التحقق من مصادر الفيديوهات ومصداقيتها">
 
-    <title>Virifixo 3.4 - YouTube Channel Verification</title>
+<style>
+*{box-sizing:border-box}
+:root{
+--bg:#101827;
+--panel:#1b2638;
+--border:#344258;
+--blue:#2879e8;
+--light:#65a9ff;
+--text:#fff;
+--muted:#aab7ca;
+--green:#4ade80;
+--red:#ff7777;
+}
+body{
+margin:0;padding:20px;
+min-height:100vh;
+background:var(--bg);
+color:var(--text);
+font-family:Arial,sans-serif;
+}
+.container{max-width:850px;margin:25px auto}
+header{text-align:center;margin-bottom:30px}
+.logo{font-size:38px;font-weight:bold;color:var(--light)}
+.subtitle{color:var(--muted);font-size:15px}
+.panel{
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:15px;
+padding:25px;
+margin-bottom:20px;
+}
+h2{font-size:20px;margin-top:0}
+label{display:block;margin:18px 0 8px;font-weight:bold}
+input,textarea{
+width:100%;padding:14px;
+background:var(--bg);
+border:1px solid var(--border);
+border-radius:8px;
+color:white;font-size:15px;
+}
+input:focus,textarea:focus{
+outline:2px solid var(--blue);
+}
+button{
+border:0;border-radius:8px;
+padding:13px 20px;
+background:var(--blue);
+color:white;font-size:16px;
+font-weight:bold;cursor:pointer;
+}
+button:hover{background:#1764cb}
+button:disabled{opacity:.5;cursor:wait}
+.primary{width:100%;margin-top:20px}
+.secondary{background:#344258}
+.status{
+padding:15px;border-radius:8px;
+background:var(--bg);
+margin-top:15px;color:var(--muted);
+}
+.result{display:none}
+.result h3{color:var(--light)}
+.item{
+padding:12px;margin:10px 0;
+background:var(--bg);
+border-radius:8px;
+border-right:3px solid var(--blue);
+}
+.muted{color:var(--muted);font-size:13px}
+.warning{
+color:#ffd166;
+background:#42371f;
+padding:12px;border-radius:8px;
+margin-top:15px;
+}
+footer{text-align:center;color:var(--muted);padding:25px}
+.file-info{margin-top:10px;color:var(--green)}
+@media(max-width:600px){
+body{padding:12px}
+.panel{padding:17px}
+.logo{font-size:30px}
+}
+</style>
+</head>
 
-    <meta name="description" content="Virifixo - YouTube Channel and Video Verification Tool.">
+<body>
+<div class="container">
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<header>
+<div class="logo">VIRIFIXO</div>
+<div class="subtitle">منصة التحقق من الفيديوهات والمصادر الإعلامية</div>
+<p class="muted">Version 3.4</p>
+</header>
 
-        :root {
-            --background: #101827;
-            --panel: #1b2638;
-            --panel-dark: #101827;
-            --border: #344258;
-            --blue: #2879e8;
-            --blue-light: #65a9ff;
-            --text: #ffffff;
-            --muted: #aab7ca;
-            --success: #4ade80;
-            --error: #ff7777;
-        }
+<section class="panel">
+<h2>🔎 فحص قناة YouTube</h2>
 
-        body {
-            margin: 0;
-            padding: 25px 15px;
-            min-height: 100vh;
-            background: var(--background);
-            color: var(--text);
-            font-family: Arial, sans-serif;
-        }
+<label for="channel">رابط القناة</label>
+<input id="channel" type="url"
+placeholder="https://www.youtube.com/@channel">
 
-        .container {
-            width: 100%;
-            max-width: 680px;
-            margin: 35px auto;
-            padding: 28px;
-            background: var(--panel);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 15px 45px rgba(0,0,0,.2);
-        }
+<label for="video">رابط الفيديو</label>
+<input id="video" type="url"
+placeholder="https://www.youtube.com/watch?v=...">
 
-        .header {
-            text-align: center;
-            margin-bottom: 30
+<button class="primary" id="verify">بدء الفحص الأولي</button>
+
+<div class="status" id="status">
+بانتظار إدخال بيانات الفيديو.
+</div>
+</section>
+
+<section class="panel">
+<h2>📁 فحص ملف فيديو</h2>
+
+<label for="file">اختر ملف الفيديو</label>
+<input id="file" type="file" accept="video/*">
+
+<div id="fileInfo" class="file-info"></div>
+</section>
+
+<section class="panel result" id="result">
+<h2>📋 تقرير الفحص الأولي</h2>
+
+<div id="report"></div>
+
+<div class="warning">
+تنبيه: هذه النتائج لا تمثل إثباتًا نهائيًا لصحة الفيديو أو زيفه.
+يلزم التحقق من المصدر الأصلي والأدلة الخارجية.
+</div>
+
+<button class="secondary" onclick="window.print()">
+طباعة التقرير
+</button>
+</section>
+
+<section class="panel">
+<h2>ℹ️ عن Virifixo</h2>
+<p>
+Virifixo منصة تهدف إلى مساعدة المؤسسات الإعلامية
+والصحفيين في فحص مصادر الفيديوهات، وتتبع أصلها،
+وتقييم مؤشرات المصداقية والتلاعب.
+</p>
+<p class="muted">
+الهدف هو دعم قرارات غرف الأخبار بالأدلة،
+وليس إصدار أحكام آلية غير موثقة.
+</p>
+</section>
+
+<footer>
+VIRIFIXO © 2026
+<br>
+<small>Media Verification Platform</small>
+</footer>
+
+</div>
+
+<script>
+const channel = document.getElementById("channel");
+const video = document.getElementById("video");
+const verify = document.getElementById("verify");
+const statusBox = document.getElementById("status");
+const result = document.getElementById("result");
+const report = document.getElementById("report");
+const file = document.getElementById("file");
+const fileInfo = document.getElementById("fileInfo");
+
+function validYouTubeChannel(value){
+try{
+const u = new URL(value);
+return (
+["youtube.com","www.youtube.com","m.youtube.com"]
+.includes(u.hostname) &&
+(/^\/(@|channel\/|c\/|user\/)/.test(u.pathname))
+);
+}catch(e){return false}
+}
+
+function validYouTubeVideo(value){
+try{
+const u = new URL(value);
+return (
+(u.hostname === "youtu.be" && u.pathname.length > 1) ||
+(
+["youtube.com","www.youtube.com","m.youtube.com"]
+.includes(u.hostname) &&
+(u.pathname === "/watch" ||
+u.pathname.startsWith("/shorts/") ||
+u.pathname.startsWith("/embed/")) &&
+(u.searchParams.has("v") || u.pathname !== "/watch")
+)
+);
+}catch(e){return false}
+}
+
+verify.addEventListener("click",function(){
+
+const c = channel.value.trim();
+const v = video.value.trim();
+
+if(!c && !v){
+statusBox.textContent="أدخل رابط قناة أو رابط فيديو للبدء.";
+return;
+}
+
+if(c && !validYouTubeChannel(c)){
+statusBox.textContent="رابط القناة غير صالح أو غير معروف.";
+return;
+}
+
+if(v && !validYouTubeVideo(v)){
+statusBox.textContent="رابط الفيديو غير صالح أو غير معروف.";
+return;
+}
+
+verify.disabled=true;
+statusBox.textContent="تم فحص صيغة الروابط بنجاح.";
+
+const checks=[
+["صيغة رابط القناة",c?"صالح مبدئيًا":"لم يتم تقديم رابط قناة"],
+["صيغة رابط الفيديو",v?"صالح مبدئيًا":"لم يتم تقديم رابط فيديو"],
+["مصدر النشر","يحتاج إلى تحقق خارجي"],
+["تاريخ النشر الأصلي","لم يتم التحقق منه"],
+["البحث عن النسخة الأصلية","لم يتم تنفيذه بعد"],
+["مؤشرات التلاعب","لم يتم تحليلها بعد"]
+];
+
+report.innerHTML="";
+
+checks.forEach(function(item){
+const div=document.createElement("div");
+div.className="item";
+const strong=document.createElement("strong");
+strong.textContent=item[0]+": ";
+const span=document.createElement("span");
+span.textContent=item[1];
+div.appendChild(strong);
+div.appendChild(span);
+report.appendChild(div);
+});
+
+const note=document.createElement("p");
+note.className="muted";
+note.textContent="حالة التقرير: فحص أولي لصيغة المدخلات فقط.";
+report.appendChild(note);
+
+result.style.display="block";
+verify.disabled=false;
+result.scrollIntoView({behavior:"smooth"});
+
+});
+
+file.addEventListener("change",function(){
+
+const selected=file.files[0];
+fileInfo.textContent="";
+
+if(!selected)return;
+
+if(!selected.type.startsWith("video/")){
+fileInfo.textContent="الملف المحدد ليس ملف فيديو.";
+file.value="";
+return;
+}
+
+const size=(selected.size/1024/1024).toFixed(2);
+
+fileInfo.textContent=
+"اسم الملف: "+selected.name+
+" | الحجم: "+size+" MB"+
+" | النوع: "+selected.type;
+
+});
+
+</script>
+</body>
+</html>
