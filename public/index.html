@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -12,287 +11,286 @@
 <script defer src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
 
 <style>
-:root{
---bg:#0b1220;
---panel:#141f31;
---panel2:#101a2b;
---border:#293b54;
---blue:#3185f5;
---light:#79b6ff;
---text:#f4f7fc;
---muted:#a6b5ca;
---green:#45dc91;
---red:#ff737d;
---gold:#ffd166;
---radius:15px;
+:root {
+  --bg:#0b1220;
+  --panel:#141f31;
+  --panel2:#101a2b;
+  --border:#293b54;
+  --blue:#3185f5;
+  --light:#79b6ff;
+  --text:#f4f7fc;
+  --muted:#a6b5ca;
+  --green:#45dc91;
+  --red:#ff737d;
+  --gold:#ffd166;
+  --radius:15px;
 }
 
-*{box-sizing:border-box}
+* { box-sizing:border-box; }
 
-html{scroll-behavior:smooth}
+html { scroll-behavior:smooth; }
 
-body{
-margin:0;
-padding:16px;
-min-height:100vh;
-background:radial-gradient(ellipse at top,#172944 0%,var(--bg) 55%);
-color:var(--text);
-font-family:Arial,Tahoma,sans-serif;
-line-height:1.7;
+body {
+  margin:0;
+  padding:16px;
+  min-height:100vh;
+  background:radial-gradient(ellipse at top,#172944 0%,var(--bg) 55%);
+  color:var(--text);
+  font-family:Arial,Tahoma,sans-serif;
+  line-height:1.7;
 }
 
-button,input{font:inherit}
+button,input { font:inherit; }
 
-button{
-border:0;
-border-radius:9px;
-padding:12px 18px;
-background:var(--blue);
-color:white;
-font-weight:bold;
-cursor:pointer;
-transition:.2s;
+button {
+  border:0;
+  border-radius:9px;
+  padding:12px 18px;
+  background:var(--blue);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
 }
 
-button:hover{filter:brightness(1.12)}
-button:disabled{opacity:.5;cursor:wait}
+button:hover { filter:brightness(1.12); }
+button:disabled { opacity:.5; cursor:wait; }
 
 button:focus-visible,
 input:focus-visible,
-a:focus-visible{
-outline:2px solid var(--light);
-outline-offset:3px;
+a:focus-visible {
+  outline:2px solid var(--light);
+  outline-offset:3px;
 }
 
-.container{
-width:100%;
-max-width:1050px;
-margin:20px auto;
+.container {
+  width:100%;
+  max-width:1050px;
+  margin:20px auto;
 }
 
-header{
-text-align:center;
-margin:20px 0 30px;
+header {
+  text-align:center;
+  margin:20px 0 30px;
 }
 
-.logo{
-font-size:43px;
-font-weight:900;
-letter-spacing:3px;
-color:var(--light);
-text-shadow:0 0 24px #3185f544;
+.logo {
+  font-size:43px;
+  font-weight:900;
+  letter-spacing:3px;
+  color:var(--light);
+  text-shadow:0 0 24px #3185f544;
 }
 
-.subtitle,.muted{
-color:var(--muted);
-line-height:1.9;
+.subtitle,.muted {
+  color:var(--muted);
+  line-height:1.9;
 }
 
-.version{
-display:inline-block;
-padding:4px 12px;
-border:1px solid var(--border);
-border-radius:20px;
-font-size:12px;
-color:var(--light);
+.version {
+  display:inline-block;
+  padding:4px 12px;
+  border:1px solid var(--border);
+  border-radius:20px;
+  font-size:12px;
+  color:var(--light);
 }
 
-.panel{
-background:linear-gradient(145deg,var(--panel),#121c2c);
-border:1px solid var(--border);
-border-radius:var(--radius);
-padding:22px;
-margin-bottom:18px;
-box-shadow:0 10px 35px #0002;
+.panel {
+  background:linear-gradient(145deg,var(--panel),#121c2c);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 10px 35px #0002;
 }
 
-h2{font-size:19px;margin:0 0 16px}
-h3{font-size:16px}
+h2 { font-size:19px; margin:0 0 16px; }
+h3 { font-size:16px; }
 
-label{
-display:block;
-margin:15px 0 7px;
-font-weight:bold;
+label {
+  display:block;
+  margin:15px 0 7px;
+  font-weight:bold;
 }
 
 input[type="url"],
-input[type="file"]{
-width:100%;
-padding:13px;
-background:var(--panel2);
-border:1px solid var(--border);
-border-radius:9px;
-color:white;
-font-size:14px;
+input[type="file"] {
+  width:100%;
+  padding:13px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:9px;
+  color:white;
+  font-size:14px;
 }
 
-input[type="file"]{cursor:pointer}
+input[type="file"] { cursor:pointer; }
 
-.primary{
-width:100%;
-margin-top:18px;
-min-height:48px;
+.primary {
+  width:100%;
+  margin-top:18px;
+  min-height:48px;
 }
 
-.secondary{
-background:#344762;
-margin:5px;
+.secondary {
+  background:#344762;
+  margin:5px;
 }
 
-.status{
-padding:13px;
-border-radius:9px;
-background:var(--panel2);
-border:1px solid var(--border);
-margin-top:15px;
-color:var(--muted);
-overflow-wrap:anywhere;
-line-height:1.9;
+.status {
+  padding:13px;
+  border-radius:9px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  margin-top:15px;
+  color:var(--muted);
+  overflow-wrap:anywhere;
+  line-height:1.9;
 }
 
-.success{color:var(--green)}
-.error{color:var(--red)}
-.loading{color:var(--gold)}
+.success { color:var(--green); }
+.error { color:var(--red); }
+.loading { color:var(--gold); }
 
-.result{display:none}
+.result { display:none; }
 
-.item{
-padding:12px;
-margin:9px 0;
-background:var(--panel2);
-border:1px solid #263851;
-border-right:3px solid var(--blue);
-border-radius:8px;
-line-height:1.9;
-overflow-wrap:anywhere;
-white-space:pre-wrap;
+.item {
+  padding:12px;
+  margin:9px 0;
+  background:var(--panel2);
+  border:1px solid #263851;
+  border-right:3px solid var(--blue);
+  border-radius:8px;
+  line-height:1.9;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
 }
 
-.item strong{color:var(--light)}
+.item strong { color:var(--light); }
 
-.warning{
-color:var(--gold);
-background:#42371f;
-border:1px solid #725c2a;
-padding:14px;
-border-radius:9px;
-margin-top:17px;
-line-height:1.9;
+.warning {
+  color:var(--gold);
+  background:#42371f;
+  border:1px solid #725c2a;
+  padding:14px;
+  border-radius:9px;
+  margin-top:17px;
+  line-height:1.9;
 }
 
-.channel-header{
-display:flex;
-align-items:center;
-gap:15px;
-margin-bottom:18px;
-overflow-wrap:anywhere;
+.channel-header {
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+  overflow-wrap:anywhere;
 }
 
-.channel-header img{
-width:78px;
-height:78px;
-border-radius:50%;
-object-fit:cover;
-border:2px solid var(--blue);
-background:var(--panel2);
+.channel-header img {
+  width:78px;
+  height:78px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid var(--blue);
+  background:var(--panel2);
 }
 
-.channel-link{
-color:var(--light);
-text-decoration:none;
+.channel-link {
+  color:var(--light);
+  text-decoration:none;
 }
 
-.preview{
-display:none;
-width:100%;
-max-height:420px;
-object-fit:contain;
-background:#080d16;
-border-radius:10px;
-margin-top:15px;
+.preview {
+  display:none;
+  width:100%;
+  max-height:420px;
+  object-fit:contain;
+  background:#080d16;
+  border-radius:10px;
+  margin-top:15px;
 }
 
-.frame-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(125px,1fr));
-gap:12px;
-margin-top:15px;
+.frame-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(125px,1fr));
+  gap:12px;
+  margin-top:15px;
 }
 
-.frame-card{
-background:var(--panel2);
-padding:7px;
-border-radius:9px;
-border:1px solid var(--border);
+.frame-card {
+  background:var(--panel2);
+  padding:7px;
+  border-radius:9px;
+  border:1px solid var(--border);
 }
 
-.frame-card img{
-display:block;
-width:100%;
-border-radius:6px;
+.frame-card img {
+  display:block;
+  width:100%;
+  border-radius:6px;
 }
 
-.frame-card small{
-display:block;
-color:var(--muted);
-text-align:center;
-margin-top:5px;
+.frame-card small {
+  display:block;
+  color:var(--muted);
+  text-align:center;
+  margin-top:5px;
 }
 
-.section-title{
-color:var(--light);
-border-bottom:1px solid var(--border);
-padding-bottom:10px;
-margin-top:25px;
+.actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:15px;
 }
 
-.actions{
-display:flex;
-flex-wrap:wrap;
-gap:8px;
-margin-top:15px;
+.actions button { flex:1; }
+
+footer {
+  text-align:center;
+  color:var(--muted);
+  padding:25px;
+  font-size:13px;
 }
 
-.actions button{flex:1}
+.hidden { display:none!important; }
 
-footer{
-text-align:center;
-color:var(--muted);
-padding:25px;
-font-size:13px;
+@media(max-width:600px) {
+  body { padding:9px; }
+  .panel { padding:15px; }
+  .logo { font-size:34px; }
+  .channel-header { align-items:flex-start; }
+  .channel-header img { width:62px; height:62px; }
+  .actions { flex-direction:column; }
+  .actions button { width:100%; margin:0; }
 }
 
-.hidden{display:none!important}
-
-@media(max-width:600px){
-body{padding:9px}
-.panel{padding:15px}
-.logo{font-size:34px}
-.channel-header{align-items:flex-start}
-.channel-header img{width:62px;height:62px}
-.actions{flex-direction:column}
-.actions button{width:100%;margin:0}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    scroll-behavior:auto!important;
+    transition:none!important;
+  }
 }
 
-@media(prefers-reduced-motion:reduce){
-*,*::before,*::after{
-scroll-behavior:auto!important;
-transition:none!important;
-}
-}
-
-@media print{
-body{background:white;color:#111;padding:0}
-.container{max-width:100%;margin:0}
-.panel{background:white;color:#111;border:1px solid #ccc;box-shadow:none;break-inside:avoid}
-.item{background:#f5f5f5;color:#111;border-color:#ddd}
-.item strong{color:#174b85}
-.muted,.subtitle,footer{color:#555}
-button,.no-print{display:none!important}
-.warning{background:#fff5d8;color:#705400;border:1px solid #ddd}
-.status{background:#f5f5f5;color:#333}
-.result{display:block!important}
-a{color:#174b85}
+@media print {
+  body { background:white; color:#111; padding:0; }
+  .container { max-width:100%; margin:0; }
+  .panel {
+    background:white;
+    color:#111;
+    border:1px solid #ccc;
+    box-shadow:none;
+    break-inside:avoid;
+  }
+  .item { background:#f5f5f5; color:#111; border-color:#ddd; }
+  .item strong { color:#174b85; }
+  .muted,.subtitle,footer { color:#555; }
+  button,.no-print { display:none!important; }
+  .warning { background:#fff5d8; color:#705400; border:1px solid #ddd; }
+  .status { background:#f5f5f5; color:#333; }
+  .result { display:block!important; }
+  a { color:#174b85; }
 }
 </style>
 </head>
@@ -301,1335 +299,124 @@ a{color:#174b85}
 <div class="container">
 
 <header>
-<div class="logo">VIRIFIXO</div>
-<div class="subtitle">
-منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
-</div>
-<p class="version">VERSION 4.2 · ADVANCED MEDIA VERIFICATION</p>
+  <div class="logo">VIRIFIXO</div>
+  <div class="subtitle">
+    منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
+  </div>
+  <p class="version">VERSION 4.2 · ADVANCED MEDIA VERIFICATION</p>
 </header>
 
 <section class="panel">
-<h2>🔎 فحص قناة أو فيديو YouTube</h2>
+  <h2>🔎 فحص قناة أو فيديو YouTube</h2>
 
-<label for="channel">رابط القناة</label>
-<input id="channel" type="url"
-placeholder="https://www.youtube.com/@channel"
-autocomplete="url">
+  <label for="channel">رابط القناة</label>
+  <input id="channel" type="url"
+    placeholder="https://www.youtube.com/@channel"
+    autocomplete="url">
 
-<label for="video">رابط الفيديو</label>
-<input id="video" type="url"
-placeholder="https://www.youtube.com/watch?v=..."
-autocomplete="url">
+  <label for="video">رابط الفيديو</label>
+  <input id="video" type="url"
+    placeholder="https://www.youtube.com/watch?v=..."
+    autocomplete="url">
 
-<p class="muted">
-أدخل رابط قناة أو فيديو واحداً فقط.
-يتم جلب البيانات من خلال خادم VIRIFIXO.
-لا يُطلب منك إدخال مفتاح YouTube API.
-</p>
+  <p class="muted">
+    أدخل رابط قناة أو فيديو واحداً فقط.
+    يتم جلب البيانات من خلال خادم VIRIFIXO.
+    لا يُطلب منك إدخال مفتاح YouTube API.
+  </p>
 
-<button class="primary" id="verify" type="button">
-بدء الفحص والتحقق
-</button>
+  <button class="primary" id="verify" type="button">
+    بدء الفحص والتحقق
+  </button>
 
-<div class="status" id="status" role="status" aria-live="polite">
-VIRIFIXO 4.2 جاهز لاستقبال طلب الفحص.
-</div>
+  <div class="status" id="status" role="status" aria-live="polite">
+    VIRIFIXO 4.2 جاهز لاستقبال طلب الفحص.
+  </div>
 </section>
 
 <section class="panel">
-<h2>📁 تحليل ملف فيديو أو صورة</h2>
+  <h2>📁 تحليل ملف فيديو أو صورة</h2>
 
-<label for="file">اختر ملفاً من جهازك</label>
-<input id="file" type="file"
-accept="video/*,image/jpeg,image/png,image/webp">
+  <label for="file">اختر ملفاً من جهازك</label>
+  <input id="file" type="file"
+    accept="video/*,image/jpeg,image/png,image/webp">
 
-<p class="muted">
-تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
-لا يتم رفع الملف إلى الخادم بواسطة هذه الصفحة.
-</p>
+  <p class="muted">
+    تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
+    لا يتم رفع الملف إلى الخادم بواسطة هذه الصفحة.
+  </p>
 
-<div id="fileInfo" class="status">
-لم يتم اختيار ملف.
-</div>
+  <div id="fileInfo" class="status">
+    لم يتم اختيار ملف.
+  </div>
 
-<video id="videoPreview" class="preview"
-controls playsinline preload="metadata"></video>
+  <video id="videoPreview" class="preview"
+    controls playsinline preload="metadata"></video>
 
-<img id="imagePreview" class="preview" alt="معاينة الصورة">
+  <img id="imagePreview" class="preview" alt="معاينة الصورة">
 
-<div id="frameSection" class="hidden">
-<h3>🎞️ استخراج إطارات الفيديو</h3>
-<p class="muted">
-استخراج عينات مرئية من الفيديو للمراجعة البشرية.
-</p>
-<div id="frames" class="frame-grid"></div>
-<button id="captureFrames" class="secondary" type="button">
-استخراج الإطارات
-</button>
-</div>
+  <div id="frameSection" class="hidden">
+    <h3>🎞️ استخراج إطارات الفيديو</h3>
+    <p class="muted">
+      استخراج عينات مرئية من الفيديو للمراجعة البشرية.
+    </p>
+    <div id="frames" class="frame-grid"></div>
+    <button id="captureFrames" class="secondary" type="button">
+      استخراج الإطارات
+    </button>
+  </div>
 </section>
 
 <section class="panel">
-<h2>🔬 تحليل البيانات الوصفية EXIF</h2>
-<p class="muted">
-فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
-إذا كانت هذه البيانات موجودة داخل الصورة.
-</p>
-<div id="exifInfo" class="status">
-بانتظار اختيار صورة.
-</div>
+  <h2>🔬 تحليل البيانات الوصفية EXIF</h2>
+  <p class="muted">
+    فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
+    إذا كانت هذه البيانات موجودة داخل الصورة.
+  </p>
+  <div id="exifInfo" class="status">
+    بانتظار اختيار صورة.
+  </div>
 </section>
 
 <section class="panel result" id="result">
-<h2>📋 تقرير VIRIFIXO</h2>
+  <h2>📋 تقرير VIRIFIXO</h2>
+  <div id="channelHeader" class="channel-header"></div>
+  <div id="report"></div>
 
-<div id="channelHeader" class="channel-header"></div>
-<div id="report"></div>
+  <div class="warning">
+    تنبيه مهني: جلب بيانات المنصة أو وجود بيانات EXIF
+    لا يثبتان وحدهما أصالة المحتوى. كما أن غياب البيانات الوصفية
+    لا يعني بالضرورة أن الصورة مزيفة.
+  </div>
 
-<div class="warning">
-تنبيه مهني: جلب بيانات المنصة أو وجود بيانات EXIF
-لا يثبتان وحدهما أصالة المحتوى. كما أن غياب البيانات الوصفية
-لا يعني بالضرورة أن الصورة مزيفة. يتطلب التحقق النهائي
-مقارنة المصادر والسياق والأدلة المستقلة.
-</div>
+  <p class="muted" id="reportTime"></p>
 
-<p class="muted" id="reportTime"></p>
-
-<div class="actions no-print">
-<button class="secondary" id="printReport" type="button">
-طباعة التقرير
-</button>
-<button class="secondary" id="reset" type="button">
-بدء فحص جديد
-</button>
-</div>
+  <div class="actions no-print">
+    <button class="secondary" id="printReport" type="button">
+      طباعة التقرير
+    </button>
+    <button class="secondary" id="reset" type="button">
+      بدء فحص جديد
+    </button>
+  </div>
 </section>
 
 <section class="panel">
-<h2>ℹ️ عن VIRIFIXO</h2>
-<p>
-VIRIFIXO منصة مساعدة للتحقق الإعلامي والتحليل الرقمي،
-تهدف إلى مساعدة الصحفيين والمؤسسات الإعلامية على جمع
-المؤشرات المتعلقة بمصادر الصور والفيديوهات ومراجعتها.
-</p>
-<p class="muted">
-النتائج مؤشرات مساعدة وليست حكماً آلياً نهائياً على المصداقية.
-</p>
+  <h2>ℹ️ عن VIRIFIXO</h2>
+  <p>
+    VIRIFIXO منصة مساعدة للتحقق الإعلامي والتحليل الرقمي،
+    تهدف إلى مساعدة الصحفيين والمؤسسات الإعلامية على جمع
+    المؤشرات المتعلقة بمصادر الصور والفيديوهات ومراجعتها.
+  </p>
+  <p class="muted">
+    النتائج مؤشرات مساعدة وليست حكماً آلياً نهائياً على المصداقية.
+  </p>
 </section>
 
 <footer>
-VIRIFIXO © 2026
-<br>
-Advanced Media Verification · Version 4.2
+  VIRIFIXO © 2026
+  <br>
+  Advanced Media Verification · Version 4.2
 </footer>
 
 </div>
-
-<script>
-"use strict";
-
-/* =========================================
-   VIRIFIXO 4.2 - CORE CONFIGURATION
-========================================= */
-
-const API_BASE =
-"https://virifixo-api.ashrafhanfy1988.workers.dev";
-
-const MAX_FILE_SIZE = 200 * 1024 * 1024;
-const MAX_FRAME_COUNT = 5;
-
-const $ = id => document.getElementById(id);
-
-const statusBox = $("status");
-const resultBox = $("result");
-
-let currentObjectURL = null;
-let currentVideoFile = null;
-let currentImageFile = null;
-let activeFile = null;
-let scanSequence = 0;
-
-function setStatus(message,type=""){
-statusBox.className = "status " + type;
-statusBox.textContent = message;
-}
-
-function addItem(label,value){
-const div = document.createElement("div");
-div.className = "item";
-
-const strong = document.createElement("strong");
-strong.textContent = label + " : ";
-
-const span = document.createElement("span");
-span.textContent =
-value === undefined || value === null || value === ""
-? "غير متوفر"
-: String(value);
-
-div.append(strong,span);
-$("report").appendChild(div);
-}
-
-function safeDate(value){
-if(!value) return "غير متوفر";
-const date = new Date(value);
-return Number.isNaN(date.getTime())
-? String(value)
-: date.toLocaleString("ar");
-}
-
-function formatBytes(bytes){
-if(!Number.isFinite(bytes)) return "غير متوفر";
-if(bytes < 1024) return bytes + " بايت";
-if(bytes < 1024*1024) return (bytes/1024).toFixed(2)+" KB";
-if(bytes < 1024*1024*1024) return (bytes/1024/1024).toFixed(2)+" MB";
-return (bytes/1024/1024/1024).toFixed(2)+" GB";
-}
-
-/* =========================================
-   YOUTUBE URL VALIDATION
-========================================= */
-
-function parseYouTubeURL(value){
-try{
-const url = new URL(value);
-const host = url.hostname.toLowerCase();
-
-const allowedHosts = [
-"youtube.com",
-"www.youtube.com",
-"m.youtube.com",
-"youtu.be",
-"www.youtu.be"
-];
-
-if(!allowedHosts.includes(host)) return null;
-if(url.protocol !== "https:" && url.protocol !== "http:") return null;
-
-const parts = url.pathname.split("/").filter(Boolean);
-
-if(host.includes("youtu.be")){
-return {
-type:"video",
-id:parts[0] || null
-};
-}
-
-if(url.pathname === "/watch"){
-return {
-type:"video",
-id:url.searchParams.get("v")
-};
-}
-
-if(["shorts","embed","live"].includes(parts[0])){
-return {
-type:"video",
-id:parts[1] || null
-};
-}
-
-if(parts[0] === "channel" && parts[1]){
-return {
-type:"channel",
-id:parts[1]
-};
-}
-
-if(parts[0]?.startsWith("@")){
-return {
-type:"handle",
-handle:parts[0].slice(1)
-};
-}
-
-if(parts[0] === "user" && parts[1]){
-return {
-type:"username",
-username:parts[1]
-};
-}
-
-return null;
-
-}catch{
-return null;
-}
-
-}
-
-function validateVideoId(id){
-return typeof id === "string" &&
-/^[a-zA-Z0-9_-]{11}$/.test(id);
-}
-
-/* =========================================
-   YOUTUBE API CONNECTION
-========================================= */
-
-async function apiRequest(endpoint,params,signal){
-
-const allowedEndpoints = ["videos","channels"];
-
-if(!allowedEndpoints.includes(endpoint)){
-throw new Error("طلب API غير مسموح.");
-}
-
-const url = new URL(
-API_BASE + "/youtube/v3/" + endpoint
-);
-
-Object.entries(params).forEach(([key,value])=>{
-if(value !== null && value !== undefined){
-url.searchParams.set(key,String(value));
-}
-});
-
-const response = await fetch(url.toString(),{
-method:"GET",
-headers:{"Accept":"application/json"},
-signal
-});
-
-let data;
-
-try{
-data = await response.json();
-}catch{
-throw new Error("تعذر قراءة استجابة خادم VIRIFIXO.");
-}
-
-if(!response.ok){
-
-const reason = data.error?.errors?.[0]?.reason;
-const message = data.error?.message || "";
-
-if(reason === "quotaExceeded"){
-throw new Error("تم استنفاد حصة استخدام YouTube API.");
-}
-
-if(reason === "keyInvalid"){
-throw new Error("مفتاح YouTube API المخزن في الخادم غير صالح.");
-}
-
-if(response.status === 429){
-throw new Error("عدد الطلبات كبير. يرجى الانتظار ثم إعادة المحاولة.");
-}
-
-if(response.status === 403 && message === "Origin not allowed"){
-throw new Error("مصدر الموقع غير مسموح به في الخادم.");
-}
-
-throw new Error(message || "فشل الاتصال بخدمة YouTube.");
-}
-
-return data;
-}
-</script>
-
-/* =========================================
-   CHANNEL DATA RETRIEVAL
-========================================= */
-
-async function getChannel(id,handle,username,signal){
-
-const params = {
-part:"snippet,statistics,contentDetails"
-};
-
-if(id){
-params.id = id;
-}else if(handle){
-params.forHandle = handle;
-}else if(username){
-throw new Error(
-"روابط أسماء المستخدمين القديمة تحتاج إلى دعم إضافي في الخادم."
-);
-}else{
-throw new Error("لم يتم تحديد معرف القناة.");
-}
-
-const data = await apiRequest("channels",params,signal);
-
-if(data.items?.length){
-return data.items[0];
-}
-
-throw new Error("تعذر العثور على القناة أو أنها غير متاحة.");
-}
-
-/* =========================================
-   CHANNEL PRESENTATION
-========================================= */
-
-function renderChannel(channel){
-
-const header = $("channelHeader");
-header.replaceChildren();
-
-const imageURL =
-channel.snippet?.thumbnails?.medium?.url ||
-channel.snippet?.thumbnails?.default?.url;
-
-if(imageURL){
-
-const image = document.createElement("img");
-
-image.src = imageURL;
-image.alt = "صورة القناة";
-image.loading = "lazy";
-image.referrerPolicy = "no-referrer";
-
-image.onerror = ()=>{
-image.remove();
-};
-
-header.appendChild(image);
-}
-
-const info = document.createElement("div");
-
-const name = document.createElement("h3");
-name.textContent =
-channel.snippet?.title || "اسم القناة غير متوفر";
-
-const link = document.createElement("a");
-
-link.className = "channel-link";
-link.href =
-"https://www.youtube.com/channel/" +
-encodeURIComponent(channel.id);
-
-link.target = "_blank";
-link.rel = "noopener noreferrer";
-link.textContent = "فتح القناة على YouTube";
-
-info.append(name,link);
-header.appendChild(info);
-}
-
-/* =========================================
-   CHANNEL REPORT
-========================================= */
-
-function renderChannelReport(channel){
-
-const snippet = channel.snippet || {};
-const stats = channel.statistics || {};
-
-addItem("نوع الفحص","تحليل بيانات قناة YouTube");
-addItem("اسم القناة",snippet.title);
-addItem("معرف القناة",channel.id);
-addItem("تاريخ إنشاء القناة",safeDate(snippet.publishedAt));
-
-addItem(
-"عدد المشتركين",
-stats.hiddenSubscriberCount
-? "عدد المشتركين مخفي"
-: stats.subscriberCount
-);
-
-addItem("إجمالي المشاهدات",stats.viewCount);
-addItem("عدد الفيديوهات",stats.videoCount);
-addItem("بلد القناة",snippet.country);
-addItem("وصف القناة",snippet.description);
-
-addItem(
-"حالة البيانات",
-"تم استلام بيانات القناة من YouTube Data API"
-);
-}
-
-/* =========================================
-   VIDEO REPORT
-========================================= */
-
-function renderVideoReport(video){
-
-const snippet = video.snippet || {};
-const stats = video.statistics || {};
-const state = video.status || {};
-
-addItem("عنوان الفيديو",snippet.title);
-addItem("معرف الفيديو",video.id);
-addItem("تاريخ النشر",safeDate(snippet.publishedAt));
-addItem("اسم القناة الناشرة",snippet.channelTitle);
-addItem("معرف القناة الناشرة",snippet.channelId);
-
-addItem("عدد المشاهدات",stats.viewCount);
-addItem("عدد الإعجابات",stats.likeCount);
-addItem("عدد التعليقات",stats.commentCount);
-
-addItem("حالة الخصوصية",state.privacyStatus);
-addItem("وصف الفيديو",snippet.description);
-
-addItem(
-"رابط الفيديو",
-"https://www.youtube.com/watch?v=" + video.id
-);
-
-addItem(
-"حالة المحتوى",
-"البيانات المسترجعة لا تكفي وحدها لإثبات أصالة الفيديو."
-);
-}
-
-/* =========================================
-   SCAN ENGINE
-========================================= */
-
-async function verify(){
-
-const channelURL = $("channel").value.trim();
-const videoURL = $("video").value.trim();
-
-if((!channelURL && !videoURL) || (channelURL && videoURL)){
-setStatus(
-"أدخل رابط قناة أو رابط فيديو واحداً فقط.",
-"error"
-);
-return;
-}
-
-const parsed = parseYouTubeURL(channelURL || videoURL);
-
-if(!parsed){
-setStatus("الرابط غير صحيح أو غير مدعوم.","error");
-return;
-}
-
-if(
-parsed.type === "video" &&
-!validateVideoId(parsed.id)
-){
-setStatus("معرف الفيديو غير صحيح.","error");
-return;
-}
-
-if(
-parsed.type === "channel" &&
-!/^UC[a-zA-Z0-9_-]{22}$/.test(parsed.id || "")
-){
-setStatus("معرف القناة غير صحيح.","error");
-return;
-}
-
-if(
-parsed.type === "handle" &&
-!/^[\p{L}\p{N}._-]{1,100}$/u.test(parsed.handle || "")
-){
-setStatus("اسم القناة غير صحيح.","error");
-return;
-}
-
-const thisScan = ++scanSequence;
-const controller = new AbortController();
-
-$("verify").disabled = true;
-resultBox.style.display = "none";
-
-$("report").replaceChildren();
-$("channelHeader").replaceChildren();
-
-try{
-
-let channel = null;
-let video = null;
-
-if(parsed.type === "video"){
-
-setStatus("المرحلة 1/3: جارٍ جلب بيانات الفيديو...","loading");
-
-const data = await apiRequest(
-"videos",
-{
-part:"snippet,statistics,status",
-id:parsed.id
-},
-controller.signal
-);
-
-if(thisScan !== scanSequence) return;
-
-video = data.items?.[0];
-
-if(!video){
-throw new Error(
-"الفيديو غير موجود أو غير متاح عبر الخدمة."
-);
-}
-
-if(!video.snippet?.channelId){
-throw new Error("تعذر تحديد القناة الناشرة.");
-}
-
-setStatus(
-"المرحلة 2/3: تم العثور على الفيديو. جارٍ فحص القناة...",
-"loading"
-);
-
-channel = await getChannel(
-video.snippet.channelId,
-null,
-null,
-controller.signal
-);
-
-}else{
-
-setStatus(
-"المرحلة 1/3: جارٍ البحث عن القناة...",
-"loading"
-);
-
-channel = await getChannel(
-parsed.id || null,
-parsed.handle || null,
-parsed.username || null,
-controller.signal
-);
-}
-
-if(thisScan !== scanSequence) return;
-
-setStatus(
-"المرحلة 3/3: جارٍ إنشاء تقرير VIRIFIXO...",
-"loading"
-);
-
-renderChannel(channel);
-renderChannelReport(channel);
-
-if(video){
-renderVideoReport(video);
-}
-
-addItem(
-"مصدر البيانات",
-"YouTube Data API عبر خادم VIRIFIXO"
-);
-
-addItem(
-"نوع التحقق المنفذ",
-"استرجاع البيانات الوصفية والإحصائية المتاحة"
-);
-
-addItem(
-"التحقق من الأصالة",
-"لم يتم إصدار حكم نهائي على أصالة المحتوى أو زيفه."
-);
-
-addItem(
-"حدود الفحص",
-"لا يشمل هذا الطلب فحص البكسلات أو تحليل الصوت أو كشف التزييف العميق."
-);
-
-$("reportTime").textContent =
-"وقت الفحص: " + new Date().toLocaleString("ar");
-
-resultBox.style.display = "block";
-
-setStatus(
-"اكتمل جلب البيانات وإنشاء تقرير VIRIFIXO بنجاح.",
-"success"
-);
-
-resultBox.scrollIntoView({
-behavior:"smooth",
-block:"start"
-});
-
-}catch(error){
-
-if(error.name === "AbortError") return;
-
-setStatus(
-"تعذر إكمال الفحص: " +
-(error.message || "خطأ غير معروف"),
-"error"
-);
-
-}finally{
-
-if(thisScan === scanSequence){
-$("verify").disabled = false;
-}
-}
-}
-
-$("verify").addEventListener("click",verify);
-
-/* =========================================
-   LOCAL FILE ANALYSIS ENGINE
-========================================= */
-
-const fileInput = $("file");
-const videoPreview = $("videoPreview");
-const imagePreview = $("imagePreview");
-const fileInfo = $("fileInfo");
-const exifInfo = $("exifInfo");
-const frameSection = $("frameSection");
-const framesBox = $("frames");
-
-function fileItem(label,value){
-
-const div = document.createElement("div");
-div.className = "item";
-
-const strong = document.createElement("strong");
-strong.textContent = label + " : ";
-
-const span = document.createElement("span");
-span.textContent =
-value === undefined || value === null || value === ""
-? "غير متوفر"
-: String(value);
-
-div.append(strong,span);
-fileInfo.appendChild(div);
-}
-
-function exifItem(label,value){
-
-const div = document.createElement("div");
-div.className = "item";
-
-const strong = document.createElement("strong");
-strong.textContent = label + " : ";
-
-const span = document.createElement("span");
-span.textContent =
-value === undefined || value === null || value === ""
-? "غير متوفر"
-: String(value);
-
-div.append(strong,span);
-exifInfo.appendChild(div);
-}
-
-/* =========================================
-   PREVIEW RESOURCE MANAGEMENT
-========================================= */
-
-function clearPreview(){
-
-videoPreview.pause();
-videoPreview.removeAttribute("src");
-videoPreview.load();
-
-imagePreview.removeAttribute("src");
-
-videoPreview.style.display = "none";
-imagePreview.style.display = "none";
-
-frameSection.classList.add("hidden");
-framesBox.replaceChildren();
-
-currentVideoFile = null;
-currentImageFile = null;
-activeFile = null;
-
-if(currentObjectURL){
-URL.revokeObjectURL(currentObjectURL);
-currentObjectURL = null;
-}
-}
-
-/* =========================================
-   IMAGE EXIF ANALYSIS
-========================================= */
-
-async function analyzeEXIF(file){
-
-exifInfo.replaceChildren();
-exifInfo.textContent = "جارٍ تحليل البيانات الوصفية...";
-
-try{
-
-if(typeof ExifReader === "undefined"){
-throw new Error("مكتبة EXIF غير متاحة.");
-}
-
-const tags = await ExifReader.load(file,{
-expanded:true
-});
-
-exifInfo.replaceChildren();
-
-const exif = tags.exif || {};
-const image = tags.file || {};
-const gps = tags.gps || {};
-
-exifItem("الشركة المصنعة",exif.Make?.description);
-exifItem("طراز الكاميرا",exif.Model?.description);
-
-exifItem(
-"تاريخ التقاط الصورة",
-exif.DateTimeOriginal?.description ||
-exif.DateTimeDigitized?.description
-);
-
-exifItem("برنامج معالجة الصورة",exif.Software?.description);
-exifItem("البعد البؤري",exif.FocalLength?.description);
-exifItem("فتحة العدسة",exif.FNumber?.description);
-exifItem("سرعة الغالق",exif.ExposureTime?.description);
-exifItem("حساسية ISO",exif.ISOSpeedRatings?.description);
-exifItem("اتجاه الصورة",exif.Orientation?.description);
-
-exifItem(
-"عرض الصورة",
-image.ImageWidth?.value ||
-image.ImageWidth?.description
-);
-
-exifItem(
-"ارتفاع الصورة",
-image.ImageHeight?.value ||
-image.ImageHeight?.description
-);
-
-let gpsFound = false;
-
-if(gps.Latitude && gps.Longitude){
-
-exifItem(
-"خط العرض",
-gps.Latitude.description || gps.Latitude.value
-);
-
-exifItem(
-"خط الطول",
-gps.Longitude.description || gps.Longitude.value
-);
-
-gpsFound = true;
-}
-
-if(!gpsFound){
-exifItem(
-"الموقع الجغرافي",
-"لم يتم العثور على إحداثيات GPS."
-);
-}
-
-exifItem(
-"نتيجة البيانات الوصفية",
-Object.keys(tags).length > 0
-? "تم العثور على مجموعات بيانات وصفية."
-: "لم يتم العثور على بيانات وصفية."
-);
-
-exifItem(
-"التقييم المهني",
-"وجود البيانات أو غيابها لا يثبت وحده أصالة الصورة."
-);
-
-}catch(error){
-
-exifInfo.replaceChildren();
-
-exifItem(
-"حالة التحليل",
-"تعذر استخراج EXIF: " + error.message
-);
-
-exifItem(
-"ملاحظة",
-"قد لا تحتوي الصورة على بيانات EXIF أو قد تكون البيانات محذوفة."
-);
-}
-}
-
-/* =========================================
-   LOCAL FILE VALIDATION AND ANALYSIS
-========================================= */
-
-fileInput.addEventListener("change",async function(){
-
-const file = this.files?.[0];
-
-clearPreview();
-
-fileInfo.replaceChildren();
-exifInfo.replaceChildren();
-
-if(!file){
-fileInfo.textContent = "لم يتم اختيار ملف.";
-exifInfo.textContent = "بانتظار اختيار صورة.";
-return;
-}
-
-if(file.size === 0){
-fileInfo.textContent = "الملف فارغ.";
-return;
-}
-
-if(file.size > MAX_FILE_SIZE){
-
-fileInfo.textContent =
-"حجم الملف يتجاوز الحد المسموح (200 MB).";
-
-return;
-}
-
-const isImage = [
-"image/jpeg",
-"image/png",
-"image/webp"
-].includes(file.type);
-
-const isVideo = file.type.startsWith("video/");
-
-if(!isImage && !isVideo){
-
-fileInfo.textContent =
-"نوع الملف غير مدعوم. اختر صورة JPEG أو PNG أو WEBP أو فيديو.";
-
-return;
-}
-
-activeFile = file;
-
-fileItem("اسم الملف",file.name);
-fileItem("نوع الملف",file.type || "غير معروف");
-fileItem("حجم الملف",formatBytes(file.size));
-
-fileItem(
-"تاريخ آخر تعديل",
-safeDate(file.lastModified)
-);
-
-fileItem(
-"طريقة المعالجة",
-"معالجة محلية داخل المتصفح"
-);
-
-currentObjectURL = URL.createObjectURL(file);
-
-/* IMAGE PROCESSING */
-
-if(isImage){
-
-currentImageFile = file;
-
-imagePreview.onload = function(){
-
-fileItem(
-"عرض الصورة",
-imagePreview.naturalWidth + " بكسل"
-);
-
-fileItem(
-"ارتفاع الصورة",
-imagePreview.naturalHeight + " بكسل"
-);
-
-fileItem(
-"دقة الصورة",
-imagePreview.naturalWidth + " × " +
-imagePreview.naturalHeight
-);
-
-fileItem(
-"حالة القراءة",
-"تمت قراءة الصورة بنجاح"
-);
-};
-
-imagePreview.onerror = function(){
-
-fileItem(
-"حالة القراءة",
-"تعذرت قراءة الصورة."
-);
-};
-
-imagePreview.src = currentObjectURL;
-imagePreview.style.display = "block";
-
-fileItem("نوع التحليل","تحليل صورة ثابتة");
-
-await analyzeEXIF(file);
-
-return;
-}
-
-/* VIDEO PROCESSING */
-
-if(isVideo){
-
-currentVideoFile = file;
-
-videoPreview.onloadedmetadata = function(){
-
-const duration = videoPreview.duration;
-
-if(!Number.isFinite(duration)){
-fileItem("مدة الفيديو","غير متوفرة");
-return;
-}
-
-const hours = Math.floor(duration/3600);
-const minutes = Math.floor((duration%3600)/60);
-const seconds = Math.floor(duration%60);
-
-const formatted =
-String(hours).padStart(2,"0") + ":" +
-String(minutes).padStart(2,"0") + ":" +
-String(seconds).padStart(2,"0");
-
-fileItem("مدة الفيديو",formatted);
-
-fileItem(
-"عرض الفيديو",
-videoPreview.videoWidth + " بكسل"
-);
-
-fileItem(
-"ارتفاع الفيديو",
-videoPreview.videoHeight + " بكسل"
-);
-
-fileItem(
-"دقة الفيديو",
-videoPreview.videoWidth + " × " +
-videoPreview.videoHeight
-);
-
-fileItem(
-"حالة القراءة",
-"تمت قراءة بيانات الفيديو الأساسية"
-);
-
-fileItem(
-"حدود التحليل",
-"لم يتم تحليل محتوى الصوت أو إثبات أصالة الفيديو."
-);
-};
-
-videoPreview.onerror = function(){
-
-fileItem(
-"حالة القراءة",
-"تعذرت قراءة الفيديو. قد يكون الترميز غير مدعوم."
-);
-};
-
-videoPreview.src = currentObjectURL;
-videoPreview.style.display = "block";
-
-videoPreview.load();
-
-frameSection.classList.remove("hidden");
-
-exifInfo.textContent =
-"تحليل EXIF مخصص للصور. بيانات الفيديو الأساسية موجودة في قسم الملف.";
-}
-});
-
-/* =========================================
-   VIDEO FRAME EXTRACTION
-========================================= */
-
-function waitForVideoEvent(video,eventName,errorName){
-
-return new Promise((resolve,reject)=>{
-
-const cleanup = ()=>{
-
-video.removeEventListener(eventName,onSuccess);
-video.removeEventListener(errorName,onError);
-};
-
-const onSuccess = ()=>{
-cleanup();
-resolve();
-};
-
-const onError = ()=>{
-cleanup();
-reject(new Error("تعذر قراءة بيانات الفيديو."));
-};
-
-video.addEventListener(eventName,onSuccess,{once:true});
-video.addEventListener(errorName,onError,{once:true});
-});
-}
-
-async function seekVideo(video,time){
-
-if(Math.abs(video.currentTime-time)<0.01){
-return;
-}
-
-const seekPromise = waitForVideoEvent(
-video,
-"seeked",
-"error"
-);
-
-video.currentTime = time;
-
-await seekPromise;
-}
-
-async function extractFrames(){
-
-if(!currentVideoFile || !currentObjectURL){
-
-setStatus(
-"اختر ملف فيديو صالحاً أولاً.",
-"error"
-);
-
-return;
-}
-
-const button = $("captureFrames");
-
-button.disabled = true;
-button.textContent = "جارٍ استخراج الإطارات...";
-
-framesBox.replaceChildren();
-
-let temporaryVideo = null;
-
-try{
-
-temporaryVideo = document.createElement("video");
-
-temporaryVideo.preload = "auto";
-temporaryVideo.muted = true;
-temporaryVideo.playsInline = true;
-
-const metadataPromise = waitForVideoEvent(
-temporaryVideo,
-"loadedmetadata",
-"error"
-);
-
-temporaryVideo.src = currentObjectURL;
-temporaryVideo.load();
-
-await metadataPromise;
-
-const duration = temporaryVideo.duration;
-
-if(
-!Number.isFinite(duration) ||
-duration <= 0 ||
-temporaryVideo.videoWidth <= 0 ||
-temporaryVideo.videoHeight <= 0
-){
-throw new Error("بيانات الفيديو غير صالحة.");
-}
-
-const canvas = document.createElement("canvas");
-
-const maxWidth = 480;
-
-const scale = Math.min(
-1,
-maxWidth/temporaryVideo.videoWidth
-);
-
-canvas.width = Math.max(
-1,
-Math.round(temporaryVideo.videoWidth*scale)
-);
-
-canvas.height = Math.max(
-1,
-Math.round(temporaryVideo.videoHeight*scale)
-);
-
-const context = canvas.getContext("2d",{
-alpha:false
-});
-
-if(!context){
-throw new Error("تعذر إنشاء مساحة معالجة الإطارات.");
-}
-
-const positions = [];
-
-for(let i=0;i<MAX_FRAME_COUNT;i++){
-
-const ratio = (i+1)/(MAX_FRAME_COUNT+1);
-
-const time = Math.min(
-duration*ratio,
-Math.max(0,duration-0.05)
-);
-
-positions.push(time);
-}
-
-for(let i=0;i<positions.length;i++){
-
-await seekVideo(
-temporaryVideo,
-positions[i]
-);
-
-context.drawImage(
-temporaryVideo,
-0,
-0,
-canvas.width,
-canvas.height
-);
-
-const image = document.createElement("img");
-
-image.alt = "إطار الفيديو رقم " + (i+1);
-
-image.src = canvas.toDataURL(
-"image/jpeg",
-0.85
-);
-
-const card = document.createElement("div");
-card.className = "frame-card";
-
-const caption = document.createElement("small");
-
-caption.textContent =
-"الإطار " + (i+1) +
-" · " + positions[i].toFixed(2) + " ثانية";
-
-card.append(image,caption);
-
-framesBox.appendChild(card);
-}
-
-fileItem(
-"عدد الإطارات المستخرجة",
-positions.length
-);
-
-fileItem(
-"نتيجة استخراج الإطارات",
-"اكتملت العملية محلياً بنجاح."
-);
-
-fileItem(
-"دلالة النتائج",
-"العينات تساعد على المراجعة البصرية ولا تثبت سلامة الفيديو."
-);
-
-setStatus(
-"اكتمل استخراج الإطارات بنجاح.",
-"success"
-);
-
-}catch(error){
-
-setStatus(
-"تعذر استخراج الإطارات: " + error.message,
-"error"
-);
-
-}finally{
-
-if(temporaryVideo){
-
-temporaryVideo.pause();
-temporaryVideo.removeAttribute("src");
-temporaryVideo.load();
-}
-
-button.disabled = false;
-button.textContent = "استخراج الإطارات";
-}
-}
-
-$("captureFrames").addEventListener(
-"click",
-extractFrames
-);
-
-
-/* =========================================
-   PRINT REPORT
-========================================= */
-
-$("printReport").addEventListener("click",()=>{
-
-if(
-!$("report").children.length &&
-!currentImageFile &&
-!currentVideoFile
-){
-
-setStatus(
-"لا توجد نتائج متاحة للطباعة.",
-"error"
-);
-
-return;
-}
-
-window.print();
-});
-
-
-/* =========================================
-   RESET VIRIFIXO
-========================================= */
-
-$("reset").addEventListener("click",()=>{
-
-scanSequence++;
-
-$("channel").value = "";
-$("video").value = "";
-
-$("report").replaceChildren();
-$("channelHeader").replaceChildren();
-$("reportTime").textContent = "";
-
-resultBox.style.display = "none";
-
-fileInput.value = "";
-
-fileInfo.textContent = "لم يتم اختيار ملف.";
-
-exifInfo.textContent =
-"بانتظار اختيار صورة لتحليل بيانات EXIF.";
-
-clearPreview();
-
-setStatus(
-"تمت إعادة ضبط VIRIFIXO 4.2. المنصة جاهزة لفحص جديد.",
-"success"
-);
-
-window.scrollTo({
-top:0,
-behavior:"smooth"
-});
-});
-
-
-/* =========================================
-   INITIALIZATION
-========================================= */
-
-setStatus(
-"VIRIFIXO 4.2 جاهز للفحص عبر خادم Cloudflare.",
-"success"
-);
-
-window.addEventListener("beforeunload",()=>{
-
-if(currentObjectURL){
-URL.revokeObjectURL(currentObjectURL);
-}
-});
-
-</script>
-
-</body>
-</html>
