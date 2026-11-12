@@ -5,96 +5,211 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101827">
-<title>VIRIFIXO 4.1 - Media Verification</title>
-<meta name="description" content="منصة التحقق من مصادر الفيديو والصور والقنوات">
+<title>VIRIFIXO 4.2 - Advanced Media Verification</title>
+<meta name="description" content="منصة VIRIFIXO للتحقق من الصور والفيديوهات والمصادر الإعلامية">
+
+<script src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
 
 <style>
 *{box-sizing:border-box}
+
 :root{
---bg:#101827;--panel:#1b2638;--border:#344258;
---blue:#2879e8;--light:#65a9ff;--text:#fff;
---muted:#aab7ca;--green:#4ade80;--red:#ff7777;
---gold:#ffd166
+--bg:#101827;
+--panel:#1b2638;
+--border:#344258;
+--blue:#2879e8;
+--light:#65a9ff;
+--text:#fff;
+--muted:#aab7ca;
+--green:#4ade80;
+--red:#ff7777;
+--gold:#ffd166;
 }
+
 body{
-margin:0;padding:18px;min-height:100vh;
-background:var(--bg);color:var(--text);
-font-family:Arial,sans-serif
+margin:0;
+padding:18px;
+min-height:100vh;
+background:var(--bg);
+color:var(--text);
+font-family:Arial,sans-serif;
 }
-.container{max-width:900px;margin:20px auto}
-header{text-align:center;margin-bottom:30px}
+
+.container{
+max-width:950px;
+margin:20px auto;
+}
+
+header{
+text-align:center;
+margin-bottom:30px;
+}
+
 .logo{
-font-size:40px;font-weight:bold;
-color:var(--light);letter-spacing:2px
+font-size:40px;
+font-weight:bold;
+color:var(--light);
+letter-spacing:2px;
 }
-.subtitle,.muted{color:var(--muted);line-height:1.8}
+
+.subtitle,.muted{
+color:var(--muted);
+line-height:1.8;
+}
+
 .panel{
-background:var(--panel);border:1px solid var(--border);
-border-radius:14px;padding:22px;margin-bottom:18px
+background:var(--panel);
+border:1px solid var(--border);
+border-radius:14px;
+padding:22px;
+margin-bottom:18px;
 }
+
 h2{font-size:20px;margin-top:0}
-label{display:block;margin:16px 0 8px;font-weight:bold}
+
+label{
+display:block;
+margin:16px 0 8px;
+font-weight:bold;
+}
+
 input{
-width:100%;padding:13px;background:var(--bg);
-border:1px solid var(--border);border-radius:8px;
-color:white;font-size:15px
+width:100%;
+padding:13px;
+background:var(--bg);
+border:1px solid var(--border);
+border-radius:8px;
+color:white;
+font-size:15px;
 }
-input:focus{outline:2px solid var(--blue)}
+
+input:focus{
+outline:2px solid var(--blue);
+}
+
 button{
-border:0;border-radius:8px;padding:13px 18px;
-background:var(--blue);color:white;font-size:15px;
-font-weight:bold;cursor:pointer
+border:0;
+border-radius:8px;
+padding:13px 18px;
+background:var(--blue);
+color:white;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
 }
+
 button:hover{background:#1764cb}
 button:disabled{opacity:.5;cursor:wait}
-.primary{width:100%;margin-top:18px}
-.secondary{background:#344258;margin:5px}
-.status{
-padding:14px;border-radius:8px;background:var(--bg);
-margin-top:15px;color:var(--muted);line-height:1.8;
-overflow-wrap:anywhere
+
+.primary{
+width:100%;
+margin-top:18px;
 }
+
+.secondary{
+background:#344258;
+margin:5px;
+}
+
+.status{
+padding:14px;
+border-radius:8px;
+background:var(--bg);
+margin-top:15px;
+color:var(--muted);
+line-height:1.8;
+overflow-wrap:anywhere;
+}
+
 .success{color:var(--green)}
 .error{color:var(--red)}
 .loading{color:var(--gold)}
+
 .result{display:none}
+
 .item{
-padding:13px;margin:10px 0;background:var(--bg);
-border-radius:8px;border-right:3px solid var(--blue);
-line-height:1.8;overflow-wrap:anywhere
+padding:13px;
+margin:10px 0;
+background:var(--bg);
+border-radius:8px;
+border-right:3px solid var(--blue);
+line-height:1.8;
+overflow-wrap:anywhere;
 }
+
 .item strong{color:var(--light)}
+
 .warning{
-color:var(--gold);background:#42371f;padding:14px;
-border-radius:8px;margin-top:15px;line-height:1.8
+color:var(--gold);
+background:#42371f;
+padding:14px;
+border-radius:8px;
+margin-top:15px;
+line-height:1.8;
 }
+
 .channel-header{
-display:flex;align-items:center;gap:15px;margin-bottom:18px
+display:flex;
+align-items:center;
+gap:15px;
+margin-bottom:18px;
 }
+
 .channel-header img{
-width:80px;height:80px;border-radius:50%;
-object-fit:cover;border:2px solid var(--blue)
+width:80px;
+height:80px;
+border-radius:50%;
+object-fit:cover;
+border:2px solid var(--blue);
 }
-.channel-link{color:var(--light);text-decoration:none}
+
+.channel-link{
+color:var(--light);
+text-decoration:none;
+}
+
 .preview{
-display:none;width:100%;max-height:420px;
-object-fit:contain;background:#080d16;
-border-radius:10px;margin-top:15px
+display:none;
+width:100%;
+max-height:420px;
+object-fit:contain;
+background:#080d16;
+border-radius:10px;
+margin-top:15px;
 }
+
 .frame-grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-gap:10px;margin-top:15px
+gap:10px;
+margin-top:15px;
 }
+
 .frame-grid img{
-width:100%;border-radius:8px;background:#080d16
+width:100%;
+border-radius:8px;
+background:#080d16;
 }
-footer{text-align:center;color:var(--muted);padding:25px}
+
+.section-title{
+color:var(--light);
+border-bottom:1px solid var(--border);
+padding-bottom:10px;
+margin-top:25px;
+}
+
+footer{
+text-align:center;
+color:var(--muted);
+padding:25px;
+}
+
 @media(max-width:600px){
 body{padding:10px}
 .panel{padding:16px}
 .logo{font-size:32px}
 }
+
 @media print{
 body{background:white;color:black}
 .panel{background:white;color:black;border:1px solid #ccc}
@@ -114,7 +229,7 @@ button{display:none}
 <div class="subtitle">
 منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
 </div>
-<p class="muted">Version 4.1 - Media Demo Edition</p>
+<p class="muted">Version 4.2 - Advanced Media Verification</p>
 </header>
 
 <section class="panel">
@@ -139,7 +254,7 @@ placeholder="https://www.youtube.com/watch?v=...">
 </button>
 
 <div class="status" id="status" role="status" aria-live="polite">
-VIRIFIXO 4.1 جاهز لاستقبال بيانات الفحص.
+VIRIFIXO 4.2 جاهز لاستقبال بيانات الفحص.
 </div>
 </section>
 
@@ -166,21 +281,29 @@ controls playsinline></video>
 استخراج إطارات الفيديو
 </button>
 </div>
+</section>
 
+<section class="panel">
+<h2>🔬 تحليل البيانات الوصفية EXIF</h2>
 <p class="muted">
-تتم قراءة الملفات محلياً في المتصفح ولا يتم رفعها إلى الخادم.
+استخراج بيانات الصورة والكاميرا وتاريخ الالتقاط والموقع الجغرافي
+إن توفرت البيانات. تتم المعالجة محلياً داخل المتصفح.
 </p>
+
+<div id="exifInfo" class="status">
+بانتظار اختيار صورة لتحليل بيانات EXIF.
+</div>
 </section>
 
 <section class="panel result" id="result">
 <h2>📋 تقرير VIRIFIXO</h2>
+
 <div id="channelHeader" class="channel-header"></div>
 <div id="report"></div>
 
 <div class="warning">
-تنبيه مهني: جلب بيانات YouTube أو استخراج إطارات الفيديو
-لا يثبت وحده أصالة المحتوى أو زيفه. يلزم فحص المصدر
-والسياق والأدلة المستقلة.
+تنبيه مهني: البيانات الوصفية ومؤشرات التعديل لا تثبت وحدها
+أصالة المحتوى أو زيفه. يلزم فحص المصدر والسياق والأدلة المستقلة.
 </div>
 
 <p class="muted" id="reportTime"></p>
@@ -208,1868 +331,872 @@ controls playsinline></video>
 <footer>
 VIRIFIXO © 2026
 <br>
-<small>Media Verification Platform - Version 4.1</small>
+<small>Advanced Media Verification - Version 4.2</small>
 </footer>
 
 </div>
-
-<!-- نهاية الدفعة الأولى -->
 
 <script>
 "use strict";
 
 const API_BASE =
-  "https://virifixo-api.ashrafhanfy1988.workers.dev";
+"https://virifixo-api.ashrafhanfy1988.workers.dev";
 
 const $ = id => document.getElementById(id);
 
 const statusBox = $("status");
 const resultBox = $("result");
 
-function setStatus(message, type = "") {
-  statusBox.className = "status " + type;
-  statusBox.textContent = message;
+function setStatus(message,type=""){
+statusBox.className="status "+type;
+statusBox.textContent=message;
 }
 
-function addItem(label, value) {
-  const div = document.createElement("div");
-  div.className = "item";
+function addItem(label,value){
+const div=document.createElement("div");
+div.className="item";
 
-  const strong = document.createElement("strong");
-  strong.textContent = label + " : ";
+const strong=document.createElement("strong");
+strong.textContent=label+" : ";
 
-  const span = document.createElement("span");
-  span.textContent =
-    value === undefined || value === null || value === ""
-      ? "غير متوفر"
-      : String(value);
+const span=document.createElement("span");
+span.textContent=
+value===undefined||value===null||value===""
+?"غير متوفر":String(value);
 
-  div.append(strong, span);
-  $("report").appendChild(div);
+div.append(strong,span);
+$("report").appendChild(div);
 }
 
-function parseYouTubeURL(value) {
-  try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase();
+function parseYouTubeURL(value){
+try{
+const url=new URL(value);
+const host=url.hostname.toLowerCase();
 
-    if (![
-      "youtube.com",
-      "www.youtube.com",
-      "m.youtube.com",
-      "youtu.be"
-    ].includes(host)) {
-      return null;
-    }
+if(![
+"youtube.com",
+"www.youtube.com",
+"m.youtube.com",
+"youtu.be"
+].includes(host))return null;
 
-    const parts = url.pathname.split("/").filter(Boolean);
+const parts=url.pathname.split("/").filter(Boolean);
 
-    if (host === "youtu.be") {
-      return { type: "video", id: parts[0] || null };
-    }
-
-    if (url.pathname === "/watch") {
-      return {
-        type: "video",
-        id: url.searchParams.get("v")
-      };
-    }
-
-    if (["shorts", "embed", "live"].includes(parts[0])) {
-      return { type: "video", id: parts[1] || null };
-    }
-
-    if (parts[0] === "channel" && parts[1]) {
-      return { type: "channel", id: parts[1] };
-    }
-
-    if (parts[0]?.startsWith("@")) {
-      return {
-        type: "handle",
-        handle: parts[0].slice(1)
-      };
-    }
-
-    if (parts[0] === "user" && parts[1]) {
-      return {
-        type: "username",
-        username: parts[1]
-      };
-    }
-
-    return null;
-  } catch {
-    return null;
-  }
+if(host==="youtu.be"){
+return {type:"video",id:parts[0]||null};
 }
 
-async function apiRequest(endpoint, params) {
-  const url = new URL(
-    API_BASE + "/youtube/v3/" + endpoint
-  );
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (value !== null && value !== undefined) {
-      url.searchParams.set(key, value);
-    }
-  });
-
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      "Accept": "application/json"
-    }
-  });
-
-  let data;
-
-  try {
-    data = await response.json();
-  } catch {
-    throw new Error("تعذر قراءة استجابة الخادم.");
-  }
-
-  if (!response.ok) {
-    const reason = data.error?.errors?.[0]?.reason;
-    const message = data.error?.message || "";
-
-    if (reason === "quotaExceeded") {
-      throw new Error("تم استنفاد حصة استخدام YouTube API.");
-    }
-
-    if (reason === "keyInvalid") {
-      throw new Error("مفتاح YouTube API المخزن في الخادم غير صالح.");
-    }
-
-    if (response.status === 403 && message === "Origin not allowed") {
-      throw new Error("مصدر الموقع غير مسموح به في الخادم.");
-    }
-
-    throw new Error(message || "فشل الاتصال بخدمة YouTube.");
-  }
-
-  return data;
+if(url.pathname==="/watch"){
+return {
+type:"video",
+id:url.searchParams.get("v")
+};
 }
 
-async function getChannel(id, handle, username) {
-  const params = {
-    part: "snippet,statistics,contentDetails"
-  };
-
-  if (id) {
-    params.id = id;
-  } else if (handle) {
-    params.forHandle = handle;
-  } else if (username) {
-    throw new Error(
-      "روابط أسماء المستخدمين القديمة تحتاج إلى دعم إضافي في الخادم."
-    );
-  }
-
-  const data = await apiRequest("channels", params);
-
-  if (data.items?.length) {
-    return data.items[0];
-  }
-
-  throw new Error(
-    "تعذر العثور على القناة. تحقق من الرابط."
-  );
+if(["shorts","embed","live"].includes(parts[0])){
+return {type:"video",id:parts[1]||null};
 }
 
-function renderChannel(channel) {
-  const header = $("channelHeader");
-  header.replaceChildren();
-
-  const imageURL =
-    channel.snippet?.thumbnails?.medium?.url ||
-    channel.snippet?.thumbnails?.default?.url;
-
-  if (imageURL) {
-    const image = document.createElement("img");
-    image.src = imageURL;
-    image.alt = "صورة القناة";
-    image.loading = "lazy";
-    header.appendChild(image);
-  }
-
-  const info = document.createElement("div");
-
-  const name = document.createElement("h3");
-  name.textContent =
-    channel.snippet?.title || "اسم غير متوفر";
-
-  const link = document.createElement("a");
-  link.className = "channel-link";
-  link.href =
-    "https://www.youtube.com/channel/" + channel.id;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.textContent = "فتح القناة على YouTube";
-
-  info.append(name, link);
-  header.appendChild(info);
+if(parts[0]==="channel"&&parts[1]){
+return {type:"channel",id:parts[1]};
 }
 
-function renderChannelReport(channel) {
-  const s = channel.snippet || {};
-  const stats = channel.statistics || {};
-
-  addItem("اسم القناة", s.title);
-  addItem("معرف القناة", channel.id);
-  addItem("تاريخ الإنشاء", s.publishedAt);
-
-  addItem(
-    "عدد المشتركين",
-    stats.hiddenSubscriberCount
-      ? "عدد المشتركين مخفي"
-      : stats.subscriberCount
-  );
-
-  addItem("إجمالي المشاهدات", stats.viewCount);
-  addItem("عدد الفيديوهات", stats.videoCount);
-  addItem("بلد القناة", s.country);
-  addItem("وصف القناة", s.description);
+if(parts[0]?.startsWith("@")){
+return {
+type:"handle",
+handle:parts[0].slice(1)
+};
 }
 
-function renderVideoReport(video) {
-  const s = video.snippet || {};
-  const stats = video.statistics || {};
-  const state = video.status || {};
-
-  addItem("عنوان الفيديو", s.title);
-  addItem("معرف الفيديو", video.id);
-  addItem("تاريخ النشر", s.publishedAt);
-  addItem("اسم القناة الناشرة", s.channelTitle);
-  addItem("معرف القناة الناشرة", s.channelId);
-  addItem("عدد المشاهدات", stats.viewCount);
-  addItem("عدد الإعجابات", stats.likeCount);
-  addItem("عدد التعليقات", stats.commentCount);
-  addItem("حالة الخصوصية", state.privacyStatus);
-  addItem("وصف الفيديو", s.description);
-
-  addItem(
-    "رابط الفيديو",
-    "https://www.youtube.com/watch?v=" + video.id
-  );
+if(parts[0]==="user"&&parts[1]){
+return {
+type:"username",
+username:parts[1]
+};
 }
 
-async function verify() {
-  const channelURL = $("channel").value.trim();
-  const videoURL = $("video").value.trim();
-
-  if ((!channelURL && !videoURL) ||
-      (channelURL && videoURL)) {
-    setStatus(
-      "أدخل رابط قناة أو رابط فيديو واحداً فقط.",
-      "error"
-    );
-    return;
-  }
-
-  const parsed = parseYouTubeURL(channelURL || videoURL);
-
-  if (!parsed) {
-    setStatus("الرابط غير صحيح أو غير مدعوم.", "error");
-    return;
-  }
-
-  if (
-    parsed.type === "video" &&
-    !/^[a-zA-Z0-9_-]{11}$/.test(parsed.id || "")
-  ) {
-    setStatus("معرف الفيديو غير صحيح.", "error");
-    return;
-  }
-
-  $("verify").disabled = true;
-  resultBox.style.display = "none";
-  $("report").replaceChildren();
-  $("channelHeader").replaceChildren();
-
-  try {
-    let channel = null;
-    let video = null;
-
-    if (parsed.type === "video") {
-      setStatus("جارٍ جلب بيانات الفيديو...", "loading");
-
-      const data = await apiRequest("videos", {
-        part: "snippet,statistics,status",
-        id: parsed.id
-      });
-
-      video = data.items?.[0];
-
-      if (!video) {
-        throw new Error("الفيديو غير موجود أو غير متاح.");
-      }
-
-      setStatus(
-        "تم العثور على الفيديو. جارٍ فحص القناة...",
-        "loading"
-      );
-
-      channel = await getChannel(
-        video.snippet.channelId,
-        null,
-        null
-      );
-
-    } else {
-      setStatus("جارٍ البحث عن القناة...", "loading");
-
-      channel = await getChannel(
-        parsed.id || null,
-        parsed.handle || null,
-        parsed.username || null
-      );
-    }
-
-    renderChannel(channel);
-    renderChannelReport(channel);
-
-    if (video) {
-      renderVideoReport(video);
-    }
-
-    addItem(
-      "نتيجة جلب البيانات",
-      "تم جلب البيانات من YouTube Data API عبر خادم VIRIFIXO"
-    );
-
-    addItem(
-      "نتيجة فحص الأصالة",
-      "لم يتم إثبات أصالة المحتوى أو زيفه"
-    );
-
-    $("reportTime").textContent =
-      "وقت الفحص: " +
-      new Date().toLocaleString("ar");
-
-    resultBox.style.display = "block";
-
-    setStatus(
-      "اكتمل الفحص وجلب البيانات بنجاح.",
-      "success"
-    );
-
-    resultBox.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-
-  } catch (error) {
-    setStatus(
-      "حدث خطأ أثناء الفحص: " + error.message,
-      "error"
-    );
-  } finally {
-    $("verify").disabled = false;
-  }
+return null;
+}catch{
+return null;
+}
 }
 
-$("verify").addEventListener("click", verify);
+async function apiRequest(endpoint,params){
+const url=new URL(
+API_BASE+"/youtube/v3/"+endpoint
+);
+
+Object.entries(params).forEach(([key,value])=>{
+if(value!==null&&value!==undefined){
+url.searchParams.set(key,value);
+}
+});
+
+const response=await fetch(url.toString(),{
+method:"GET",
+headers:{"Accept":"application/json"}
+});
+
+let data;
+
+try{
+data=await response.json();
+}catch{
+throw new Error("تعذر قراءة استجابة الخادم.");
+}
+
+if(!response.ok){
+const reason=data.error?.errors?.[0]?.reason;
+const message=data.error?.message||"";
+
+if(reason==="quotaExceeded"){
+throw new Error("تم استنفاد حصة استخدام YouTube API.");
+}
+
+if(reason==="keyInvalid"){
+throw new Error("مفتاح YouTube API المخزن في الخادم غير صالح.");
+}
+
+if(response.status===403&&message==="Origin not allowed"){
+throw new Error("مصدر الموقع غير مسموح به في الخادم.");
+}
+
+throw new Error(message||"فشل الاتصال بخدمة YouTube.");
+}
+
+return data;
+}
+
+async function getChannel(id,handle,username){
+const params={
+part:"snippet,statistics,contentDetails"
+};
+
+if(id){
+params.id=id;
+}else if(handle){
+params.forHandle=handle;
+}else if(username){
+throw new Error(
+"روابط أسماء المستخدمين القديمة تحتاج إلى دعم إضافي في الخادم."
+);
+}
+
+const data=await apiRequest("channels",params);
+
+if(data.items?.length)return data.items[0];
+
+throw new Error("تعذر العثور على القناة. تحقق من الرابط.");
+}
+
+function renderChannel(channel){
+const header=$("channelHeader");
+header.replaceChildren();
+
+const imageURL=
+channel.snippet?.thumbnails?.medium?.url||
+channel.snippet?.thumbnails?.default?.url;
+
+if(imageURL){
+const image=document.createElement("img");
+image.src=imageURL;
+image.alt="صورة القناة";
+image.loading="lazy";
+header.appendChild(image);
+}
+
+const info=document.createElement("div");
+
+const name=document.createElement("h3");
+name.textContent=channel.snippet?.title||"اسم غير متوفر";
+
+const link=document.createElement("a");
+link.className="channel-link";
+link.href="https://www.youtube.com/channel/"+channel.id;
+link.target="_blank";
+link.rel="noopener noreferrer";
+link.textContent="فتح القناة على YouTube";
+
+info.append(name,link);
+header.appendChild(info);
+}
+
+function renderChannelReport(channel){
+const s=channel.snippet||{};
+const stats=channel.statistics||{};
+
+addItem("اسم القناة",s.title);
+addItem("معرف القناة",channel.id);
+addItem("تاريخ الإنشاء",s.publishedAt);
+
+addItem(
+"عدد المشتركين",
+stats.hiddenSubscriberCount
+?"عدد المشتركين مخفي"
+:stats.subscriberCount
+);
+
+addItem("إجمالي المشاهدات",stats.viewCount);
+addItem("عدد الفيديوهات",stats.videoCount);
+addItem("بلد القناة",s.country);
+addItem("وصف القناة",s.description);
+}
+
+function renderVideoReport(video){
+const s=video.snippet||{};
+const stats=video.statistics||{};
+const state=video.status||{};
+
+addItem("عنوان الفيديو",s.title);
+addItem("معرف الفيديو",video.id);
+addItem("تاريخ النشر",s.publishedAt);
+addItem("اسم القناة الناشرة",s.channelTitle);
+addItem("معرف القناة الناشرة",s.channelId);
+addItem("عدد المشاهدات",stats.viewCount);
+addItem("عدد الإعجابات",stats.likeCount);
+addItem("عدد التعليقات",stats.commentCount);
+addItem("حالة الخصوصية",state.privacyStatus);
+addItem("وصف الفيديو",s.description);
+
+addItem(
+"رابط الفيديو",
+"https://www.youtube.com/watch?v="+video.id
+);
+}
+
+async function verify(){
+const channelURL=$("channel").value.trim();
+const videoURL=$("video").value.trim();
+
+if((!channelURL&&!videoURL)||(channelURL&&videoURL)){
+setStatus("أدخل رابط قناة أو رابط فيديو واحداً فقط.","error");
+return;
+}
+
+const parsed=parseYouTubeURL(channelURL||videoURL);
+
+if(!parsed){
+setStatus("الرابط غير صحيح أو غير مدعوم.","error");
+return;
+}
+
+if(
+parsed.type==="video"&&
+!/^[a-zA-Z0-9_-]{11}$/.test(parsed.id||"")
+){
+setStatus("معرف الفيديو غير صحيح.","error");
+return;
+}
+
+$("verify").disabled=true;
+resultBox.style.display="none";
+$("report").replaceChildren();
+$("channelHeader").replaceChildren();
+
+try{
+let channel=null;
+let video=null;
+
+if(parsed.type==="video"){
+setStatus("جارٍ جلب بيانات الفيديو...","loading");
+
+const data=await apiRequest("videos",{
+part:"snippet,statistics,status",
+id:parsed.id
+});
+
+video=data.items?.[0];
+
+if(!video){
+throw new Error("الفيديو غير موجود أو غير متاح.");
+}
+
+setStatus("تم العثور على الفيديو. جارٍ فحص القناة...","loading");
+
+channel=await getChannel(
+video.snippet.channelId,
+null,
+null
+);
+
+}else{
+setStatus("جارٍ البحث عن القناة...","loading");
+
+channel=await getChannel(
+parsed.id||null,
+parsed.handle||null,
+parsed.username||null
+);
+}
+
+renderChannel(channel);
+renderChannelReport(channel);
+
+if(video){
+renderVideoReport(video);
+}
+
+addItem(
+"نتيجة جلب البيانات",
+"تم جلب البيانات من YouTube Data API عبر خادم VIRIFIXO"
+);
+
+addItem(
+"نتيجة فحص الأصالة",
+"لم يتم إثبات أصالة المحتوى أو زيفه"
+);
+
+$("reportTime").textContent=
+"وقت الفحص: "+new Date().toLocaleString("ar");
+
+resultBox.style.display="block";
+
+setStatus("اكتمل الفحص وجلب البيانات بنجاح.","success");
+
+resultBox.scrollIntoView({
+behavior:"smooth",
+block:"start"
+});
+
+}catch(error){
+setStatus("حدث خطأ أثناء الفحص: "+error.message,"error");
+}finally{
+$("verify").disabled=false;
+}
+}
+
+$("verify").addEventListener("click",verify);
+
 </script>
 
-<!-- نهاية الدفعة الثانية -->
+<!-- الدفعة الأولى تنتهي هنا. -->
+</body>
+</html>
 
 <script>
 "use strict";
 
 let currentObjectURL = null;
 let currentVideoFile = null;
+let currentImageFile = null;
 
 const fileInput = $("file");
 const videoPreview = $("videoPreview");
 const imagePreview = $("imagePreview");
 const fileInfo = $("fileInfo");
+const exifInfo = $("exifInfo");
 const frameSection = $("frameSection");
 const framesBox = $("frames");
 
-function fileItem(label, value) {
-  const div = document.createElement("div");
-  div.className = "item";
+function fileItem(label,value){
+const div=document.createElement("div");
+div.className="item";
 
-  const strong = document.createElement("strong");
-  strong.textContent = label + " : ";
+const strong=document.createElement("strong");
+strong.textContent=label+" : ";
 
-  const span = document.createElement("span");
-  span.textContent = String(value);
+const span=document.createElement("span");
+span.textContent=String(value??"غير متوفر");
 
-  div.append(strong, span);
-  fileInfo.appendChild(div);
+div.append(strong,span);
+fileInfo.appendChild(div);
 }
 
-function clearPreview() {
-  videoPreview.pause();
-  videoPreview.removeAttribute("src");
-  videoPreview.load();
+function exifItem(label,value){
+const div=document.createElement("div");
+div.className="item";
 
-  imagePreview.removeAttribute("src");
+const strong=document.createElement("strong");
+strong.textContent=label+" : ";
 
-  videoPreview.style.display = "none";
-  imagePreview.style.display = "none";
+const span=document.createElement("span");
+span.textContent=
+value===undefined||value===null||value===""
+?"غير متوفر":String(value);
 
-  frameSection.style.display = "none";
-  framesBox.replaceChildren();
-
-  currentVideoFile = null;
-
-  if (currentObjectURL) {
-    URL.revokeObjectURL(currentObjectURL);
-    currentObjectURL = null;
-  }
+div.append(strong,span);
+exifInfo.appendChild(div);
 }
 
-fileInput.addEventListener("change", function () {
-  const file = this.files?.[0];
+function clearPreview(){
 
-  clearPreview();
-  fileInfo.replaceChildren();
+videoPreview.pause();
+videoPreview.removeAttribute("src");
+videoPreview.load();
 
-  if (!file) {
-    fileInfo.textContent = "لم يتم اختيار ملف.";
-    return;
-  }
+imagePreview.removeAttribute("src");
 
-  const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+videoPreview.style.display="none";
+imagePreview.style.display="none";
 
-  fileItem("اسم الملف", file.name);
-  fileItem("نوع الملف", file.type || "غير معروف");
-  fileItem("حجم الملف", sizeMB + " MB");
+frameSection.style.display="none";
+framesBox.replaceChildren();
 
-  fileItem(
-    "تاريخ آخر تعديل",
-    new Date(file.lastModified).toLocaleString("ar")
-  );
+currentVideoFile=null;
+currentImageFile=null;
 
-  currentObjectURL = URL.createObjectURL(file);
+if(currentObjectURL){
+URL.revokeObjectURL(currentObjectURL);
+currentObjectURL=null;
+}
+}
 
-  // تحليل الصور
+async function analyzeEXIF(file){
 
-  if (file.type.startsWith("image/")) {
-    const allowed = [
-      "image/png",
-      "image/jpeg",
-      "image/webp"
-    ];
+exifInfo.replaceChildren();
 
-    if (!allowed.includes(file.type)) {
-      fileItem("حالة الملف", "صيغة الصورة غير مدعومة.");
-      return;
-    }
+exifInfo.textContent="جارٍ تحليل بيانات EXIF...";
 
-    imagePreview.onload = function () {
-      fileItem(
-        "عرض الصورة",
-        imagePreview.naturalWidth + " بكسل"
-      );
+try{
 
-      fileItem(
-        "ارتفاع الصورة",
-        imagePreview.naturalHeight + " بكسل"
-      );
+if(typeof ExifReader==="undefined"){
+throw new Error("مكتبة EXIF غير متاحة.");
+}
 
-      fileItem(
-        "دقة الصورة",
-        imagePreview.naturalWidth + " × " +
-        imagePreview.naturalHeight
-      );
-
-      fileItem(
-        "حالة القراءة",
-        "تمت قراءة الصورة محلياً بنجاح"
-      );
-    };
-
-    imagePreview.onerror = function () {
-      fileItem("حالة القراءة", "تعذرت قراءة الصورة.");
-    };
-
-    imagePreview.src = currentObjectURL;
-    imagePreview.style.display = "block";
-
-    fileItem("نوع التحليل", "تحليل صورة ثابتة");
-    return;
-  }
-
-  // تحليل الفيديو
-
-  if (!file.type.startsWith("video/")) {
-    fileItem(
-      "حالة الملف",
-      "نوع الملف غير مدعوم. اختر فيديو أو صورة."
-    );
-    return;
-  }
-
-  currentVideoFile = file;
-
-  videoPreview.src = currentObjectURL;
-  videoPreview.style.display = "block";
-  frameSection.style.display = "block";
-
-  videoPreview.onloadedmetadata = function () {
-    const duration = videoPreview.duration;
-
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor((duration % 3600) / 60);
-    const seconds = Math.floor(duration % 60);
-
-    const formatted =
-      String(hours).padStart(2, "0") + ":" +
-      String(minutes).padStart(2, "0") + ":" +
-      String(seconds).padStart(2, "0");
-
-    fileItem("مدة الفيديو", formatted);
-
-    fileItem(
-      "عرض الفيديو",
-      videoPreview.videoWidth + " بكسل"
-    );
-
-    fileItem(
-      "ارتفاع الفيديو",
-      videoPreview.videoHeight + " بكسل"
-    );
-
-    fileItem(
-      "دقة الفيديو",
-      videoPreview.videoWidth + " × " +
-      videoPreview.videoHeight
-    );
-
-    fileItem(
-      "حالة القراءة",
-      "تم استخراج البيانات الوصفية بنجاح"
-    );
-  };
-
-  videoPreview.onerror = function () {
-    fileItem(
-      "حالة القراءة",
-      "تعذر قراءة الفيديو. قد تكون الصيغة أو الترميز غير مدعوم."
-    );
-  };
+const tags=await ExifReader.load(file,{
+expanded:true
 });
+
+exifInfo.replaceChildren();
+
+const exif=tags.exif||{};
+const image=tags.file||{};
+const gps=tags.gps||{};
+
+exifItem(
+"الشركة المصنعة",
+exif.Make?.description
+);
+
+exifItem(
+"طراز الكاميرا",
+exif.Model?.description
+);
+
+exifItem(
+"تاريخ التقاط الصورة",
+exif.DateTimeOriginal?.description||
+exif.DateTimeDigitized?.description
+);
+
+exifItem(
+"برنامج معالجة الصورة",
+exif.Software?.description
+);
+
+exifItem(
+"البعد البؤري",
+exif.FocalLength?.description
+);
+
+exifItem(
+"فتحة العدسة",
+exif.FNumber?.description
+);
+
+exifItem(
+"سرعة الغالق",
+exif.ExposureTime?.description
+);
+
+exifItem(
+"حساسية ISO",
+exif.ISOSpeedRatings?.description
+);
+
+exifItem(
+"اتجاه الصورة",
+exif.Orientation?.description
+);
+
+exifItem(
+"عرض الصورة",
+image.ImageWidth?.value||"غير متوفر"
+);
+
+exifItem(
+"ارتفاع الصورة",
+image.ImageHeight?.value||"غير متوفر"
+);
+
+let gpsFound=false;
+
+if(gps.Latitude&&gps.Longitude){
+
+const lat=gps.Latitude.description||
+gps.Latitude.value;
+
+const lon=gps.Longitude.description||
+gps.Longitude.value;
+
+exifItem("خط العرض",lat);
+exifItem("خط الطول",lon);
+
+gpsFound=true;
+}
+
+if(!gpsFound){
+exifItem(
+"الموقع الجغرافي",
+"لم يتم العثور على إحداثيات GPS في بيانات الصورة."
+);
+}
+
+const metadataCount=Object.keys(tags).length;
+
+exifItem(
+"حالة البيانات الوصفية",
+metadataCount>0
+?"تم العثور على بيانات وصفية"
+:"لم يتم العثور على بيانات وصفية"
+);
+
+exifItem(
+"التقييم المهني",
+"البيانات الوصفية قرائن مساعدة وليست دليلاً قاطعاً على أصالة الصورة."
+);
+
+}catch(error){
+
+exifInfo.replaceChildren();
+
+exifItem(
+"حالة التحليل",
+"تعذر استخراج بيانات EXIF: "+error.message
+);
+
+exifItem(
+"ملاحظة",
+"قد تكون الصورة لا تحتوي على بيانات EXIF أو أن صيغة الملف غير مدعومة."
+);
+}
+}
+
+fileInput.addEventListener("change",async function(){
+
+const file=this.files?.[0];
+
+clearPreview();
+
+fileInfo.replaceChildren();
+exifInfo.replaceChildren();
+
+if(!file){
+fileInfo.textContent="لم يتم اختيار ملف.";
+exifInfo.textContent="بانتظار اختيار صورة.";
+return;
+}
+
+const sizeMB=(file.size/1024/1024).toFixed(2);
+
+fileItem("اسم الملف",file.name);
+fileItem("نوع الملف",file.type||"غير معروف");
+fileItem("حجم الملف",sizeMB+" MB");
+
+fileItem(
+"تاريخ آخر تعديل",
+new Date(file.lastModified).toLocaleString("ar")
+);
+
+currentObjectURL=URL.createObjectURL(file);
+
+if(file.type.startsWith("image/")){
+
+const allowed=[
+"image/png",
+"image/jpeg",
+"image/webp"
+];
+
+if(!allowed.includes(file.type)){
+fileItem("حالة الملف","صيغة الصورة غير مدعومة.");
+return;
+}
+
+currentImageFile=file;
+
+imagePreview.onload=function(){
+
+fileItem(
+"عرض الصورة",
+imagePreview.naturalWidth+" بكسل"
+);
+
+fileItem(
+"ارتفاع الصورة",
+imagePreview.naturalHeight+" بكسل"
+);
+
+fileItem(
+"دقة الصورة",
+imagePreview.naturalWidth+" × "+
+imagePreview.naturalHeight
+);
+
+fileItem(
+"حالة القراءة",
+"تمت قراءة الصورة محلياً بنجاح"
+);
+};
+
+imagePreview.onerror=function(){
+fileItem("حالة القراءة","تعذرت قراءة الصورة.");
+};
+
+imagePreview.src=currentObjectURL;
+imagePreview.style.display="block";
+
+fileItem("نوع التحليل","تحليل صورة ثابتة");
+
+await analyzeEXIF(file);
+
+return;
+}
+
+if(!file.type.startsWith("video/")){
+
+fileItem(
+"حالة الملف",
+"نوع الملف غير مدعوم. اختر فيديو أو صورة."
+);
+
+return;
+}
+
+currentVideoFile=file;
+
+videoPreview.src=currentObjectURL;
+videoPreview.style.display="block";
+
+frameSection.style.display="block";
+
+videoPreview.onloadedmetadata=function(){
+
+const duration=videoPreview.duration;
+
+const hours=Math.floor(duration/3600);
+const minutes=Math.floor((duration%3600)/60);
+const seconds=Math.floor(duration%60);
+
+const formatted=
+String(hours).padStart(2,"0")+":"+
+String(minutes).padStart(2,"0")+":"+
+String(seconds).padStart(2,"0");
+
+fileItem("مدة الفيديو",formatted);
+
+fileItem(
+"عرض الفيديو",
+videoPreview.videoWidth+" بكسل"
+);
+
+fileItem(
+"ارتفاع الفيديو",
+videoPreview.videoHeight+" بكسل"
+);
+
+fileItem(
+"دقة الفيديو",
+videoPreview.videoWidth+" × "+
+videoPreview.videoHeight
+);
+
+fileItem(
+"حالة القراءة",
+"تم استخراج البيانات الوصفية بنجاح"
+);
+};
+
+videoPreview.onerror=function(){
+fileItem(
+"حالة القراءة",
+"تعذر قراءة الفيديو. قد تكون الصيغة أو الترميز غير مدعوم."
+);
+};
+
+exifInfo.textContent=
+"تحليل EXIF مخصص للصور. بيانات الفيديو الأساسية ظاهرة في قسم الملف.";
+};
 
 // استخراج إطارات الفيديو
 
-async function extractFrames() {
-  if (!currentVideoFile || !currentObjectURL) {
-    alert("اختر ملف فيديو أولاً.");
-    return;
-  }
+async function extractFrames(){
 
-  const button = $("captureFrames");
+if(!currentVideoFile||!currentObjectURL){
+alert("اختر ملف فيديو أولاً.");
+return;
+}
 
-  button.disabled = true;
-  button.textContent = "جارٍ استخراج الإطارات...";
+const button=$("captureFrames");
 
-  framesBox.replaceChildren();
+button.disabled=true;
+button.textContent="جارٍ استخراج الإطارات...";
 
-  try {
-    const video = document.createElement("video");
+framesBox.replaceChildren();
 
-    video.preload = "auto";
-    video.muted = true;
-    video.playsInline = true;
-    video.src = currentObjectURL;
+try{
 
-    await new Promise((resolve, reject) => {
-      video.onloadedmetadata = resolve;
-      video.onerror = () => reject(
-        new Error("تعذر فتح الفيديو.")
-      );
-    });
+const video=document.createElement("video");
 
-    const duration = video.duration;
+video.preload="auto";
+video.muted=true;
+video.playsInline=true;
+video.src=currentObjectURL;
 
-    if (!Number.isFinite(duration) || duration <= 0) {
-      throw new Error("مدة الفيديو غير صالحة.");
-    }
+await new Promise((resolve,reject)=>{
 
-    const canvas = document.createElement("canvas");
-    const maxWidth = 480;
+video.onloadedmetadata=resolve;
 
-    const scale = Math.min(
-      1,
-      maxWidth / video.videoWidth
-    );
+video.onerror=()=>reject(
+new Error("تعذر فتح الفيديو.")
+);
+});
 
-    canvas.width = Math.round(video.videoWidth * scale);
-    canvas.height = Math.round(video.videoHeight * scale);
+const duration=video.duration;
 
-    const context = canvas.getContext("2d");
+if(!Number.isFinite(duration)||duration<=0){
+throw new Error("مدة الفيديو غير صالحة.");
+}
 
-    if (!context) {
-      throw new Error("تعذر إنشاء مساحة معالجة الإطارات.");
-    }
+const canvas=document.createElement("canvas");
 
-    const positions = [
-      duration * 0.10,
-      duration * 0.30,
-      duration * 0.50,
-      duration * 0.70,
-      duration * 0.90
-    ];
+const maxWidth=480;
 
-    for (let i = 0; i < positions.length; i++) {
-      const time = Math.min(
-        positions[i],
-        Math.max(0, duration - 0.1)
-      );
+const scale=Math.min(
+1,
+maxWidth/video.videoWidth
+);
 
-      await new Promise((resolve, reject) => {
-        video.onseeked = resolve;
-        video.onerror = reject;
-        video.currentTime = time;
-      });
+canvas.width=Math.round(video.videoWidth*scale);
+canvas.height=Math.round(video.videoHeight*scale);
 
-      context.drawImage(
-        video,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
+const context=canvas.getContext("2d");
 
-      const image = document.createElement("img");
+if(!context){
+throw new Error("تعذر إنشاء مساحة معالجة الإطارات.");
+}
 
-      image.src = canvas.toDataURL("image/jpeg", 0.85);
-      image.alt = "إطار رقم " + (i + 1);
+const positions=[
+duration*0.10,
+duration*0.30,
+duration*0.50,
+duration*0.70,
+duration*0.90
+];
 
-      image.title =
-        "الإطار " + (i + 1) +
-        " عند " + time.toFixed(1) + " ثانية";
+for(let i=0;i<positions.length;i++){
 
-      framesBox.appendChild(image);
-    }
+const time=Math.min(
+positions[i],
+Math.max(0,duration-0.1)
+);
 
-    fileItem("عدد الإطارات المستخرجة", positions.length);
+await new Promise((resolve,reject)=>{
 
-    fileItem(
-      "نتيجة استخراج الإطارات",
-      "اكتملت العملية محلياً بنجاح"
-    );
+video.onseeked=resolve;
+video.onerror=reject;
 
-  } catch (error) {
-    alert("تعذر استخراج الإطارات: " + error.message);
+video.currentTime=time;
+});
 
-  } finally {
-    button.disabled = false;
-    button.textContent = "استخراج إطارات الفيديو";
-  }
+context.drawImage(
+video,
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+const image=document.createElement("img");
+
+image.src=canvas.toDataURL("image/jpeg",0.85);
+
+image.alt="إطار رقم "+(i+1);
+
+image.title=
+"الإطار "+(i+1)+
+" عند "+time.toFixed(1)+" ثانية";
+
+framesBox.appendChild(image);
+}
+
+fileItem("عدد الإطارات المستخرجة",positions.length);
+
+fileItem(
+"نتيجة استخراج الإطارات",
+"اكتملت العملية محلياً بنجاح"
+);
+
+}catch(error){
+
+alert("تعذر استخراج الإطارات: "+error.message);
+
+}finally{
+
+button.disabled=false;
+
+button.textContent="استخراج إطارات الفيديو";
+}
 }
 
 $("captureFrames").addEventListener(
-  "click",
-  extractFrames
+"click",
+extractFrames
 );
 
 // طباعة التقرير
 
-$("printReport").addEventListener("click", () => {
-  if (!$("report").children.length) {
-    setStatus("لا يوجد تقرير للطباعة.", "error");
-    return;
-  }
+$("printReport").addEventListener("click",()=>{
 
-  window.print();
+if(!$("report").children.length){
+setStatus("لا يوجد تقرير للطباعة.","error");
+return;
+}
+
+window.print();
 });
 
 // إعادة ضبط المنصة
 
-$("reset").addEventListener("click", () => {
-  $("channel").value = "";
-  $("video").value = "";
+$("reset").addEventListener("click",()=>{
 
-  $("report").replaceChildren();
-  $("channelHeader").replaceChildren();
-  $("reportTime").textContent = "";
+$("channel").value="";
+$("video").value="";
 
-  resultBox.style.display = "none";
+$("report").replaceChildren();
+$("channelHeader").replaceChildren();
+$("reportTime").textContent="";
 
-  fileInput.value = "";
-  fileInfo.textContent = "لم يتم اختيار ملف.";
+resultBox.style.display="none";
 
-  clearPreview();
+fileInput.value="";
 
-  setStatus(
-    "تمت إعادة ضبط VIRIFIXO 4.1. جاهز لفحص جديد.",
-    "success"
-  );
+fileInfo.textContent="لم يتم اختيار ملف.";
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+exifInfo.textContent=
+"بانتظار اختيار صورة لتحليل بيانات EXIF.";
+
+clearPreview();
+
+setStatus(
+"تمت إعادة ضبط VIRIFIXO 4.2. جاهز لفحص جديد.",
+"success"
+);
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
 });
 
 // التهيئة النهائية
 
 setStatus(
-  "VIRIFIXO 4.1 جاهز للفحص عبر خادم Cloudflare.",
-  "success"
+"VIRIFIXO 4.2 جاهز للفحص عبر خادم Cloudflare.",
+"success"
 );
 
 </script>
 
 </body>
 </html>
-
-<!-- بداية الجزء الثاني -->
-
-<script>
-"use strict";
-
-// =====================================
-// VIRIFIXO 4.2 - API CONFIGURATION
-// =====================================
-
-const API_BASE =
-  "https://virifixo-api.ashrafhanfy1988.workers.dev";
-
-const $ = id => document.getElementById(id);
-
-const statusBox = $("status");
-const resultBox = $("result");
-
-function setStatus(message, type = "") {
-  statusBox.className = "status " + type;
-  statusBox.textContent = message;
-}
-
-function addItem(label, value) {
-  const div = document.createElement("div");
-  div.className = "item";
-
-  const strong = document.createElement("strong");
-  strong.textContent = label + " : ";
-
-  const span = document.createElement("span");
-
-  span.textContent =
-    value === undefined ||
-    value === null ||
-    value === ""
-      ? "غير متوفر"
-      : String(value);
-
-  div.append(strong, span);
-  $("report").appendChild(div);
-}
-
-// =====================================
-// YOUTUBE URL PARSER
-// =====================================
-
-function parseYouTubeURL(value) {
-  try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase();
-
-    const allowedHosts = [
-      "youtube.com",
-      "www.youtube.com",
-      "m.youtube.com",
-      "youtu.be"
-    ];
-
-    if (!allowedHosts.includes(host)) {
-      return null;
-    }
-
-    const parts = url.pathname
-      .split("/")
-      .filter(Boolean);
-
-    if (host === "youtu.be") {
-      return {
-        type: "video",
-        id: parts[0] || null
-      };
-    }
-
-    if (url.pathname === "/watch") {
-      return {
-        type: "video",
-        id: url.searchParams.get("v")
-      };
-    }
-
-    if (
-      ["shorts", "embed", "live"].includes(parts[0])
-    ) {
-      return {
-        type: "video",
-        id: parts[1] || null
-      };
-    }
-
-    if (
-      parts[0] === "channel" &&
-      parts[1]
-    ) {
-      return {
-        type: "channel",
-        id: parts[1]
-      };
-    }
-
-    if (parts[0]?.startsWith("@")) {
-      return {
-        type: "handle",
-        handle: parts[0].slice(1)
-      };
-    }
-
-    if (
-      parts[0] === "user" &&
-      parts[1]
-    ) {
-      return {
-        type: "username",
-        username: parts[1]
-      };
-    }
-
-    return null;
-
-  } catch {
-    return null;
-  }
-}
-
-// =====================================
-// API REQUEST
-// =====================================
-
-async function apiRequest(endpoint, params) {
-
-  const url = new URL(
-    API_BASE + "/youtube/v3/" + endpoint
-  );
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (
-      value !== null &&
-      value !== undefined
-    ) {
-      url.searchParams.set(key, value);
-    }
-  });
-
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      "Accept": "application/json"
-    }
-  });
-
-  let data;
-
-  try {
-    data = await response.json();
-  } catch {
-    throw new Error(
-      "تعذر قراءة استجابة خادم VIRIFIXO."
-    );
-  }
-
-  if (!response.ok) {
-
-    const reason =
-      data.error?.errors?.[0]?.reason;
-
-    const message =
-      data.error?.message || "";
-
-    if (reason === "quotaExceeded") {
-      throw new Error(
-        "تم استنفاد حصة استخدام YouTube API."
-      );
-    }
-
-    if (reason === "keyInvalid") {
-      throw new Error(
-        "مفتاح YouTube API غير صالح."
-      );
-    }
-
-    if (
-      response.status === 403 &&
-      message === "Origin not allowed"
-    ) {
-      throw new Error(
-        "مصدر الموقع غير مسموح به في خادم Cloudflare."
-      );
-    }
-
-    throw new Error(
-      message || "فشل الاتصال بخدمة YouTube."
-    );
-  }
-
-  return data;
-}
-
-// =====================================
-// CHANNEL DATA
-// =====================================
-
-async function getChannel(id, handle, username) {
-
-  const params = {
-    part: "snippet,statistics,contentDetails"
-  };
-
-  if (id) {
-
-    params.id = id;
-
-  } else if (handle) {
-
-    params.forHandle = handle;
-
-  } else if (username) {
-
-    throw new Error(
-      "روابط أسماء المستخدمين القديمة تحتاج إلى دعم إضافي."
-    );
-
-  } else {
-
-    throw new Error(
-      "لم يتم تحديد معرف القناة."
-    );
-  }
-
-  const data = await apiRequest(
-    "channels",
-    params
-  );
-
-  if (data.items?.length) {
-    return data.items[0];
-  }
-
-  throw new Error(
-    "تعذر العثور على القناة. تحقق من الرابط."
-  );
-}
-
-// =====================================
-// CHANNEL HEADER
-// =====================================
-
-function renderChannel(channel) {
-
-  const header = $("channelHeader");
-
-  header.replaceChildren();
-
-  const imageURL =
-    channel.snippet?.thumbnails?.medium?.url ||
-    channel.snippet?.thumbnails?.default?.url;
-
-  if (imageURL) {
-
-    const image = document.createElement("img");
-
-    image.src = imageURL;
-    image.alt = "صورة القناة";
-    image.loading = "lazy";
-
-    header.appendChild(image);
-  }
-
-  const info = document.createElement("div");
-
-  const name = document.createElement("h3");
-
-  name.textContent =
-    channel.snippet?.title ||
-    "اسم غير متوفر";
-
-  const link = document.createElement("a");
-
-  link.className = "channel-link";
-
-  link.href =
-    "https://www.youtube.com/channel/" +
-    encodeURIComponent(channel.id);
-
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-
-  link.textContent =
-    "فتح القناة على YouTube";
-
-  info.append(name, link);
-
-  header.appendChild(info);
-}
-
-// =====================================
-// CHANNEL REPORT
-// =====================================
-
-function renderChannelReport(channel) {
-
-  const s = channel.snippet || {};
-  const stats = channel.statistics || {};
-
-  addItem("اسم القناة", s.title);
-
-  addItem("معرف القناة", channel.id);
-
-  addItem(
-    "تاريخ إنشاء القناة",
-    s.publishedAt
-  );
-
-  addItem(
-    "عدد المشتركين",
-    stats.hiddenSubscriberCount
-      ? "عدد المشتركين مخفي"
-      : stats.subscriberCount
-  );
-
-  addItem(
-    "إجمالي المشاهدات",
-    stats.viewCount
-  );
-
-  addItem(
-    "عدد الفيديوهات",
-    stats.videoCount
-  );
-
-  addItem(
-    "بلد القناة",
-    s.country
-  );
-
-  addItem(
-    "وصف القناة",
-    s.description
-  );
-}
-
-// =====================================
-// VIDEO REPORT
-// =====================================
-
-function renderVideoReport(video) {
-
-  const s = video.snippet || {};
-  const stats = video.statistics || {};
-  const state = video.status || {};
-
-  addItem("عنوان الفيديو", s.title);
-
-  addItem("معرف الفيديو", video.id);
-
-  addItem(
-    "تاريخ النشر",
-    s.publishedAt
-  );
-
-  addItem(
-    "اسم القناة الناشرة",
-    s.channelTitle
-  );
-
-  addItem(
-    "معرف القناة الناشرة",
-    s.channelId
-  );
-
-  addItem(
-    "عدد المشاهدات",
-    stats.viewCount
-  );
-
-  addItem(
-    "عدد الإعجابات",
-    stats.likeCount
-  );
-
-  addItem(
-    "عدد التعليقات",
-    stats.commentCount
-  );
-
-  addItem(
-    "حالة الخصوصية",
-    state.privacyStatus
-  );
-
-  addItem(
-    "وصف الفيديو",
-    s.description
-  );
-
-  addItem(
-    "رابط الفيديو",
-    "https://www.youtube.com/watch?v=" +
-    video.id
-  );
-}
-
-// =====================================
-// MAIN VERIFICATION ENGINE
-// =====================================
-
-async function verify() {
-
-  const channelURL =
-    $("channel").value.trim();
-
-  const videoURL =
-    $("video").value.trim();
-
-  if (
-    (!channelURL && !videoURL) ||
-    (channelURL && videoURL)
-  ) {
-
-    setStatus(
-      "أدخل رابط قناة أو رابط فيديو واحداً فقط.",
-      "error"
-    );
-
-    return;
-  }
-
-  const parsed = parseYouTubeURL(
-    channelURL || videoURL
-  );
-
-  if (!parsed) {
-
-    setStatus(
-      "الرابط غير صحيح أو غير مدعوم.",
-      "error"
-    );
-
-    return;
-  }
-
-  if (
-    parsed.type === "video" &&
-    !/^[a-zA-Z0-9_-]{11}$/.test(
-      parsed.id || ""
-    )
-  ) {
-
-    setStatus(
-      "معرف الفيديو غير صحيح.",
-      "error"
-    );
-
-    return;
-  }
-
-  if (
-    parsed.type === "channel" &&
-    !/^UC[a-zA-Z0-9_-]{22}$/.test(
-      parsed.id || ""
-    )
-  ) {
-
-    setStatus(
-      "معرف القناة غير صحيح.",
-      "error"
-    );
-
-    return;
-  }
-
-  $("verify").disabled = true;
-
-  resultBox.style.display = "none";
-
-  $("report").replaceChildren();
-
-  $("channelHeader").replaceChildren();
-
-  try {
-
-    let channel = null;
-    let video = null;
-
-    // VIDEO CHECK
-
-    if (parsed.type === "video") {
-
-      setStatus(
-        "جارٍ جلب بيانات الفيديو من YouTube...",
-        "loading"
-      );
-
-      const data = await apiRequest(
-        "videos",
-        {
-          part: "snippet,statistics,status",
-          id: parsed.id
-        }
-      );
-
-      video = data.items?.[0];
-
-      if (!video) {
-
-        throw new Error(
-          "الفيديو غير موجود أو غير متاح."
-        );
-      }
-
-      if (!video.snippet?.channelId) {
-
-        throw new Error(
-          "تعذر تحديد القناة الناشرة."
-        );
-      }
-
-      setStatus(
-        "تم العثور على الفيديو. جارٍ فحص القناة...",
-        "loading"
-      );
-
-      channel = await getChannel(
-        video.snippet.channelId,
-        null,
-        null
-      );
-
-    }
-
-    // CHANNEL CHECK
-
-    else {
-
-      setStatus(
-        "جارٍ البحث عن القناة...",
-        "loading"
-      );
-
-      channel = await getChannel(
-        parsed.id || null,
-        parsed.handle || null,
-        parsed.username || null
-      );
-    }
-
-    // GENERATE REPORT
-
-    renderChannel(channel);
-
-    renderChannelReport(channel);
-
-    if (video) {
-      renderVideoReport(video);
-    }
-
-    addItem(
-      "نتيجة جلب البيانات",
-      "تم جلب البيانات من YouTube Data API عبر خادم VIRIFIXO"
-    );
-
-    addItem(
-      "نتيجة فحص الأصالة",
-      "لم يتم إثبات أصالة المحتوى أو زيفه"
-    );
-
-    addItem(
-      "حالة التحقق",
-      "تم التحقق من البيانات المتاحة فقط"
-    );
-
-    $("reportTime").textContent =
-      "وقت الفحص: " +
-      new Date().toLocaleString("ar");
-
-    resultBox.style.display = "block";
-
-    setStatus(
-      "اكتمل الفحص وجلب البيانات بنجاح.",
-      "success"
-    );
-
-    resultBox.scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
-
-  } catch (error) {
-
-    setStatus(
-      "حدث خطأ أثناء الفحص: " +
-      error.message,
-      "error"
-    );
-
-  } finally {
-
-    $("verify").disabled = false;
-  }
-}
-
-// =====================================
-// START VERIFICATION
-// =====================================
-
-$("verify").addEventListener(
-  "click",
-  verify
-);
-
-// =====================================
-// END OF PART TWO
-// =====================================
-</script>
-
-<!-- نهاية الجزء الثاني -->
-
-<!-- بداية الجزء الثالث -->
-
-<script>
-"use strict";
-
-// =====================================
-// VIRIFIXO 4.2 - MEDIA ANALYSIS
-// =====================================
-
-let currentObjectURL = null;
-let currentVideoFile = null;
-
-const fileInput = $("file");
-const videoPreview = $("videoPreview");
-const imagePreview = $("imagePreview");
-const fileInfo = $("fileInfo");
-const frameSection = $("frameSection");
-const framesBox = $("frames");
-
-// =====================================
-// FILE INFORMATION
-// =====================================
-
-function fileItem(label, value) {
-
-  const div = document.createElement("div");
-
-  div.className = "item";
-
-  const strong = document.createElement("strong");
-
-  strong.textContent = label + " : ";
-
-  const span = document.createElement("span");
-
-  span.textContent =
-    value === undefined ||
-    value === null
-      ? "غير متوفر"
-      : String(value);
-
-  div.append(strong, span);
-
-  fileInfo.appendChild(div);
-}
-
-// =====================================
-// CLEAR PREVIOUS FILE
-// =====================================
-
-function clearPreview() {
-
-  videoPreview.pause();
-
-  videoPreview.removeAttribute("src");
-
-  videoPreview.load();
-
-  imagePreview.removeAttribute("src");
-
-  videoPreview.style.display = "none";
-
-  imagePreview.style.display = "none";
-
-  frameSection.style.display = "none";
-
-  framesBox.replaceChildren();
-
-  currentVideoFile = null;
-
-  if (currentObjectURL) {
-
-    URL.revokeObjectURL(currentObjectURL);
-
-    currentObjectURL = null;
-  }
-}
-
-// =====================================
-// FILE SELECTION
-// =====================================
-
-fileInput.addEventListener(
-  "change",
-  function () {
-
-    const file = this.files?.[0];
-
-    clearPreview();
-
-    fileInfo.replaceChildren();
-
-    if (!file) {
-
-      fileInfo.textContent =
-        "لم يتم اختيار ملف.";
-
-      return;
-    }
-
-    const sizeMB = (
-      file.size / 1024 / 1024
-    ).toFixed(2);
-
-    fileItem("اسم الملف", file.name);
-
-    fileItem(
-      "نوع الملف",
-      file.type || "غير معروف"
-    );
-
-    fileItem(
-      "حجم الملف",
-      sizeMB + " MB"
-    );
-
-    fileItem(
-      "تاريخ آخر تعديل",
-      new Date(
-        file.lastModified
-      ).toLocaleString("ar")
-    );
-
-    currentObjectURL =
-      URL.createObjectURL(file);
-
-    // =================================
-    // IMAGE ANALYSIS
-    // =================================
-
-    if (file.type.startsWith("image/")) {
-
-      const allowed = [
-        "image/png",
-        "image/jpeg",
-        "image/webp"
-      ];
-
-      if (!allowed.includes(file.type)) {
-
-        fileItem(
-          "حالة الملف",
-          "صيغة الصورة غير مدعومة."
-        );
-
-        return;
-      }
-
-      imagePreview.onload = function () {
-
-        fileItem(
-          "عرض الصورة",
-          imagePreview.naturalWidth + " بكسل"
-        );
-
-        fileItem(
-          "ارتفاع الصورة",
-          imagePreview.naturalHeight + " بكسل"
-        );
-
-        fileItem(
-          "دقة الصورة",
-          imagePreview.naturalWidth +
-          " × " +
-          imagePreview.naturalHeight
-        );
-
-        fileItem(
-          "حالة القراءة",
-          "تمت قراءة الصورة محلياً بنجاح"
-        );
-      };
-
-      imagePreview.onerror = function () {
-
-        fileItem(
-          "حالة القراءة",
-          "تعذرت قراءة الصورة."
-        );
-      };
-
-      imagePreview.src = currentObjectURL;
-
-      imagePreview.style.display = "block";
-
-      fileItem(
-        "نوع التحليل",
-        "تحليل صورة ثابتة"
-      );
-
-      return;
-    }
-
-    // =================================
-    // VIDEO ANALYSIS
-    // =================================
-
-    if (!file.type.startsWith("video/")) {
-
-      fileItem(
-        "حالة الملف",
-        "نوع الملف غير مدعوم. اختر فيديو أو صورة."
-      );
-
-      return;
-    }
-
-    currentVideoFile = file;
-
-    videoPreview.src = currentObjectURL;
-
-    videoPreview.style.display = "block";
-
-    frameSection.style.display = "block";
-
-    videoPreview.onloadedmetadata = function () {
-
-      const duration = videoPreview.duration;
-
-      if (!Number.isFinite(duration)) {
-
-        fileItem(
-          "مدة الفيديو",
-          "غير متاحة"
-        );
-
-        return;
-      }
-
-      const hours = Math.floor(
-        duration / 3600
-      );
-
-      const minutes = Math.floor(
-        (duration % 3600) / 60
-      );
-
-      const seconds = Math.floor(
-        duration % 60
-      );
-
-      const formatted =
-        String(hours).padStart(2, "0") +
-        ":" +
-        String(minutes).padStart(2, "0") +
-        ":" +
-        String(seconds).padStart(2, "0");
-
-      fileItem(
-        "مدة الفيديو",
-        formatted
-      );
-
-      fileItem(
-        "عرض الفيديو",
-        videoPreview.videoWidth + " بكسل"
-      );
-
-      fileItem(
-        "ارتفاع الفيديو",
-        videoPreview.videoHeight + " بكسل"
-      );
-
-      fileItem(
-        "دقة الفيديو",
-        videoPreview.videoWidth +
-        " × " +
-        videoPreview.videoHeight
-      );
-
-      fileItem(
-        "حالة القراءة",
-        "تم استخراج البيانات الوصفية بنجاح"
-      );
-    };
-
-    videoPreview.onerror = function () {
-
-      fileItem(
-        "حالة القراءة",
-        "تعذر قراءة الفيديو. قد تكون الصيغة أو الترميز غير مدعوم."
-      );
-    };
-  }
-);
-
-// =====================================
-// EXTRACT VIDEO FRAMES
-// =====================================
-
-async function extractFrames() {
-
-  if (!currentVideoFile || !currentObjectURL) {
-
-    alert(
-      "اختر ملف فيديو أولاً."
-    );
-
-    return;
-  }
-
-  const button = $("captureFrames");
-
-  button.disabled = true;
-
-  button.textContent =
-    "جارٍ استخراج الإطارات...";
-
-  framesBox.replaceChildren();
-
-  try {
-
-    const video = document.createElement("video");
-
-    video.preload = "auto";
-
-    video.muted = true;
-
-    video.playsInline = true;
-
-    video.src = currentObjectURL;
-
-    await new Promise((resolve, reject) => {
-
-      video.onloadedmetadata = resolve;
-
-      video.onerror = () => reject(
-        new Error("تعذر فتح الفيديو.")
-      );
-    });
-
-    const duration = video.duration;
-
-    if (
-      !Number.isFinite(duration) ||
-      duration <= 0 ||
-      !video.videoWidth ||
-      !video.videoHeight
-    ) {
-
-      throw new Error(
-        "بيانات الفيديو غير صالحة."
-      );
-    }
-
-    const canvas = document.createElement("canvas");
-
-    const maxWidth = 480;
-
-    const scale = Math.min(
-      1,
-      maxWidth / video.videoWidth
-    );
-
-    canvas.width = Math.round(
-      video.videoWidth * scale
-    );
-
-    canvas.height = Math.round(
-      video.videoHeight * scale
-    );
-
-    const context = canvas.getContext("2d");
-
-    if (!context) {
-
-      throw new Error(
-        "تعذر إنشاء مساحة معالجة الإطارات."
-      );
-    }
-
-    const positions = [
-      duration * 0.10,
-      duration * 0.30,
-      duration * 0.50,
-      duration * 0.70,
-      duration * 0.90
-    ];
-
-    for (
-      let i = 0;
-      i < positions.length;
-      i++
-    ) {
-
-      const time = Math.min(
-        positions[i],
-        Math.max(0, duration - 0.1)
-      );
-
-      await new Promise((resolve, reject) => {
-
-        video.onseeked = resolve;
-
-        video.onerror = () => reject(
-          new Error("تعذر الانتقال إلى الإطار المطلوب.")
-        );
-
-        video.currentTime = time;
-      });
-
-      context.drawImage(
-        video,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-
-      const image = document.createElement("img");
-
-      image.src = canvas.toDataURL(
-        "image/jpeg",
-        0.85
-      );
-
-      image.alt =
-        "إطار رقم " + (i + 1);
-
-      image.title =
-        "الإطار " +
-        (i + 1) +
-        " عند " +
-        time.toFixed(1) +
-        " ثانية";
-
-      framesBox.appendChild(image);
-    }
-
-    fileItem(
-      "عدد الإطارات المستخرجة",
-      positions.length
-    );
-
-    fileItem(
-      "نتيجة استخراج الإطارات",
-      "اكتملت العملية محلياً بنجاح"
-    );
-
-  } catch (error) {
-
-    alert(
-      "تعذر استخراج الإطارات: " +
-      error.message
-    );
-
-  } finally {
-
-    button.disabled = false;
-
-    button.textContent =
-      "استخراج إطارات الفيديو";
-  }
-}
-
-$("captureFrames").addEventListener(
-  "click",
-  extractFrames
-);
-
-// =====================================
-// PRINT REPORT
-// =====================================
-
-$("printReport").addEventListener(
-  "click",
-  () => {
-
-    if (!$("report").children.length) {
-
-      setStatus(
-        "لا يوجد تقرير للطباعة.",
-        "error"
-      );
-
-      return;
-    }
-
-    window.print();
-  }
-);
-
-// =====================================
-// RESET PLATFORM
-// =====================================
-
-$("reset").addEventListener(
-  "click",
-  () => {
-
-    $("channel").value = "";
-
-    $("video").value = "";
-
-    $("report").replaceChildren();
-
-    $("channelHeader").replaceChildren();
-
-    $("reportTime").textContent = "";
-
-    resultBox.style.display = "none";
-
-    fileInput.value = "";
-
-    fileInfo.textContent =
-      "لم يتم اختيار ملف.";
-
-    clearPreview();
-
-    setStatus(
-      "تمت إعادة ضبط VIRIFIXO 4.2. جاهز لفحص جديد.",
-      "success"
-    );
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  }
-);
-
-// =====================================
-// FINAL INITIALIZATION
-// =====================================
-
-setStatus(
-  "VIRIFIXO 4.2 جاهز للفحص عبر خادم Cloudflare.",
-  "success"
-);
-
-// =====================================
-// END OF PART THREE
-// =====================================
-</script>
-
-</body>
-</html>
-
-<!-- نهاية الجزء الثالث -->
