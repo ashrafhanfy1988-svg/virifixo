@@ -1,14 +1,799 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=./public/">
-    <title>Virifixo 3.4</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="VIRIFIXO منصة متقدمة للتحقق الإعلامي وتحليل الصور والفيديوهات والمصادر الرقمية.">
+<meta name="color-scheme" content="dark">
+<title>VIRIFIXO 4.2 | Advanced Media Verification</title>
+
+<script defer src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
+
+<style>
+:root {
+  --bg:#0b1220;
+  --panel:#141f31;
+  --panel2:#101a2b;
+  --border:#293b54;
+  --blue:#3185f5;
+  --light:#79b6ff;
+  --text:#f4f7fc;
+  --muted:#a6b5ca;
+  --green:#45dc91;
+  --red:#ff737d;
+  --gold:#ffd166;
+  --radius:15px;
+}
+
+* { box-sizing:border-box; }
+
+html { scroll-behavior:smooth; }
+
+body {
+  margin:0;
+  padding:16px;
+  min-height:100vh;
+  background:radial-gradient(ellipse at top,#172944 0%,var(--bg) 55%);
+  color:var(--text);
+  font-family:Arial,Tahoma,sans-serif;
+  line-height:1.7;
+}
+
+button,input { font:inherit; }
+
+button {
+  border:0;
+  border-radius:9px;
+  padding:12px 18px;
+  background:var(--blue);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+}
+
+button:hover { filter:brightness(1.12); }
+button:disabled { opacity:.5; cursor:wait; }
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline:2px solid var(--light);
+  outline-offset:3px;
+}
+
+.container {
+  width:100%;
+  max-width:1050px;
+  margin:20px auto;
+}
+
+header {
+  text-align:center;
+  margin:20px 0 30px;
+}
+
+.logo {
+  font-size:43px;
+  font-weight:900;
+  letter-spacing:3px;
+  color:var(--light);
+  text-shadow:0 0 24px #3185f544;
+}
+
+.subtitle,.muted {
+  color:var(--muted);
+  line-height:1.9;
+}
+
+.version {
+  display:inline-block;
+  padding:4px 12px;
+  border:1px solid var(--border);
+  border-radius:20px;
+  font-size:12px;
+  color:var(--light);
+}
+
+.panel {
+  background:linear-gradient(145deg,var(--panel),#121c2c);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:22px;
+  margin-bottom:18px;
+  box-shadow:0 10px 35px #0002;
+}
+
+h2 { font-size:19px; margin:0 0 16px; }
+h3 { font-size:16px; }
+
+label {
+  display:block;
+  margin:15px 0 7px;
+  font-weight:bold;
+}
+
+input[type="url"],
+input[type="file"] {
+  width:100%;
+  padding:13px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:9px;
+  color:white;
+  font-size:14px;
+}
+
+input[type="file"] { cursor:pointer; }
+
+.primary {
+  width:100%;
+  margin-top:18px;
+  min-height:48px;
+}
+
+.secondary {
+  background:#344762;
+  margin:5px;
+}
+
+.status {
+  padding:13px;
+  border-radius:9px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  margin-top:15px;
+  color:var(--muted);
+  overflow-wrap:anywhere;
+  line-height:1.9;
+}
+
+.success { color:var(--green); }
+.error { color:var(--red); }
+.loading { color:var(--gold); }
+
+.result { display:none; }
+
+.item {
+  padding:12px;
+  margin:9px 0;
+  background:var(--panel2);
+  border:1px solid #263851;
+  border-right:3px solid var(--blue);
+  border-radius:8px;
+  line-height:1.9;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+}
+
+.item strong { color:var(--light); }
+
+.warning {
+  color:var(--gold);
+  background:#42371f;
+  border:1px solid #725c2a;
+  padding:14px;
+  border-radius:9px;
+  margin-top:17px;
+  line-height:1.9;
+}
+
+.channel-header {
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+  overflow-wrap:anywhere;
+}
+
+.channel-header img {
+  width:78px;
+  height:78px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid var(--blue);
+  background:var(--panel2);
+}
+
+.channel-link {
+  color:var(--light);
+  text-decoration:none;
+}
+
+.preview {
+  display:none;
+  width:100%;
+  max-height:420px;
+  object-fit:contain;
+  background:#080d16;
+  border-radius:10px;
+  margin-top:15px;
+}
+
+.frame-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(125px,1fr));
+  gap:12px;
+  margin-top:15px;
+}
+
+.frame-card {
+  background:var(--panel2);
+  padding:7px;
+  border-radius:9px;
+  border:1px solid var(--border);
+}
+
+.frame-card img {
+  display:block;
+  width:100%;
+  border-radius:6px;
+}
+
+.frame-card small {
+  display:block;
+  color:var(--muted);
+  text-align:center;
+  margin-top:5px;
+}
+
+.actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:15px;
+}
+
+.actions button { flex:1; }
+
+footer {
+  text-align:center;
+  color:var(--muted);
+  padding:25px;
+  font-size:13px;
+}
+
+.hidden { display:none!important; }
+
+@media(max-width:600px) {
+  body { padding:9px; }
+  .panel { padding:15px; }
+  .logo { font-size:34px; }
+  .channel-header { align-items:flex-start; }
+  .channel-header img { width:62px; height:62px; }
+  .actions { flex-direction:column; }
+  .actions button { width:100%; margin:0; }
+}
+
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    scroll-behavior:auto!important;
+    transition:none!important;
+  }
+}
+
+@media print {
+  body { background:white; color:#111; padding:0; }
+  .container { max-width:100%; margin:0; }
+  .panel {
+    background:white;
+    color:#111;
+    border:1px solid #ccc;
+    box-shadow:none;
+    break-inside:avoid;
+  }
+  .item { background:#f5f5f5; color:#111; border-color:#ddd; }
+  .item strong { color:#174b85; }
+  .muted,.subtitle,footer { color:#555; }
+  button,.no-print { display:none!important; }
+  .warning { background:#fff5d8; color:#705400; border:1px solid #ddd; }
+  .status { background:#f5f5f5; color:#333; }
+  .result { display:block!important; }
+  a { color:#174b85; }
+}
+</style>
 </head>
+
 <body>
-    <p>Opening Virifixo...</p>
-    <a href="./public/">Open Virifixo</a>
+<div class="container">
+
+<header>
+  <div class="logo">VIRIFIXO</div>
+  <div class="subtitle">
+    منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
+  </div>
+  <p class="version">VERSION 4.2 · ADVANCED MEDIA VERIFICATION</p>
+</header>
+
+<section class="panel">
+  <h2>🔎 فحص قناة أو فيديو YouTube</h2>
+
+  <label for="channel">رابط القناة</label>
+  <input id="channel" type="url"
+    placeholder="https://www.youtube.com/@channel"
+    autocomplete="url">
+
+  <label for="video">رابط الفيديو</label>
+  <input id="video" type="url"
+    placeholder="https://www.youtube.com/watch?v=..."
+    autocomplete="url">
+
+  <p class="muted">
+    أدخل رابط قناة أو فيديو واحداً فقط.
+    يتم جلب البيانات من خلال خادم VIRIFIXO.
+    لا يُطلب منك إدخال مفتاح YouTube API.
+  </p>
+
+  <button class="primary" id="verify" type="button">
+    بدء الفحص والتحقق
+  </button>
+
+  <div class="status" id="status" role="status" aria-live="polite">
+    VIRIFIXO 4.2 جاهز لاستقبال طلب الفحص.
+  </div>
+</section>
+
+<section class="panel">
+  <h2>📁 تحليل ملف فيديو أو صورة</h2>
+
+  <label for="file">اختر ملفاً من جهازك</label>
+  <input id="file" type="file"
+    accept="video/*,image/jpeg,image/png,image/webp">
+
+  <p class="muted">
+    تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
+    لا يتم رفع الملف إلى الخادم بواسطة هذه الصفحة.
+  </p>
+
+  <div id="fileInfo" class="status">
+    لم يتم اختيار ملف.
+  </div>
+
+  <video id="videoPreview" class="preview"
+    controls playsinline preload="metadata"></video>
+
+  <img id="imagePreview" class="preview" alt="معاينة الصورة">
+
+  <div id="frameSection" class="hidden">
+    <h3>🎞️ استخراج إطارات الفيديو</h3>
+    <p class="muted">
+      استخراج عينات مرئية من الفيديو للمراجعة البشرية.
+    </p>
+    <div id="frames" class="frame-grid"></div>
+    <button id="captureFrames" class="secondary" type="button">
+      استخراج الإطارات
+    </button>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>🔬 تحليل البيانات الوصفية EXIF</h2>
+  <p class="muted">
+    فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
+    إذا كانت هذه البيانات موجودة داخل الصورة.
+  </p>
+  <div id="exifInfo" class="status">
+    بانتظار اختيار صورة.
+  </div>
+</section>
+
+<section class="panel result" id="result">
+  <h2>📋 تقرير VIRIFIXO</h2>
+  <div id="channelHeader" class="channel-header"></div>
+  <div id="report"></div>
+
+  <div class="warning">
+    تنبيه مهني: جلب بيانات المنصة أو وجود بيانات EXIF
+    لا يثبتان وحدهما أصالة المحتوى. كما أن غياب البيانات الوصفية
+    لا يعني بالضرورة أن الصورة مزيفة.
+  </div>
+
+  <p class="muted" id="reportTime"></p>
+
+  <div class="actions no-print">
+    <button class="secondary" id="printReport" type="button">
+      طباعة التقرير
+    </button>
+    <button class="secondary" id="reset" type="button">
+      بدء فحص جديد
+    </button>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>ℹ️ عن VIRIFIXO</h2>
+  <p>
+    VIRIFIXO منصة مساعدة للتحقق الإعلامي والتحليل الرقمي،
+    تهدف إلى مساعدة الصحفيين والمؤسسات الإعلامية على جمع
+    المؤشرات المتعلقة بمصادر الصور والفيديوهات ومراجعتها.
+  </p>
+  <p class="muted">
+    النتائج مؤشرات مساعدة وليست حكماً آلياً نهائياً على المصداقية.
+  </p>
+</section>
+
+<footer>
+  VIRIFIXO © 2026
+  <br>
+  Advanced Media Verification · Version 4.2
+</footer>
+
+</div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+let currentFileURL = null;
+let extractedFrames = [];
+
+function status(message, type = "") {
+  const el = $("status");
+  el.textContent = message;
+  el.className = "status " + type;
+}
+
+function bytes(size) {
+  if (size < 1024) return size + " Bytes";
+  if (size < 1048576) return (size / 1024).toFixed(2) + " KB";
+  return (size / 1048576).toFixed(2) + " MB";
+}
+
+function report(title, data) {
+  $("result").style.display = "block";
+  $("report").replaceChildren();
+
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+  $("channelHeader").replaceChildren(heading);
+
+  Object.entries(data).forEach(([key, value]) => {
+    const item = document.createElement("div");
+    item.className = "item";
+
+    const strong = document.createElement("strong");
+    strong.textContent = key + ": ";
+
+    const span = document.createElement("span");
+    span.textContent = value || "غير متوفر";
+
+    item.append(strong, span);
+    $("report").appendChild(item);
+  });
+
+  $("reportTime").textContent =
+    "تاريخ التقرير: " + new Date().toLocaleString("ar-SA");
+
+  $("result").scrollIntoView({behavior:"smooth"});
+}
+
+// فحص روابط YouTube
+$("verify").addEventListener("click", async () => {
+  const channel = $("channel").value.trim();
+  const video = $("video").value.trim();
+
+  if ((!channel && !video) || (channel && video)) {
+    status("أدخل رابط قناة أو فيديو واحداً فقط.", "error");
+    return;
+  }
+
+  const target = channel || video;
+
+  try {
+    const url = new URL(target);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (!["youtube.com", "m.youtube.com", "youtu.be",
+          "youtube-nocookie.com"].includes(host)) {
+      throw new Error("الرابط ليس رابط YouTube صالحاً.");
+    }
+  } catch (error) {
+    status(error.message || "الرابط غير صالح.", "error");
+    return;
+  }
+
+  const button = $("verify");
+  button.disabled = true;
+
+  status("جارٍ الاتصال بخادم VIRIFIXO...", "loading");
+
+  try {
+    const response = await fetch("/api/verify", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        type: channel ? "channel" : "video",
+        url: target
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("خادم الفحص غير متاح: " + response.status);
+    }
+
+    const data = await response.json();
+
+    report("نتائج فحص YouTube", {
+      "نوع الفحص": channel ? "قناة" : "فيديو",
+      "الرابط": target,
+      "العنوان": data.title,
+      "اسم القناة": data.channelTitle,
+      "معرف القناة": data.channelId,
+      "معرف الفيديو": data.videoId,
+      "تاريخ النشر": data.publishedAt,
+      "المشاهدات": data.viewCount,
+      "المشتركون": data.subscriberCount,
+      "الإعجابات": data.likeCount,
+      "التعليقات": data.commentCount,
+      "الوصف": data.description,
+      "المصدر": data.source
+    });
+
+    status("اكتمل الفحص واستلام البيانات.", "success");
+
+  } catch (error) {
+    status(
+      "تعذر الفحص: " + error.message +
+      ". تحقق من إعداد خادم /api/verify.",
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+  }
+});
+
+// تحليل الملفات المحلية
+$("file").addEventListener("change", async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const isImage = file.type.startsWith("image/");
+  const isVideo = file.type.startsWith("video/");
+
+  if (!isImage && !isVideo) {
+    $("fileInfo").textContent = "نوع الملف غير مدعوم.";
+    return;
+  }
+
+  if (file.size > 500 * 1024 * 1024) {
+    $("fileInfo").textContent = "حجم الملف يتجاوز 500 MB.";
+    return;
+  }
+
+  if (currentFileURL) URL.revokeObjectURL(currentFileURL);
+
+  currentFileURL = URL.createObjectURL(file);
+  extractedFrames = [];
+
+  $("frames").replaceChildren();
+  $("frameSection").classList.toggle("hidden", !isVideo);
+
+  $("fileInfo").textContent =
+    "اسم الملف: " + file.name +
+    "\nالنوع: " + file.type +
+    "\nالحجم: " + bytes(file.size) +
+    "\nتاريخ التعديل: " + new Date(file.lastModified).toLocaleString("ar-SA");
+
+  $("imagePreview").style.display = "none";
+  $("videoPreview").style.display = "none";
+
+  if (isImage) {
+    $("imagePreview").src = currentFileURL;
+    $("imagePreview").style.display = "block";
+    analyzeExif(file);
+  }
+
+  if (isVideo) {
+    const video = $("videoPreview");
+    video.src = currentFileURL;
+    video.style.display = "block";
+
+    video.onloadedmetadata = () => {
+      $("fileInfo").textContent +=
+        "\nمدة الفيديو: " + video.duration.toFixed(2) + " ثانية" +
+        "\nالعرض: " + video.videoWidth +
+        "\nالارتفاع: " + video.videoHeight;
+    };
+
+    $("exifInfo").textContent =
+      "تم اختيار فيديو. بيانات EXIF الخاصة بالصور غير متاحة لهذا الملف.";
+  }
+});
+
+// تحليل EXIF
+async function analyzeExif(file) {
+  const output = $("exifInfo");
+  output.textContent = "جارٍ تحليل البيانات الوصفية...";
+
+  try {
+    if (!window.ExifReader) {
+      throw new Error("مكتبة EXIF غير متاحة.");
+    }
+
+    const tags = await ExifReader.load(file, {expanded:true});
+    const data = tags.exif || {};
+    const gps = tags.gps || {};
+
+    const fields = {
+      "الشركة المصنعة": data.Make,
+      "طراز الكاميرا": data.Model,
+      "تاريخ الالتقاط": data.DateTimeOriginal,
+      "تاريخ الإنشاء": data.DateTime,
+      "البرنامج المستخدم": data.Software,
+      "البعد البؤري": data.FocalLength,
+      "فتحة العدسة": data.FNumber,
+      "سرعة الغالق": data.ExposureTime,
+      "ISO": data.ISOSpeedRatings,
+      "خط العرض": gps.Latitude,
+      "خط الطول": gps.Longitude
+    };
+
+    output.replaceChildren();
+
+    let found = false;
+
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+
+      found = true;
+
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const strong = document.createElement("strong");
+      strong.textContent = key + ": ";
+
+      const span = document.createElement("span");
+      span.textContent = typeof value === "object"
+        ? JSON.stringify(value)
+        : String(value);
+
+      item.append(strong, span);
+      output.appendChild(item);
+    });
+
+    if (!found) {
+      output.textContent = "لم يتم العثور على بيانات EXIF.";
+    }
+
+  } catch (error) {
+    output.textContent = "تعذر تحليل EXIF: " + error.message;
+  }
+}
+
+// استخراج إطارات الفيديو
+$("captureFrames").addEventListener("click", async () => {
+  const video = $("videoPreview");
+
+  if (!video.src || !Number.isFinite(video.duration) ||
+      video.duration <= 0) {
+    $("fileInfo").textContent = "اختر فيديو صالحاً أولاً.";
+    return;
+  }
+
+  const button = $("captureFrames");
+  button.disabled = true;
+  button.textContent = "جارٍ استخراج الإطارات...";
+
+  const canvas = document.createElement("canvas");
+  const maxWidth = 480;
+  const ratio = Math.min(1, maxWidth / video.videoWidth);
+
+  canvas.width = Math.max(1, Math.round(video.videoWidth * ratio));
+  canvas.height = Math.max(1, Math.round(video.videoHeight * ratio));
+
+  const context = canvas.getContext("2d");
+  const originalTime = video.currentTime;
+
+  $("frames").replaceChildren();
+  extractedFrames = [];
+
+  try {
+    for (let i = 1; i <= 5; i++) {
+      const time = video.duration * i / 6;
+
+      video.currentTime = time;
+
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("انتهت مهلة استخراج الإطار."));
+        }, 10000);
+
+        const cleanup = () => {
+          clearTimeout(timeout);
+          video.removeEventListener("seeked", done);
+          video.removeEventListener("error", failed);
+        };
+
+        const done = () => {
+          cleanup();
+          resolve();
+        };
+
+        const failed = () => {
+          cleanup();
+          reject(new Error("تعذر قراءة إطار الفيديو."));
+        };
+
+        video.addEventListener("seeked", done, {once:true});
+        video.addEventListener("error", failed, {once:true});
+      });
+
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const image = canvas.toDataURL("image/jpeg", 0.85);
+      extractedFrames.push(image);
+
+      const card = document.createElement("div");
+      card.className = "frame-card";
+
+      const img = document.createElement("img");
+      img.src = image;
+      img.alt = "إطار " + i;
+
+      const label = document.createElement("small");
+      label.textContent = "الإطار " + i + " · " + time.toFixed(2) + " ثانية";
+
+      card.append(img, label);
+      $("frames").appendChild(card);
+    }
+
+    video.currentTime = originalTime;
+    $("fileInfo").textContent = "اكتمل استخراج 5 إطارات.";
+
+  } catch (error) {
+    $("fileInfo").textContent = "تعذر استخراج الإطارات: " + error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = "استخراج الإطارات";
+  }
+});
+
+// الطباعة
+$("printReport").addEventListener("click", () => {
+  window.print();
+});
+
+// بدء فحص جديد
+$("reset").addEventListener("click", () => {
+  $("channel").value = "";
+  $("video").value = "";
+  $("file").value = "";
+
+  $("result").style.display = "none";
+  $("report").replaceChildren();
+  $("channelHeader").replaceChildren();
+
+  $("imagePreview").removeAttribute("src");
+  $("imagePreview").style.display = "none";
+
+  $("videoPreview").pause();
+  $("videoPreview").removeAttribute("src");
+  $("videoPreview").load();
+  $("videoPreview").style.display = "none";
+
+  $("frameSection").classList.add("hidden");
+  $("frames").replaceChildren();
+  $("exifInfo").textContent = "بانتظار اختيار صورة.";
+  $("fileInfo").textContent = "لم يتم اختيار ملف.";
+
+  if (currentFileURL) {
+    URL.revokeObjectURL(currentFileURL);
+    currentFileURL = null;
+  }
+
+  extractedFrames = [];
+  status("VIRIFIXO 4.2 جاهز لفحص جديد.");
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+window.addEventListener("pagehide", () => {
+  if (currentFileURL) URL.revokeObjectURL(currentFileURL);
+});
+</script>
+
 </body>
 </html>
