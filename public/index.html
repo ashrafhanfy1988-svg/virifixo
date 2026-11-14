@@ -665,16 +665,29 @@ $("verify").addEventListener("click", async () => {
     return;
   }
 
-  const target = channel || video;
+  let target = channel || video;
+
+  // Accept links with or without an explicit HTTPS scheme.
+  if (!/^[a-zA-Z][a-zA-Z\d+.-]*:/.test(target)) {
+    target = "https://" + target;
+  }
 
   try {
     const url = new URL(target);
-    const host = url.hostname.replace(/^www\./, "");
+    const host = url.hostname.toLowerCase().replace(/^www\./, "");
 
-    if (!["youtube.com", "m.youtube.com", "youtu.be",
-          "youtube-nocookie.com"].includes(host)) {
+    if (
+      url.protocol !== "https:" ||
+      url.username ||
+      url.password ||
+      url.port ||
+      !["youtube.com", "m.youtube.com", "youtu.be",
+        "youtube-nocookie.com"].includes(host)
+    ) {
       throw new Error("الرابط ليس رابط YouTube صالحاً.");
     }
+
+    target = url.toString();
   } catch (error) {
     status(error.message || "الرابط غير صالح.", "error");
     return;
