@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="VIRIFIXO منصة متقدمة للتحقق الإعلامي وتحليل الصور والفيديوهات والمصادر الرقمية.">
 <meta name="color-scheme" content="dark">
-<title>VIRIFIXO 4.2 | Advanced Media Verification</title>
+<title>VIRIFIXO 5.0 | Advanced Media Verification</title>
 
 <script defer src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
 
@@ -292,21 +292,163 @@ footer {
   .result { display:block!important; }
   a { color:#174b85; }
 }
+
+/* VIRIFIXO presentation layer */
+:root{--cyan:#59d5ff;--violet:#8b8cff;--surface:#111d30;--surface2:#0d1727}
+body{padding:0;background:radial-gradient(ellipse at 50% -15%,#1d3a61 0%,#0b1220 48%);font-family:Tahoma,Arial,sans-serif}
+.container{max-width:1160px;margin:0 auto;padding:0 22px}
+.site-nav{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px 0;border-bottom:1px solid #293b5466}
+.site-nav .brand{font-weight:900;letter-spacing:2px;color:var(--light);font-size:20px}
+.site-nav nav{display:flex;gap:20px;flex-wrap:wrap}
+.site-nav a{color:var(--muted);text-decoration:none;font-size:13px}
+.site-nav a:hover{color:var(--cyan)}
+header{padding:48px 20px 36px;margin:0 auto 20px;max-width:900px}
+.logo{font-size:clamp(42px,7vw,68px);letter-spacing:5px;background:linear-gradient(90deg,#9bd5ff,#4d9cff,#a9a6ff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.subtitle{font-size:clamp(16px,2vw,20px);margin-top:10px}
+.version{margin-top:18px;background:#172b45;padding:7px 16px}
+.hero-copy{max-width:760px;margin:18px auto 0;color:#c6d5e8;font-size:15px}
+.hero-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:24px}
+.hero-actions a{display:inline-flex;align-items:center;justify-content:center;padding:11px 20px;border-radius:9px;text-decoration:none;font-weight:bold;background:linear-gradient(110deg,#287ce9,#5369e8);color:#fff}
+.hero-actions a.outline{background:transparent;border:1px solid #4d719a;color:#c8e4ff}
+.investment{margin:18px 0 30px}
+.section-intro{text-align:center;max-width:760px;margin:0 auto 22px}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:bold;letter-spacing:1.5px}
+.section-intro h2{font-size:clamp(24px,4vw,32px);margin:8px 0}
+.section-intro p{color:var(--muted);margin:0}
+.feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.feature-card{background:linear-gradient(145deg,#16263c,#101a2b);border:1px solid #2b4260;border-radius:15px;padding:20px;min-width:0}
+.feature-card .symbol{font-size:25px}
+.feature-card h3{color:#eaf4ff;margin:8px 0}
+.feature-card p{color:#aebfd4;font-size:14px;margin:0;line-height:1.9}
+.roadmap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:15px}
+.roadmap-card{border-radius:15px;padding:22px;border:1px solid #304761;background:#101b2c}
+.roadmap-card.current{border-top:3px solid var(--green)}
+.roadmap-card.future{border-top:3px solid var(--violet)}
+.roadmap-card h3{font-size:18px;margin:0 0 8px}
+.roadmap-card ul{padding-right:20px;color:#b8c8dc;line-height:2;margin:10px 0 0}
+.tag{display:inline-block;border:1px solid #385779;color:#9bcaff;border-radius:20px;padding:3px 10px;font-size:11px;margin-bottom:8px}
+.roadmap-card.current .tag{color:#78e6ae;border-color:#2d7655}
+.roadmap-card.future .tag{color:#c2bdff;border-color:#5c5a9c}
+.revenue-wrap{overflow-x:auto;border:1px solid #2b4260;border-radius:13px;margin-top:15px}
+.revenue{width:100%;border-collapse:collapse;min-width:480px;background:#101a2b}
+.revenue th,.revenue td{padding:13px 16px;text-align:right;border-bottom:1px solid #293b54}
+.revenue th{background:#192b43;color:#9fd1ff}
+.revenue td{color:#d6e2f1;font-size:14px}
+.revenue tr:last-child td{border-bottom:0}
+.ip-note{padding:17px;border:1px solid #594d31;background:#2a261b;border-radius:12px;color:#e9d7a4;line-height:1.9;margin-top:15px}
+.partnership{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;background:linear-gradient(110deg,#142c48,#1c2446);border:1px solid #3d5681;border-radius:16px;padding:24px;margin-top:16px}
+.partnership h3{font-size:20px;margin:0 0 6px}
+.partnership p{margin:0;color:#bacbe0}
+.partnership a{white-space:nowrap;background:#3185f5;color:white;text-decoration:none;padding:11px 18px;border-radius:9px;font-weight:bold}
+#workspace{scroll-margin-top:20px}
+.panel{box-shadow:0 14px 40px #0003}
+footer{border-top:1px solid #293b54;margin-top:30px}
+@media(max-width:760px){.feature-grid{grid-template-columns:1fr}.roadmap{grid-template-columns:1fr}.site-nav{align-items:flex-start;flex-direction:column}.site-nav nav{gap:14px}.container{padding:0 12px}header{padding:35px 8px 28px}}
+@media print{.site-nav,.hero-actions,.partnership a{display:none!important}.feature-card,.roadmap-card{break-inside:avoid;background:white;color:#111}.feature-card p,.roadmap-card ul{color:#333}.investment{break-inside:avoid}}
+
 </style>
 </head>
 
 <body>
 <div class="container">
 
+<div class="site-nav">
+  <div class="brand">VIRIFIXO</div>
+  <nav aria-label="التنقل الرئيسي">
+    <a href="#about-project">عن المشروع</a>
+    <a href="#roadmap">الإصدار الحالي والتطوير</a>
+    <a href="#business-model">نموذج العمل</a>
+    <a href="#workspace">جرّب المنصة</a>
+  </nav>
+</div>
+
+
 <header>
   <div class="logo">VIRIFIXO</div>
   <div class="subtitle">
     منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
   </div>
-  <p class="version">VERSION 4.2 · ADVANCED MEDIA VERIFICATION</p>
+  <p class="version">VERSION 5.0 · ADVANCED MEDIA VERIFICATION</p>
 </header>
 
-<section class="panel">
+  <p class="hero-copy">منصة مساعدة للتحقق الإعلامي وتحليل المحتوى الرقمي، تهدف إلى تنظيم المؤشرات المتاحة ومساندة الصحفيين والمؤسسات في مراجعة الصور والفيديوهات ومصادرها.</p>
+  <div class="hero-actions">
+    <a href="#workspace">استكشف أدوات الفحص</a>
+    <a class="outline" href="#about-project">اكتشف فرصة الشراكة</a>
+  </div>
+
+
+<section class="investment" id="about-project" aria-labelledby="project-title">
+  <div class="section-intro">
+    <span class="eyebrow">MEDIA VERIFICATION TECHNOLOGY</span>
+    <h2 id="project-title">تقنية تساعد على فهم المحتوى قبل تداوله</h2>
+    <p>يجمع VIRIFIXO بين أدوات فحص أولية وواجهة منظمة لمراجعة بيانات المصادر والملفات، مع رؤية للتوسع نحو حلول تحقق إعلامي أكثر تقدماً.</p>
+  </div>
+  <div class="feature-grid">
+    <article class="feature-card"><div class="symbol">🔎</div><h3>مراجعة المصادر</h3><p>إدخال روابط قنوات وفيديوهات YouTube واستعراض البيانات التي يعيدها خادم الفحص عند توافره.</p></article>
+    <article class="feature-card"><div class="symbol">🖼️</div><h3>تحليل الملفات</h3><p>معاينة ملفات الصور والفيديو محلياً داخل المتصفح، وقراءة بيانات EXIF المتاحة للصور.</p></article>
+    <article class="feature-card"><div class="symbol">🎞️</div><h3>استخراج الإطارات</h3><p>استخراج عينات مرئية من الفيديو لتسهيل المراجعة البشرية ومقارنة محتوى اللقطات.</p></article>
+  </div>
+  <div class="section-intro" id="roadmap" style="margin-top:38px">
+    <span class="eyebrow">PRODUCT STATUS & ROADMAP</span>
+    <h2>من النسخة التجريبية إلى الرؤية المستقبلية</h2>
+    <p>نعرض هنا ما توفره الصفحة الحالية بشكل منفصل عن الخصائص المقترحة للتطوير.</p>
+  </div>
+  <div class="roadmap">
+    <article class="roadmap-card current">
+      <span class="tag">متاح في النسخة التجريبية الحالية</span>
+      <h3>VIRIFIXO 4.2 · Media Demo</h3>
+      <ul>
+        <li>إرسال رابط قناة أو فيديو YouTube إلى نقطة الخدمة <bdi>/api/verify</bdi> واستقبال البيانات إذا كان الخادم مهيأً ويعمل.</li>
+        <li>معاينة ملفات الصور والفيديو محلياً داخل المتصفح.</li>
+        <li>قراءة بيانات EXIF المتاحة في الصور، بما فيها بيانات الكاميرا والتاريخ والموقع عند وجودها.</li>
+        <li>استخراج خمس عينات إطارات من الفيديو للمراجعة البصرية.</li>
+      </ul>
+    </article>
+    <article class="roadmap-card future">
+      <span class="tag">رؤية تطويرية مقترحة</span>
+      <h3>VIRIFIXO 5.0 · Future Roadmap</h3>
+      <ul>
+        <li>دمج تقنيات الذكاء الاصطناعي لرصد مؤشرات التلاعب بالصور والفيديو.</li>
+        <li>تحليل أعمق للبيانات الوصفية ومؤشرات المصدر والسياق الزمني والجغرافي عند توافر الأدلة.</li>
+        <li>تحليل الإطارات والمقاطع وإنتاج تقارير تحقق منظمة.</li>
+        <li>واجهات API وتكاملات مخصصة للمؤسسات الإعلامية والجهات المهنية.</li>
+      </ul>
+    </article>
+  </div>
+  <div class="section-intro" id="business-model" style="margin-top:38px">
+    <span class="eyebrow">INVESTMENT & PARTNERSHIP</span>
+    <h2>فرص الاستثمار والشراكة</h2>
+    <p>يستهدف المشروع بناء تعاون تقني وإعلامي واستثماري لتطوير المنتج واختباره وتوسيع نطاق استخدامه.</p>
+  </div>
+  <div class="feature-grid">
+    <article class="feature-card"><div class="symbol">🤝</div><h3>شراكة تقنية</h3><p>تطوير مشترك للبنية التقنية وخدمات التحليل والتحقق، وفق نطاق عمل وحقوق ملكية محددة.</p></article>
+    <article class="feature-card"><div class="symbol">📡</div><h3>شراكة إعلامية</h3><p>تجربة الأدوات مع غرف الأخبار والفرق الصحفية، وجمع الملاحظات لتحديد احتياجات الاستخدام الفعلية.</p></article>
+    <article class="feature-card"><div class="symbol">📈</div><h3>استثمار وتوسع</h3><p>بحث فرص التمويل والتوسع التجاري وبناء منتج مؤسسي قابل للتطوير وفق نتائج الاختبار والسوق.</p></article>
+  </div>
+  <div class="revenue-wrap">
+    <table class="revenue">
+      <thead><tr><th>الخدمة المقترحة</th><th>نموذج الإيراد</th></tr></thead>
+      <tbody>
+        <tr><td>الاستخدام الفردي</td><td>اشتراكات شهرية وسنوية</td></tr>
+        <tr><td>المؤسسات الإعلامية</td><td>تراخيص مؤسسية</td></tr>
+        <tr><td>خدمات التحقق المتقدمة</td><td>رسوم حسب الاستخدام</td></tr>
+        <tr><td>التكامل التقني API</td><td>عقود وتراخيص</td></tr>
+        <tr><td>التقارير المتخصصة</td><td>رسوم مقابل الخدمة</td></tr>
+        <tr><td>الحلول المخصصة</td><td>عقود تطوير وتشغيل</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="ip-note"><strong>الملكية الفكرية والحقوق:</strong> تشمل الأصول التي يملكها المشروع الاسم والهوية والتصميمات والواجهات والأكواد التي يملك حقوقها والوثائق والتطويرات المستقلة. وتُحدد حقوق أي تطوير مشترك أو ترخيص أو مساهمة تقنية بعقود مكتوبة قبل بدء التعاون.</div>
+  <div class="partnership">
+    <div><h3>نبحث عن شركاء يؤمنون بأهمية التحقق الإعلامي</h3><p>فرصة للتعاون مع المستثمرين والشركات التقنية والمؤسسات الإعلامية في تطوير VIRIFIXO واختبار تطبيقاته.</p></div>
+    <a href="#workspace">جرّب النسخة الحالية</a>
+  </div>
+  <p class="muted" style="font-size:12px;margin-top:14px">ملاحظة مهنية: نتائج البيانات الوصفية أو معلومات المنصة مؤشرات مساعدة وليست دليلاً قاطعاً على أصالة المحتوى أو زيفه. كما أن خصائص الإصدار 5.0 أعلاه تمثل خارطة تطوير مستقبلية وليست ادعاءً بأنها متاحة حالياً.</p>
+</section>
+
+
+<section class="panel" id="workspace">
   <h2>🔎 فحص قناة أو فيديو YouTube</h2>
 
   <label for="channel">رابط القناة</label>
@@ -330,7 +472,7 @@ footer {
   </button>
 
   <div class="status" id="status" role="status" aria-live="polite">
-    VIRIFIXO 4.2 جاهز لاستقبال طلب الفحص.
+    VIRIFIXO 5.0 جاهز لاستقبال طلب الفحص.
   </div>
 </section>
 
@@ -416,9 +558,8 @@ footer {
 <footer>
   VIRIFIXO © 2026
   <br>
-  Advanced Media Verification · Version 4.2
+  Advanced Media Verification · Version 5.0
 </footer>
-
 </div>
 
 <script>
@@ -441,13 +582,58 @@ function bytes(size) {
   return (size / 1048576).toFixed(2) + " MB";
 }
 
-function report(title, data) {
+// Decode HTML entities before displaying untrusted API text.
+// Values are still inserted with textContent, never as executable HTML.
+function decodeHtmlEntities(value) {
+  let text = value == null ? "" : String(value);
+  const decoder = document.createElement("textarea");
+
+  for (let i = 0; i < 3; i++) {
+    decoder.innerHTML = text;
+    const decoded = decoder.value;
+    if (decoded === text) break;
+    text = decoded;
+  }
+
+  return text;
+}
+
+function displayValue(value) {
+  if (value && typeof value === "object" &&
+      Object.prototype.hasOwnProperty.call(value, "value")) {
+    if (value.available === false || value.value == null || value.value === "") {
+      return "غير متوفر";
+    }
+    value = value.value;
+  }
+
+  if (value == null || value === "") return "غير متوفر";
+
+  if (Array.isArray(value)) return value.join("، ");
+
+  return decodeHtmlEntities(value);
+}
+
+function report(title, data, thumbnailUrl) {
   $("result").style.display = "block";
   $("report").replaceChildren();
 
   const heading = document.createElement("h3");
   heading.textContent = title;
-  $("channelHeader").replaceChildren(heading);
+
+  const header = $("channelHeader");
+  header.replaceChildren();
+
+  if (thumbnailUrl) {
+    const image = document.createElement("img");
+    image.src = thumbnailUrl;
+    image.alt = "صورة القناة أو الفيديو";
+    image.referrerPolicy = "no-referrer";
+    image.onerror = () => image.remove();
+    header.appendChild(image);
+  }
+
+  header.appendChild(heading);
 
   Object.entries(data).forEach(([key, value]) => {
     const item = document.createElement("div");
@@ -457,7 +643,7 @@ function report(title, data) {
     strong.textContent = key + ": ";
 
     const span = document.createElement("span");
-    span.textContent = value || "غير متوفر";
+    span.textContent = displayValue(value);
 
     item.append(strong, span);
     $("report").appendChild(item);
@@ -500,7 +686,9 @@ $("verify").addEventListener("click", async () => {
   status("جارٍ الاتصال بخادم VIRIFIXO...", "loading");
 
   try {
-    const response = await fetch("https://virifixo-1.onrender.com/api/verify", {
+    const API_BASE = "https://virifixo-1.onrender.com";
+
+    const response = await fetch(API_BASE + "/api/verify", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
@@ -509,27 +697,69 @@ $("verify").addEventListener("click", async () => {
       })
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error("خادم الفحص غير متاح: " + response.status);
+      throw new Error(data.error || ("خادم الفحص أعاد الحالة: " + response.status));
     }
 
-    const data = await response.json();
+    const stats = data.statistics || data.stats || {};
+
+    // Read both the current API shape (statistics.<field>.value)
+    // and legacy flat fields without assuming either one is present.
+    const firstAvailable = (...values) => {
+      for (const value of values) {
+        if (value === undefined || value === null || value === "") continue;
+        if (typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.prototype.hasOwnProperty.call(value, "value")) {
+          if (value.available === false || value.value == null || value.value === "") continue;
+          return value;
+        }
+        return value;
+      }
+      return null;
+    };
+
+    const sourceValue = firstAvailable(
+      data.source,
+      data.sources,
+      data.provider
+    );
 
     report("نتائج فحص YouTube", {
       "نوع الفحص": channel ? "قناة" : "فيديو",
       "الرابط": target,
-      "العنوان": data.title,
-      "اسم القناة": data.channelTitle,
+      "العنوان": firstAvailable(data.title, data.channelTitle),
+      "اسم القناة": firstAvailable(data.channelTitle, data.authorName, data.title),
       "معرف القناة": data.channelId,
       "معرف الفيديو": data.videoId,
-      "تاريخ النشر": data.publishedAt,
-      "المشاهدات": data.viewCount,
-      "المشتركون": data.subscriberCount,
-      "الإعجابات": data.likeCount,
-      "التعليقات": data.commentCount,
+      "تاريخ إنشاء القناة": channel
+        ? firstAvailable(stats.joinedDate, stats.createdAt, data.joinedDate)
+        : null,
+      "تاريخ النشر": channel ? null
+        : firstAvailable(stats.publishDate, stats.publishedAt, data.publishedAt, data.publishDate),
+      "عدد المشتركين": channel
+        ? firstAvailable(stats.subscribers, stats.subscriberCount, data.subscriberCount)
+        : null,
+      "عدد الفيديوهات": channel
+        ? firstAvailable(stats.videoCount, stats.videos, data.videoCount)
+        : null,
+      "إجمالي مشاهدات القناة": channel
+        ? firstAvailable(stats.totalViews, stats.viewCount, data.viewCount)
+        : null,
+      "مشاهدات الفيديو": channel ? null
+        : firstAvailable(stats.views, stats.viewCount, data.viewCount),
+      "مدة الفيديو بالثواني": channel ? null
+        : firstAvailable(stats.durationSeconds, stats.duration, data.durationSeconds),
+      "الإعجابات": channel ? null
+        : firstAvailable(stats.likes, stats.likeCount, data.likeCount),
+      "التعليقات": channel ? null
+        : firstAvailable(stats.comments, stats.commentCount, data.commentCount),
       "الوصف": data.description,
-      "المصدر": data.source
-    });
+      "المصدر": sourceValue,
+      "ملاحظة": data.note
+    }, data.thumbnailUrl);
 
     status("اكتمل الفحص واستلام البيانات.", "success");
 
@@ -786,7 +1016,7 @@ $("reset").addEventListener("click", () => {
   }
 
   extractedFrames = [];
-  status("VIRIFIXO 4.2 جاهز لفحص جديد.");
+  status("VIRIFIXO 5.0 جاهز لفحص جديد.");
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
