@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="VIRIFIXO منصة متقدمة للتحقق الإعلامي وتحليل الصور والفيديوهات والمصادر الرقمية.">
 <meta name="color-scheme" content="dark">
-<title>VIRIFIXO 4.3 | Advanced Media Verification</title>
+<title>VIRIFIXO 5.0 | Advanced Media Verification</title>
 
 <script defer src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
 
@@ -368,7 +368,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <div class="subtitle">
     منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
   </div>
-  <p class="version">VERSION 4.3 · ADVANCED MEDIA VERIFICATION</p>
+  <p class="version">VERSION 5.0 · ADVANCED MEDIA VERIFICATION</p>
 </header>
 
   <p class="hero-copy">منصة مساعدة للتحقق الإعلامي وتحليل المحتوى الرقمي، تهدف إلى تنظيم المؤشرات المتاحة ومساندة الصحفيين والمؤسسات في مراجعة الصور والفيديوهات ومصادرها.</p>
@@ -472,7 +472,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   </button>
 
   <div class="status" id="status" role="status" aria-live="polite">
-    VIRIFIXO 4.3 جاهز لاستقبال طلب الفحص.
+    VIRIFIXO 5.0 جاهز لاستقبال طلب الفحص.
   </div>
 </section>
 
@@ -558,7 +558,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 <footer>
   VIRIFIXO © 2026
   <br>
-  Advanced Media Verification · Version 4.3
+  Advanced Media Verification · Version 5.0
 </footer>
 </div>
 
@@ -582,13 +582,58 @@ function bytes(size) {
   return (size / 1048576).toFixed(2) + " MB";
 }
 
-function report(title, data) {
+// Decode HTML entities before displaying untrusted API text.
+// Values are still inserted with textContent, never as executable HTML.
+function decodeHtmlEntities(value) {
+  let text = value == null ? "" : String(value);
+  const decoder = document.createElement("textarea");
+
+  for (let i = 0; i < 3; i++) {
+    decoder.innerHTML = text;
+    const decoded = decoder.value;
+    if (decoded === text) break;
+    text = decoded;
+  }
+
+  return text;
+}
+
+function displayValue(value) {
+  if (value && typeof value === "object" &&
+      Object.prototype.hasOwnProperty.call(value, "value")) {
+    if (value.available === false || value.value == null || value.value === "") {
+      return "غير متوفر";
+    }
+    value = value.value;
+  }
+
+  if (value == null || value === "") return "غير متوفر";
+
+  if (Array.isArray(value)) return value.join("، ");
+
+  return decodeHtmlEntities(value);
+}
+
+function report(title, data, thumbnailUrl) {
   $("result").style.display = "block";
   $("report").replaceChildren();
 
   const heading = document.createElement("h3");
   heading.textContent = title;
-  $("channelHeader").replaceChildren(heading);
+
+  const header = $("channelHeader");
+  header.replaceChildren();
+
+  if (thumbnailUrl) {
+    const image = document.createElement("img");
+    image.src = thumbnailUrl;
+    image.alt = "صورة القناة أو الفيديو";
+    image.referrerPolicy = "no-referrer";
+    image.onerror = () => image.remove();
+    header.appendChild(image);
+  }
+
+  header.appendChild(heading);
 
   Object.entries(data).forEach(([key, value]) => {
     const item = document.createElement("div");
@@ -598,7 +643,7 @@ function report(title, data) {
     strong.textContent = key + ": ";
 
     const span = document.createElement("span");
-    span.textContent = value || "غير متوفر";
+    span.textContent = displayValue(value);
 
     item.append(strong, span);
     $("report").appendChild(item);
@@ -658,21 +703,28 @@ $("verify").addEventListener("click", async () => {
       throw new Error(data.error || ("خادم الفحص أعاد الحالة: " + response.status));
     }
 
+    const stats = data.statistics || {};
+
     report("نتائج فحص YouTube", {
       "نوع الفحص": channel ? "قناة" : "فيديو",
       "الرابط": target,
-      "العنوان": data.title,
-      "اسم القناة": data.channelTitle,
+      "العنوان": data.title || data.channelTitle,
+      "اسم القناة": data.channelTitle || data.title,
       "معرف القناة": data.channelId,
       "معرف الفيديو": data.videoId,
-      "تاريخ النشر": data.publishedAt,
-      "المشاهدات": data.viewCount,
-      "المشتركون": data.subscriberCount,
-      "الإعجابات": data.likeCount,
-      "التعليقات": data.commentCount,
+      "تاريخ إنشاء القناة": channel ? stats.joinedDate : null,
+      "تاريخ النشر": channel ? null : (stats.publishDate || data.publishedAt),
+      "عدد المشتركين": channel ? stats.subscribers : null,
+      "عدد الفيديوهات": channel ? stats.videoCount : null,
+      "إجمالي مشاهدات القناة": channel ? stats.totalViews : null,
+      "مشاهدات الفيديو": channel ? null : (stats.views || data.viewCount),
+      "مدة الفيديو بالثواني": channel ? null : stats.durationSeconds,
+      "الإعجابات": channel ? null : (stats.likes || data.likeCount),
+      "التعليقات": channel ? null : (stats.comments || data.commentCount),
       "الوصف": data.description,
-      "المصدر": data.source
-    });
+      "المصدر": data.source,
+      "ملاحظة": data.note
+    }, data.thumbnailUrl);
 
     status("اكتمل الفحص واستلام البيانات.", "success");
 
@@ -929,7 +981,7 @@ $("reset").addEventListener("click", () => {
   }
 
   extractedFrames = [];
-  status("VIRIFIXO 4.3 جاهز لفحص جديد.");
+  status("VIRIFIXO 5.0 جاهز لفحص جديد.");
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
