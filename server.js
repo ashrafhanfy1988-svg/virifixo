@@ -644,10 +644,23 @@ async function verifyVideo(url, videoId) {
         extractEmbeddedJson(candidateHtml, "playerResponse") ||
         {};
 
-      pageHtml = candidateHtml;
-      pageData = candidateData;
-      pageSource = candidate.source;
-      break;
+      // Keep the first fetched HTML as a metadata fallback, but continue
+      // when it contains no player details so the embed page gets a chance.
+      if (!pageHtml) {
+        pageHtml = candidateHtml;
+        pageData = candidateData;
+        pageSource = candidate.source;
+      }
+
+      if (
+        candidateData.videoDetails ||
+        candidateData.microformat?.playerMicroformatRenderer
+      ) {
+        pageHtml = candidateHtml;
+        pageData = candidateData;
+        pageSource = candidate.source;
+        break;
+      }
     } catch (error) {
       console.warn(
         "VIRIFIXO video page source unavailable:",
