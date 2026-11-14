@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="VIRIFIXO منصة متقدمة للتحقق الإعلامي وتحليل الصور والفيديوهات والمصادر الرقمية.">
 <meta name="color-scheme" content="dark">
-<title>VIRIFIXO 5.0 | Advanced Media Verification</title>
+<title>VIRIFIXO 5.4 | Advanced Media Verification</title>
 
 <script defer src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
 
@@ -368,7 +368,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <div class="subtitle">
     منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
   </div>
-  <p class="version">VERSION 5.0 · ADVANCED MEDIA VERIFICATION</p>
+  <p class="version">VERSION 5.4 · ADVANCED MEDIA VERIFICATION</p>
 </header>
 
   <p class="hero-copy">منصة مساعدة للتحقق الإعلامي وتحليل المحتوى الرقمي، تهدف إلى تنظيم المؤشرات المتاحة ومساندة الصحفيين والمؤسسات في مراجعة الصور والفيديوهات ومصادرها.</p>
@@ -472,7 +472,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   </button>
 
   <div class="status" id="status" role="status" aria-live="polite">
-    VIRIFIXO 5.0 جاهز لاستقبال طلب الفحص.
+    VIRIFIXO 5.4 جاهز لاستقبال طلب الفحص.
   </div>
 </section>
 
@@ -559,7 +559,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 <footer>
   VIRIFIXO © 2026
   <br>
-  Advanced Media Verification · Version 5.0
+  Advanced Media Verification · Version 5.4
 </footer>
 </div>
 
@@ -603,7 +603,9 @@ function decodeHtmlEntities(value) {
 function displayValue(value) {
   if (value && typeof value === "object" &&
       Object.prototype.hasOwnProperty.call(value, "value")) {
-    if (value.available === false || value.value == null || value.value === "") {
+    if (value.value == null || value.value === "") {
+      if (value.status === "fetch_failed") return "تعذر جلب البيانات من المصدر";
+      if (value.status === "unavailable") return "غير متاح علنياً";
       return "غير متوفر";
     }
     value = value.value;
@@ -728,7 +730,6 @@ $("verify").addEventListener("click", async () => {
         if (typeof value === "object" &&
             !Array.isArray(value) &&
             Object.prototype.hasOwnProperty.call(value, "value")) {
-          if (value.available === false || value.value == null || value.value === "") continue;
           return value;
         }
         return value;
@@ -1072,7 +1073,7 @@ $("reset").addEventListener("click", () => {
   }
 
   extractedFrames = [];
-  status("VIRIFIXO 5.0 جاهز لفحص جديد.");
+  status("VIRIFIXO 5.4 جاهز لفحص جديد.");
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
