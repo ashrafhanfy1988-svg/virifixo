@@ -1,205 +1,770 @@
+
 "use strict";
 
 const express = require("express");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
+const VERSION = "5.0";
 
-const allowedOrigins = new Set([
+const ALLOWED_ORIGINS = new Set([
   "https://ashrafhanfy1988-svg.github.io"
+]);
+
+const YOUTUBE_HOSTS = new Set([
+  "youtube.com",
+  "m.youtube.com",
+  "www.youtube.com",
+  "youtu.be",
+  "youtube-nocookie.com",
+  "www.youtube-nocookie.com"
 ]);
 
 app.disable("x-powered-by");
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && allowedOrigins.has(origin)) {
+
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
     res.setHeader("Vary", "Origin");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   }
+
   if (req.method === "OPTIONS") {
-    if (!origin || !allowedOrigins.has(origin)) return res.sendStatus(403);
+    if (!origin || !ALLOWED_ORIGINS.has(origin)) {
+      return res.sendStatus(403);
+    }
     return res.sendStatus(204);
   }
+
   next();
 });
 
-app.use(express.json({ limit: "10kb", strict: true }));
+app.use(express.json({
+  limit: "10kb",
+  strict: true
+}));
+
+// ==================================================
+// 1. SERVICE STATUS
+// ==================================================
 
 app.get("/", (req, res) => {
-  res.status(200).json({ service: "VIRIFIXO API", status: "running", version: "4.3" });
+  res.json({
+    service: "VIRIFIXO API",
+    status: "running",
+    version: VERSION
+  });
 });
 
 app.get("/health", (req, res) => {
-  res.status(200).json({ ok: true, service: "VIRIFIXO API", status: "running", version: "4.3" });
+  res.json({
+    ok: true,
+    service: "VIRIFIXO API",
+    status: "running",
+    version: VERSION
+  });
 });
 
+// ==================================================
+// 2. HTML ENTITY DECODER
+// ==================================================
+
+const HTML_ENTITIES = {
+  amp: "&",
+  quot: '"',
+  apos: "'",
+  lt: "<",
+  gt: ">",
+  nbsp: " ",
+  ndash: "–",
+  mdash: "—",
+  hellip: "…",
+  copy: "©",
+  reg: "®",
+  trade: "™",
+  euro: "€",
+  pound: "£",
+  yen: "¥",
+  middot: "·",
+  bull: "•",
+  laquo: "«",
+  raquo: "»",
+  rsquo: "’",
+  lsquo: "‘",
+  rdquo: "”",
+  ldquo: "“"
+};
+
 function decodeHtml(value = "") {
-  return String(value)
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;|&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
+  return String(value).replace(
+    /&(#x[0-9a-f]+|#\d+|[a-z][a-z0-9]+);/gi,
+    (entity, code) => {
+      if (code[0] === "#") {
+        const hex = code[1].toLowerCase() === "x";
+        const number = parseInt(code.slice(hex ? 2 : 1), hex ? 16 : 10);
+
+        if (
+          !Number.isInteger(number) ||
+          number <= 0 ||
+          number > 0x10FFFF ||
+          (number >= 0xD800 && number <= 0xDFFF)
+        ) {
+          return entity;
+        }
+
+        try {
+          return String.fromCodePoint(number);
+        } catch {
+          return entity;
+        }
+      }
+
+      return HTML_ENTITIES[code.toLowerCase()] ?? entity;
+    }
+  );
 }
 
+function cleanText(value) {
+  if (typeof value !== "string") return "";
+
+  return decodeHtml(value)
+    .replace(/<[^>]*>/g, " ")
+    .replace(/[\u200B-\u200F\uFEFF]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// ==================================================
+// 3. HTML METADATA EXTRACTION
+// ==================================================
+
 function getTagAttribute(tag, attribute) {
-  const match = tag.match(new RegExp("\\b" + attribute + "\\s*=\\s*(['\"])(.*?)\\1", "i"));
+  const escaped = attribute.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  const match = tag.match(
+    new RegExp(
+      "\\b" + escaped + "\\s*=\\s*(['\"])(.*?)\\1",
+      "i"
+    )
+  );
+
   return match ? decodeHtml(match[2]) : "";
 }
 
 function extractMeta(html, wanted) {
   const tags = html.match(/<meta\b[^>]*>/gi) || [];
+
   for (const tag of tags) {
-    const key = getTagAttribute(tag, "property") || getTagAttribute(tag, "name") ||
-                getTagAttribute(tag, "itemprop");
+    const key =
+      getTagAttribute(tag, "property") ||
+      getTagAttribute(tag, "name") ||
+      getTagAttribute(tag, "itemprop");
+
     if (key.toLowerCase() === wanted.toLowerCase()) {
-      return getTagAttribute(tag, "content");
+      return cleanText(getTagAttribute(tag, "content"));
     }
   }
+
   return "";
 }
 
-function validateYoutubeUrl(type, value) {
-  if (typeof value !== "string" || value.length > 2048) {
-    throw new Error("رابط YouTube مطلوب ويجب ألا يتجاوز 2048 حرفاً.");
-  }
-  let parsed;
-  try { parsed = new URL(value); }
-  catch { throw new Error("الرابط غير صالح."); }
+function extractCanonical(html, fallback) {
+  const tags = html.match(/<link\b[^>]*>/gi) || [];
 
-  const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
-  const hosts = new Set(["youtube.com", "m.youtube.com", "youtu.be", "youtube-nocookie.com"]);
-  if (parsed.protocol !== "https:" || parsed.username || parsed.password || !hosts.has(host)) {
-    throw new Error("يرجى إدخال رابط YouTube آمن وصحيح.");
+  for (const tag of tags) {
+    const rel = getTagAttribute(tag, "rel");
+
+    if (rel.toLowerCase().split(/\s+/).includes("canonical")) {
+      return getTagAttribute(tag, "href") || fallback;
+    }
+  }
+
+  return fallback;
+}
+
+// ==================================================
+// 4. SAFE YOUTUBE URL VALIDATION
+// ==================================================
+
+function validateYoutubeUrl(type, value) {
+  if (
+    typeof value !== "string" ||
+    value.length > 2048
+  ) {
+    throw new Error(
+      "رابط YouTube مطلوب ويجب ألا يتجاوز 2048 حرفاً."
+    );
+  }
+
+  let parsed;
+
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new Error("الرابط غير صالح.");
+  }
+
+  const host = parsed.hostname.toLowerCase();
+
+  if (
+    parsed.protocol !== "https:" ||
+    parsed.username ||
+    parsed.password ||
+    parsed.port ||
+    !YOUTUBE_HOSTS.has(host)
+  ) {
+    throw new Error(
+      "يرجى إدخال رابط YouTube آمن وصحيح."
+    );
   }
 
   const path = parsed.pathname;
+
   if (type === "video") {
-    const valid = (host === "youtu.be" && path.length > 1) ||
-      (["/watch", "/shorts/", "/embed/", "/live/"].some(prefix =>
-        prefix.endsWith("/") ? path.startsWith(prefix) && path.length > prefix.length : path === prefix
-      ) && (path !== "/watch" || Boolean(parsed.searchParams.get("v"))));
-    if (!valid) throw new Error("أدخل رابط فيديو YouTube صالحاً.");
-    return parsed;
+    let videoId = "";
+
+    if (host === "youtu.be") {
+      videoId = path.slice(1).split("/")[0];
+    } else if (path === "/watch") {
+      videoId = parsed.searchParams.get("v") || "";
+    } else {
+      const match = path.match(
+        /^\/(?:shorts|embed|live)\/([^/]+)/
+      );
+      videoId = match ? match[1] : "";
+    }
+
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+      throw new Error("أدخل رابط فيديو YouTube صالحاً.");
+    }
+
+    return { parsed, videoId };
   }
 
-  const validChannel = host !== "youtu.be" &&
-    (/^\/@[^/]+/.test(path) || /^\/channel\/[^/]+/.test(path) ||
-     /^\/user\/[^/]+/.test(path) || /^\/c\/[^/]+/.test(path));
-  if (!validChannel) throw new Error("أدخل رابط قناة YouTube صالحاً مثل youtube.com/@اسم_القناة.");
-  return parsed;
+  const validChannel =
+    host !== "youtu.be" &&
+    (
+      /^\/@[^/]+/.test(path) ||
+      /^\/channel\/UC[a-zA-Z0-9_-]+/.test(path) ||
+      /^\/user\/[^/]+/.test(path) ||
+      /^\/c\/[^/]+/.test(path)
+    );
+
+  if (!validChannel) {
+    throw new Error(
+      "أدخل رابط قناة YouTube صالحاً."
+    );
+  }
+
+  return { parsed };
 }
 
-async function fetchText(url) {
-  const response = await fetch(url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; VIRIFIXO/4.3; +https://github.com/ashrafhanfy1988-svg/virifixo)",
-      "Accept": "text/html,application/json;q=0.9,*/*;q=0.8"
-    },
-    signal: AbortSignal.timeout(15000),
-    redirect: "follow"
-  });
-  if (!response.ok) throw new Error("تعذر جلب بيانات YouTube (HTTP " + response.status + ").");
-  return response;
+// ==================================================
+// 5. SAFE HTTP FETCH
+// ==================================================
+
+async function fetchText(inputUrl) {
+  let currentUrl = new URL(inputUrl);
+
+  for (let attempt = 0; attempt < 4; attempt++) {
+    if (
+      currentUrl.protocol !== "https:" ||
+      !YOUTUBE_HOSTS.has(currentUrl.hostname.toLowerCase()) ||
+      currentUrl.username ||
+      currentUrl.password
+    ) {
+      throw new Error("تم رفض تحويل غير موثوق.");
+    }
+
+    const response = await fetch(currentUrl, {
+      method: "GET",
+      redirect: "manual",
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (compatible; VIRIFIXO/5.0)",
+        "Accept":
+          "text/html,application/json;q=0.9,*/*;q=0.8"
+      },
+      signal: AbortSignal.timeout(15000)
+    });
+
+    if (
+      [301, 302, 303, 307, 308].includes(response.status)
+    ) {
+      const location = response.headers.get("location");
+
+      if (!location || attempt === 3) {
+        throw new Error("تعذر إكمال تحويل رابط YouTube.");
+      }
+
+      currentUrl = new URL(location, currentUrl);
+      continue;
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        "تعذر جلب بيانات YouTube (HTTP " +
+        response.status + ")."
+      );
+    }
+
+    return response;
+  }
+
+  throw new Error("تجاوز عدد تحويلات الرابط المسموح بها.");
 }
 
-async function verifyVideo(url) {
-  const parsed = new URL(url);
-  let videoId = "";
-  if (parsed.hostname.replace(/^www\./, "") === "youtu.be") videoId = parsed.pathname.slice(1).split("/")[0];
-  else if (parsed.pathname === "/watch") videoId = parsed.searchParams.get("v") || "";
-  else videoId = parsed.pathname.split("/").filter(Boolean).pop() || "";
+// ==================================================
+// 6. EXTRACT JSON EMBEDDED IN YOUTUBE PAGE
+// ==================================================
 
-  const endpoint = "https://www.youtube.com/oembed?format=json&url=" + encodeURIComponent(url);
-  const response = await fetchText(endpoint);
-  const data = await response.json();
+function extractEmbeddedJson(html, marker) {
+  const position = html.indexOf(marker);
 
+  if (position === -1) return null;
+
+  const start = html.indexOf("{", position + marker.length);
+
+  if (start === -1) return null;
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = start; i < html.length; i++) {
+    const char = html[i];
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (char === '"') {
+      inString = true;
+    } else if (char === "{") {
+      depth++;
+    } else if (char === "}") {
+      depth--;
+
+      if (depth === 0) {
+        try {
+          return JSON.parse(html.slice(start, i + 1));
+        } catch {
+          return null;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function getRendererText(value) {
+  if (!value) return "";
+
+  if (typeof value === "string") {
+    return cleanText(value);
+  }
+
+  if (typeof value.simpleText === "string") {
+    return cleanText(value.simpleText);
+  }
+
+  if (Array.isArray(value.runs)) {
+    return cleanText(
+      value.runs.map(item => item.text || "").join("")
+    );
+  }
+
+  return "";
+}
+
+function findFirstKey(object, keys) {
+  const wanted = new Set(keys);
+  const visited = new Set();
+  const stack = [object];
+
+  while (stack.length) {
+    const current = stack.pop();
+
+    if (!current || typeof current !== "object") continue;
+    if (visited.has(current)) continue;
+
+    visited.add(current);
+
+    for (const key of wanted) {
+      if (Object.prototype.hasOwnProperty.call(current, key)) {
+        const value = current[key];
+
+        if (value !== undefined && value !== null) {
+          const text = getRendererText(value);
+
+          if (text) return text;
+        }
+      }
+    }
+
+    for (const value of Object.values(current)) {
+      if (value && typeof value === "object") {
+        stack.push(value);
+      }
+    }
+  }
+
+  return "";
+}
+
+function findChannelId(object) {
+  const visited = new Set();
+  const stack = [object];
+
+  while (stack.length) {
+    const current = stack.pop();
+
+    if (!current || typeof current !== "object") continue;
+    if (visited.has(current)) continue;
+
+    visited.add(current);
+
+    for (const key of ["channelId", "externalId"]) {
+      const value = current[key];
+
+      if (
+        typeof value === "string" &&
+        /^UC[a-zA-Z0-9_-]{22}$/.test(value)
+      ) {
+        return value;
+      }
+    }
+
+    for (const value of Object.values(current)) {
+      if (value && typeof value === "object") {
+        stack.push(value);
+      }
+    }
+  }
+
+  return "";
+}
+
+// ==================================================
+// 7. DATA AVAILABILITY
+// ==================================================
+
+function available(value) {
+  return value !== undefined &&
+    value !== null &&
+    String(value).trim() !== "";
+}
+
+function field(value) {
   return {
-    ok: true,
-    type: "video",
-    videoId,
-    title: data.title || "",
-    channelTitle: data.author_name || "",
-    channelUrl: data.author_url || "",
-    thumbnailUrl: data.thumbnail_url || "",
-    source: "YouTube oEmbed public metadata",
-    note: "هذه بيانات تعريفية عامة للفيديو وليست حكماً على أصالته أو عدم التلاعب به."
+    value: available(value) ? value : null,
+    available: available(value)
   };
 }
+
+// ==================================================
+// 8. CHANNEL VERIFICATION
+// ==================================================
 
 async function verifyChannel(url) {
   const response = await fetchText(url);
   const html = await response.text();
 
-  const title = extractMeta(html, "og:title") ||
-                extractMeta(html, "title") ||
-                extractMeta(html, "twitter:title");
-  const description = extractMeta(html, "og:description") ||
-                      extractMeta(html, "description");
-  const image = extractMeta(html, "og:image");
-  const canonicalMatch = html.match(/<link\b[^>]*rel=["']canonical["'][^>]*>/i);
-  const canonical = canonicalMatch ? getTagAttribute(canonicalMatch[0], "href") : url;
-  const idMatch = html.match(/"channelId"\s*:\s*"(UC[a-zA-Z0-9_-]+)"/) ||
-                  html.match(/"externalId"\s*:\s*"(UC[a-zA-Z0-9_-]+)"/);
+  const initialData = extractEmbeddedJson(
+    html,
+    "ytInitialData"
+  );
 
-  if (!title && !description) {
-    throw new Error("لم نتمكن من قراءة بيانات القناة العامة. قد تكون الصفحة محجوبة مؤقتاً أو تغيّر تنسيق YouTube.");
+  const metadata = extractMeta(html, "og:title") ||
+    extractMeta(html, "title") ||
+    extractMeta(html, "twitter:title");
+
+  const description = extractMeta(html, "og:description") ||
+    extractMeta(html, "description");
+
+  const image = extractMeta(html, "og:image");
+
+  const renderer =
+    initialData?.metadata?.channelMetadataRenderer || {};
+
+  const title =
+    cleanText(renderer.title || "") ||
+    metadata;
+
+  const channelDescription =
+    cleanText(renderer.description || "") ||
+    description;
+
+  const thumbnail =
+    renderer.avatar?.thumbnails?.slice(-1)[0]?.url ||
+    image;
+
+  const channelId =
+    renderer.externalId ||
+    findChannelId(initialData) ||
+    "";
+
+  const statistics = initialData || {};
+
+  const subscribers = findFirstKey(statistics, [
+    "subscriberCountText",
+    "subscriberCount"
+  ]);
+
+  const videoCount = findFirstKey(statistics, [
+    "videoCountText",
+    "videoCount"
+  ]);
+
+  const totalViews = findFirstKey(statistics, [
+    "viewCountText",
+    "viewCount"
+  ]);
+
+  const joinedDate = findFirstKey(statistics, [
+    "joinedDateText"
+  ]);
+
+  if (!title && !channelDescription && !channelId) {
+    throw new Error(
+      "لم نتمكن من قراءة بيانات القناة العامة. " +
+      "قد تكون الصفحة محجوبة أو تغير تنسيق YouTube."
+    );
   }
+
+  const canonical = extractCanonical(html, url);
 
   return {
     ok: true,
     type: "channel",
+    version: VERSION,
+
     title,
     channelTitle: title,
-    channelId: idMatch ? idMatch[1] : "",
-    description,
-    thumbnailUrl: image,
+    channelId,
+
+    description: channelDescription,
+    thumbnailUrl: thumbnail,
     channelUrl: canonical,
-    source: "YouTube public channel page metadata",
-    note: "تم جلب البيانات العامة الظاهرة فقط؛ لا تمثل هذه البيانات توثيقاً لهوية القناة أو حكماً على محتواها."
+
+    statistics: {
+      subscribers: field(subscribers),
+      videoCount: field(videoCount),
+      totalViews: field(totalViews),
+      joinedDate: field(joinedDate)
+    },
+
+    source: "YouTube public channel page",
+
+    note:
+      "البيانات مستخرجة من الصفحة العامة المتاحة. " +
+      "قد تختلف البيانات المتاحة حسب إعدادات القناة وواجهة YouTube. " +
+      "هذا الفحص لا يثبت هوية القناة أو أصالة محتواها."
   };
 }
 
+// ==================================================
+// 9. VIDEO VERIFICATION
+// ==================================================
+
+async function verifyVideo(url, videoId) {
+  const endpoint =
+    "https://www.youtube.com/oembed?format=json&url=" +
+    encodeURIComponent(url);
+
+  const oembedResponse = await fetchText(endpoint);
+  const oembed = await oembedResponse.json();
+
+  let pageData = {};
+  let pageHtml = "";
+
+  try {
+    const pageResponse = await fetchText(
+      "https://www.youtube.com/watch?v=" + videoId
+    );
+
+    pageHtml = await pageResponse.text();
+
+    pageData = extractEmbeddedJson(
+      pageHtml,
+      "ytInitialPlayerResponse"
+    ) || {};
+  } catch (error) {
+    console.warn(
+      "VIRIFIXO video page metadata unavailable:",
+      error.message
+    );
+  }
+
+  const details = pageData.videoDetails || {};
+  const microformat =
+    pageData.microformat?.playerMicroformatRenderer || {};
+
+  const title =
+    cleanText(details.title || "") ||
+    cleanText(oembed.title || "");
+
+  const channelTitle =
+    cleanText(details.author || "") ||
+    cleanText(oembed.author_name || "");
+
+  const channelUrl =
+    details.channelId
+      ? "https://www.youtube.com/channel/" + details.channelId
+      : oembed.author_url || "";
+
+  const thumbnail =
+    details.thumbnail?.thumbnails?.slice(-1)[0]?.url ||
+    oembed.thumbnail_url ||
+    "";
+
+  const publishDate =
+    microformat.publishDate ||
+    microformat.uploadDate ||
+    extractMeta(pageHtml, "datePublished");
+
+  return {
+    ok: true,
+    type: "video",
+    version: VERSION,
+
+    videoId,
+    title,
+    channelTitle,
+    channelUrl,
+    thumbnailUrl: thumbnail,
+
+    statistics: {
+      views: field(details.viewCount),
+      durationSeconds: field(details.lengthSeconds),
+      publishDate: field(publishDate),
+      likes: field(null),
+      comments: field(null)
+    },
+
+    source: [
+      "YouTube oEmbed",
+      pageHtml ? "YouTube public video page" : null
+    ].filter(Boolean),
+
+    note:
+      "هذه بيانات تعريفية وعامة للفيديو. " +
+      "لا يمثل توفر البيانات أو تطابقها دليلاً على أصالة الفيديو " +
+      "أو عدم التلاعب به. بعض الإحصائيات قد لا تكون متاحة."
+  };
+}
+
+// ==================================================
+// 10. MAIN VERIFICATION API
+// ==================================================
+
 app.post("/api/verify", async (req, res) => {
   const body = req.body;
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return res.status(400).json({ ok: false, error: "يجب إرسال بيانات طلب صحيحة بصيغة JSON." });
+
+  if (
+    !body ||
+    typeof body !== "object" ||
+    Array.isArray(body)
+  ) {
+    return res.status(400).json({
+      ok: false,
+      error: "يجب إرسال بيانات طلب صحيحة بصيغة JSON."
+    });
   }
+
   const { type, url } = body;
+
   if (!["video", "channel"].includes(type)) {
-    return res.status(400).json({ ok: false, error: 'نوع الفحص يجب أن يكون "video" أو "channel".' });
+    return res.status(400).json({
+      ok: false,
+      error: 'نوع الفحص يجب أن يكون "video" أو "channel".'
+    });
   }
 
   try {
-    const parsed = validateYoutubeUrl(type, url);
+    const validated = validateYoutubeUrl(type, url);
+
     const result = type === "video"
-      ? await verifyVideo(parsed.toString())
-      : await verifyChannel(parsed.toString());
+      ? await verifyVideo(
+          validated.parsed.toString(),
+          validated.videoId
+        )
+      : await verifyChannel(
+          validated.parsed.toString()
+        );
+
     return res.status(200).json(result);
+
   } catch (error) {
-    console.error("VIRIFIXO verification error:", error.message);
-    const upstream = /HTTP 404/.test(error.message) ? 404 :
-                     /timeout|aborted/i.test(error.message) ? 504 : 502;
-    return res.status(upstream).json({ ok: false, error: error.message || "تعذر إتمام الفحص." });
+    console.error(
+      "VIRIFIXO verification error:",
+      error.message
+    );
+
+    const status =
+      /HTTP 404/.test(error.message) ? 404 :
+      /timeout|aborted/i.test(error.message) ? 504 :
+      /رابط|URL|تحويل|رفض/i.test(error.message) ? 400 :
+      502;
+
+    return res.status(status).json({
+      ok: false,
+      error: error.message || "تعذر إتمام الفحص."
+    });
   }
 });
 
-app.use((req, res) => res.status(404).json({ ok: false, error: "المسار المطلوب غير موجود." }));
+// ==================================================
+// 11. ERROR HANDLING
+// ==================================================
+
+app.use((req, res) => {
+  res.status(404).json({
+    ok: false,
+    error: "المسار المطلوب غير موجود."
+  });
+});
 
 app.use((err, req, res, next) => {
   if (res.headersSent) return next(err);
-  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
-    return res.status(400).json({ ok: false, error: "صيغة JSON غير صحيحة." });
+
+  if (
+    err instanceof SyntaxError &&
+    err.status === 400 &&
+    "body" in err
+  ) {
+    return res.status(400).json({
+      ok: false,
+      error: "صيغة JSON غير صحيحة."
+    });
   }
+
   console.error("VIRIFIXO API error:", err.message);
-  return res.status(500).json({ ok: false, error: "حدث خطأ داخلي في الخادم." });
+
+  return res.status(500).json({
+    ok: false,
+    error: "حدث خطأ داخلي في الخادم."
+  });
 });
 
+// ==================================================
+// 12. START SERVER
+// ==================================================
+
 app.listen(PORT, "0.0.0.0", () => {
-  console.log("VIRIFIXO API 4.3 listening on port " + PORT);
+  console.log(
+    "VIRIFIXO API " + VERSION +
+    " listening on port " + PORT
+  );
 });
