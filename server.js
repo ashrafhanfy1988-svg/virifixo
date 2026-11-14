@@ -5,7 +5,7 @@ const express = require("express");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
-const VERSION = "5.0";
+const VERSION = "5.1";
 
 const ALLOWED_ORIGINS = new Set([
   "https://ashrafhanfy1988-svg.github.io"
@@ -515,26 +515,57 @@ async function verifyChannel(url) {
     findChannelId(initialData) ||
     "";
 
-  const statistics = initialData || {};
+  // YouTube places channel statistics in different renderers and,
+  // for some channel layouts, exposes total views and join date only
+  // on the About tab. Read that public tab as a secondary source.
+  let aboutData = null;
 
-  const subscribers = findFirstKey(statistics, [
-    "subscriberCountText",
-    "subscriberCount"
-  ]);
+  try {
+    const aboutUrl = new URL(extractCanonical(html, url));
+    aboutUrl.pathname = aboutUrl.pathname.replace(/\\/$/, "") + "/about";
+    const aboutResponse = await fetchText(aboutUrl.toString());
+    const aboutHtml = await aboutResponse.text();
+    aboutData = extractEmbeddedJson(aboutHtml, "ytInitialData");
+  } catch (error) {
+    console.warn("VIRIFIXO channel About data unavailable:", error.message);
+  }
 
-  const videoCount = findFirstKey(statistics, [
-    "videoCountText",
-    "videoCount"
-  ]);
+  const subscribers =
+    findFirstKey(initialData, [
+      "subscriberCountText",
+      "subscriberCount",
+      "subscriberCountLabel"
+    ]);
 
-  const totalViews = findFirstKey(statistics, [
-    "viewCountText",
-    "viewCount"
-  ]);
+  const videoCount =
+    findFirstKey(initialData, [
+      "videosCountText",
+      "videoCountText",
+      "videoCount",
+      "videosCount"
+    ]);
 
-  const joinedDate = findFirstKey(statistics, [
-    "joinedDateText"
-  ]);
+  const totalViews =
+    findFirstKey(aboutData, [
+      "viewCountText",
+      "viewCount",
+      "totalViews"
+    ]) ||
+    findFirstKey(initialData, [
+      "viewCountText",
+      "viewCount",
+      "totalViews"
+    ]);
+
+  const joinedDate =
+    findFirstKey(aboutData, [
+      "joinedDateText",
+      "joinedDate"
+    ]) ||
+    findFirstKey(initialData, [
+      "joinedDateText",
+      "joinedDate"
+    ]);
 
   if (!title && !channelDescription && !channelId) {
     throw new Error(
