@@ -525,6 +525,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 
 <section class="panel result" id="result">
   <h2>📋 تقرير VIRIFIXO</h2>
+  <p class="muted" id="reportScope">هذا التقرير خاص بفحص رابط YouTube. تحليل الصور والفيديوهات المحلية يتم بشكل مستقل في القسمين السابقين.</p>
   <div id="channelHeader" class="channel-header"></div>
   <div id="report"></div>
 
@@ -1047,8 +1048,7 @@ $("reset").addEventListener("click", () => {
   $("video").value = "";
   $("file").value = "";
   selectedImageFile = null;
-  $("analyzeImage").classList.add("hidden");
-  $("analyzeImage").disabled = false;
+  $("analyzeImage").disabled = true;
   $("analyzeImage").textContent = "تحليل الصورة";
 
   $("result").style.display = "none";
