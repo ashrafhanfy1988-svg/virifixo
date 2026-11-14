@@ -5,7 +5,7 @@ const express = require("express");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
-const VERSION = "5.1";
+const VERSION = "5.2";
 
 const ALLOWED_ORIGINS = new Set([
   "https://ashrafhanfy1988-svg.github.io"
@@ -369,10 +369,10 @@ function extractEmbeddedJson(html, marker) {
 }
 
 function getRendererText(value) {
-  if (!value) return "";
+  if (value === undefined || value === null) return "";
 
-  if (typeof value === "string") {
-    return cleanText(value);
+  if (typeof value === "string" || typeof value === "number") {
+    return cleanText(String(value));
   }
 
   if (typeof value.simpleText === "string") {
@@ -619,23 +619,42 @@ async function verifyVideo(url, videoId) {
 
   let pageData = {};
   let pageHtml = "";
+  let pageSource = "";
 
-  try {
-    const pageResponse = await fetchText(
-      "https://www.youtube.com/watch?v=" + videoId
-    );
+  // Try both public page formats. Some server environments can
+  // access the embed page even when the watch page is unavailable.
+  const pageCandidates = [
+    {
+      url: "https://www.youtube.com/watch?v=" + videoId,
+      source: "YouTube public video page"
+    },
+    {
+      url: "https://www.youtube.com/embed/" + videoId,
+      source: "YouTube public embed page"
+    }
+  ];
 
-    pageHtml = await pageResponse.text();
+  for (const candidate of pageCandidates) {
+    try {
+      const pageResponse = await fetchText(candidate.url);
+      const candidateHtml = await pageResponse.text();
 
-    pageData = extractEmbeddedJson(
-      pageHtml,
-      "ytInitialPlayerResponse"
-    ) || {};
-  } catch (error) {
-    console.warn(
-      "VIRIFIXO video page metadata unavailable:",
-      error.message
-    );
+      const candidateData =
+        extractEmbeddedJson(candidateHtml, "ytInitialPlayerResponse") ||
+        extractEmbeddedJson(candidateHtml, "playerResponse") ||
+        {};
+
+      pageHtml = candidateHtml;
+      pageData = candidateData;
+      pageSource = candidate.source;
+      break;
+    } catch (error) {
+      console.warn(
+        "VIRIFIXO video page source unavailable:",
+        candidate.source,
+        error.message
+      );
+    }
   }
 
   const details = pageData.videoDetails || {};
@@ -644,26 +663,57 @@ async function verifyVideo(url, videoId) {
 
   const title =
     cleanText(details.title || "") ||
+    extractMeta(pageHtml, "og:title") ||
     cleanText(oembed.title || "");
 
   const channelTitle =
     cleanText(details.author || "") ||
+    extractMeta(pageHtml, "author") ||
     cleanText(oembed.author_name || "");
 
+  const channelId =
+    details.channelId ||
+    findChannelId(pageData) ||
+    "";
+
   const channelUrl =
-    details.channelId
-      ? "https://www.youtube.com/channel/" + details.channelId
+    channelId
+      ? "https://www.youtube.com/channel/" + channelId
       : oembed.author_url || "";
 
   const thumbnail =
     details.thumbnail?.thumbnails?.slice(-1)[0]?.url ||
+    extractMeta(pageHtml, "og:image") ||
     oembed.thumbnail_url ||
     "";
+
+  const description =
+    cleanText(details.shortDescription || "") ||
+    extractMeta(pageHtml, "og:description") ||
+    extractMeta(pageHtml, "description");
 
   const publishDate =
     microformat.publishDate ||
     microformat.uploadDate ||
-    extractMeta(pageHtml, "datePublished");
+    extractMeta(pageHtml, "datePublished") ||
+    extractMeta(pageHtml, "uploadDate");
+
+  const viewCount =
+    details.viewCount ??
+    microformat.viewCount ??
+    null;
+
+  const durationSeconds =
+    details.lengthSeconds ??
+    microformat.lengthSeconds ??
+    null;
+
+  const sources = ["YouTube oEmbed"];
+  if (pageSource) sources.push(pageSource);
+
+  const pageUnavailableNote = pageSource
+    ? ""
+    : " تعذر الوصول إلى صفحة الفيديو العامة من الخادم؛ لذلك قد لا تتوفر المشاهدات والمدة وتاريخ النشر.";
 
   return {
     ok: true,
@@ -673,26 +723,27 @@ async function verifyVideo(url, videoId) {
     videoId,
     title,
     channelTitle,
+    channelId,
     channelUrl,
     thumbnailUrl: thumbnail,
+    description,
 
     statistics: {
-      views: field(details.viewCount),
-      durationSeconds: field(details.lengthSeconds),
+      views: field(viewCount),
+      durationSeconds: field(durationSeconds),
       publishDate: field(publishDate),
+      // Likes and comments are not consistently exposed in public page metadata.
       likes: field(null),
       comments: field(null)
     },
 
-    source: [
-      "YouTube oEmbed",
-      pageHtml ? "YouTube public video page" : null
-    ].filter(Boolean),
+    source: sources.join(" + "),
 
     note:
       "هذه بيانات تعريفية وعامة للفيديو. " +
       "لا يمثل توفر البيانات أو تطابقها دليلاً على أصالة الفيديو " +
-      "أو عدم التلاعب به. بعض الإحصائيات قد لا تكون متاحة."
+      "أو عدم التلاعب به. بعض الإحصائيات قد لا تكون متاحة." +
+      pageUnavailableNote
   };
 }
 
