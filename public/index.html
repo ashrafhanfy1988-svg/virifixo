@@ -483,6 +483,12 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <input id="file" type="file"
     accept="video/*,image/jpeg,image/png,image/webp">
 
+  <button id="analyzeImage" class="primary" type="button" disabled
+    style="display:block;width:100%;min-height:52px;margin:14px 0;background:#1677e8;color:#fff;font-size:17px;font-weight:bold;border:2px solid #79b6ff;border-radius:10px">
+    اختر صورة أولاً لتحليلها
+  </button>
+  <p class="muted">بعد اختيار صورة، سيتفعّل زر تحليل الصورة هنا مباشرة.</p>
+
   <p class="muted">
     تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
     لا يتم رفع الملف إلى الخادم بواسطة هذه الصفحة.
@@ -515,9 +521,6 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
     إذا كانت هذه البيانات موجودة داخل الصورة.
   </p>
-  <button id="analyzeImage" class="primary" type="button" disabled style="display:block;margin:14px 0">
-    تحليل الصورة الآن
-  </button>
   <div id="exifInfo" class="status" aria-live="polite">
     اختر صورة من القسم السابق، ثم اضغط «تحليل الصورة الآن».
   </div>
@@ -817,7 +820,7 @@ $("file").addEventListener("change", async event => {
   extractedFrames = [];
   selectedImageFile = isImage ? file : null;
   $("analyzeImage").disabled = !isImage;
-  $("analyzeImage").textContent = "تحليل الصورة";
+  $("analyzeImage").textContent = isImage ? "🔬 تحليل الصورة الآن" : "اختر صورة أولاً لتحليلها";
 
   $("frames").replaceChildren();
   $("frameSection").classList.toggle("hidden", !isVideo);
@@ -1049,7 +1052,7 @@ $("reset").addEventListener("click", () => {
   $("file").value = "";
   selectedImageFile = null;
   $("analyzeImage").disabled = true;
-  $("analyzeImage").textContent = "تحليل الصورة";
+  $("analyzeImage").textContent = "اختر صورة أولاً لتحليلها";
 
   $("result").style.display = "none";
   $("report").replaceChildren();
