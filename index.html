@@ -397,7 +397,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <div class="roadmap">
     <article class="roadmap-card current">
       <span class="tag">متاح في النسخة التجريبية الحالية</span>
-      <h3>VIRIFIXO 4.2 · Media Demo</h3>
+      <h3>VIRIFIXO 5.4 · Media Demo</h3>
       <ul>
         <li>إرسال رابط قناة أو فيديو YouTube إلى نقطة الخدمة <bdi>/api/verify</bdi> واستقبال البيانات إذا كان الخادم مهيأً ويعمل.</li>
         <li>معاينة ملفات الصور والفيديو محلياً داخل المتصفح.</li>
@@ -982,13 +982,8 @@ $("captureFrames").addEventListener("click", async () => {
     for (let i = 1; i <= 5; i++) {
       const time = video.duration * i / 6;
 
-      video.currentTime = time;
-
       await new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          cleanup();
-          reject(new Error("انتهت مهلة استخراج الإطار."));
-        }, 10000);
+        let settled = false;
 
         const cleanup = () => {
           clearTimeout(timeout);
@@ -996,18 +991,33 @@ $("captureFrames").addEventListener("click", async () => {
           video.removeEventListener("error", failed);
         };
 
-        const done = () => {
+        const finish = (error) => {
+          if (settled) return;
+          settled = true;
           cleanup();
-          resolve();
+          if (error) reject(error);
+          else resolve();
         };
 
-        const failed = () => {
-          cleanup();
-          reject(new Error("تعذر قراءة إطار الفيديو."));
-        };
+        const done = () => finish();
+        const failed = () => finish(new Error("تعذر قراءة إطار الفيديو."));
+        const timeout = setTimeout(
+          () => finish(new Error("انتهت مهلة استخراج الإطار.")),
+          10000
+        );
 
+        // Register listeners before seeking so a fast seek cannot be missed.
         video.addEventListener("seeked", done, {once:true});
         video.addEventListener("error", failed, {once:true});
+
+        try {
+          video.currentTime = time;
+          if (Math.abs(video.currentTime - time) < 0.01 && !video.seeking) {
+            finish();
+          }
+        } catch (error) {
+          finish(error);
+        }
       });
 
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -1029,12 +1039,16 @@ $("captureFrames").addEventListener("click", async () => {
       $("frames").appendChild(card);
     }
 
-    video.currentTime = originalTime;
     $("fileInfo").textContent = "اكتمل استخراج 5 إطارات.";
 
   } catch (error) {
     $("fileInfo").textContent = "تعذر استخراج الإطارات: " + error.message;
   } finally {
+    try {
+      if (Number.isFinite(originalTime)) video.currentTime = originalTime;
+    } catch (_) {
+      // Keep the extraction result even if restoring playback position fails.
+    }
     button.disabled = false;
     button.textContent = "استخراج الإطارات";
   }
