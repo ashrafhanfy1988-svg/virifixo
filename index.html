@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="VIRIFIXO منصة متقدمة للتحقق الإعلامي وتحليل الصور والفيديوهات والمصادر الرقمية.">
 <meta name="color-scheme" content="dark">
-<title>VIRIFIXO 5.0 | Advanced Media Verification</title>
+<title>VIRIFIXO 5.4 | Advanced Media Verification</title>
 
 <script defer src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
 
@@ -368,7 +368,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <div class="subtitle">
     منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
   </div>
-  <p class="version">VERSION 5.0 · ADVANCED MEDIA VERIFICATION</p>
+  <p class="version">VERSION 5.4 · ADVANCED MEDIA VERIFICATION</p>
 </header>
 
   <p class="hero-copy">منصة مساعدة للتحقق الإعلامي وتحليل المحتوى الرقمي، تهدف إلى تنظيم المؤشرات المتاحة ومساندة الصحفيين والمؤسسات في مراجعة الصور والفيديوهات ومصادرها.</p>
@@ -472,7 +472,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   </button>
 
   <div class="status" id="status" role="status" aria-live="polite">
-    VIRIFIXO 5.0 جاهز لاستقبال طلب الفحص.
+    VIRIFIXO 5.4 جاهز لاستقبال طلب الفحص.
   </div>
 </section>
 
@@ -482,6 +482,12 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <label for="file">اختر ملفاً من جهازك</label>
   <input id="file" type="file"
     accept="video/*,image/jpeg,image/png,image/webp">
+
+  <button id="analyzeImage" class="primary" type="button" disabled
+    style="display:block;width:100%;min-height:52px;margin:14px 0;background:#1677e8;color:#fff;font-size:17px;font-weight:bold;border:2px solid #79b6ff;border-radius:10px">
+    اختر صورة أولاً لتحليلها
+  </button>
+  <p class="muted">بعد اختيار صورة، سيتفعّل زر تحليل الصورة هنا مباشرة.</p>
 
   <p class="muted">
     تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
@@ -515,13 +521,14 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
     إذا كانت هذه البيانات موجودة داخل الصورة.
   </p>
-  <div id="exifInfo" class="status">
-    بانتظار اختيار صورة.
+  <div id="exifInfo" class="status" aria-live="polite">
+    اختر صورة من القسم السابق، ثم اضغط «تحليل الصورة الآن».
   </div>
 </section>
 
 <section class="panel result" id="result">
   <h2>📋 تقرير VIRIFIXO</h2>
+  <p class="muted" id="reportScope">هذا التقرير خاص بفحص رابط YouTube. تحليل الصور والفيديوهات المحلية يتم بشكل مستقل في القسمين السابقين.</p>
   <div id="channelHeader" class="channel-header"></div>
   <div id="report"></div>
 
@@ -558,7 +565,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 <footer>
   VIRIFIXO © 2026
   <br>
-  Advanced Media Verification · Version 5.0
+  Advanced Media Verification · Version 5.4
 </footer>
 </div>
 
@@ -568,6 +575,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 const $ = id => document.getElementById(id);
 
 let currentFileURL = null;
+let selectedImageFile = null;
 let extractedFrames = [];
 
 function status(message, type = "") {
@@ -601,7 +609,9 @@ function decodeHtmlEntities(value) {
 function displayValue(value) {
   if (value && typeof value === "object" &&
       Object.prototype.hasOwnProperty.call(value, "value")) {
-    if (value.available === false || value.value == null || value.value === "") {
+    if (value.value == null || value.value === "") {
+      if (value.status === "fetch_failed") return "تعذر جلب البيانات من المصدر";
+      if (value.status === "unavailable") return "غير متاح علنياً";
       return "غير متوفر";
     }
     value = value.value;
@@ -726,7 +736,6 @@ $("verify").addEventListener("click", async () => {
         if (typeof value === "object" &&
             !Array.isArray(value) &&
             Object.prototype.hasOwnProperty.call(value, "value")) {
-          if (value.available === false || value.value == null || value.value === "") continue;
           return value;
         }
         return value;
@@ -809,6 +818,9 @@ $("file").addEventListener("change", async event => {
 
   currentFileURL = URL.createObjectURL(file);
   extractedFrames = [];
+  selectedImageFile = isImage ? file : null;
+  $("analyzeImage").disabled = !isImage;
+  $("analyzeImage").textContent = isImage ? "🔬 تحليل الصورة الآن" : "اختر صورة أولاً لتحليلها";
 
   $("frames").replaceChildren();
   $("frameSection").classList.toggle("hidden", !isVideo);
@@ -825,7 +837,14 @@ $("file").addEventListener("change", async event => {
   if (isImage) {
     $("imagePreview").src = currentFileURL;
     $("imagePreview").style.display = "block";
-    analyzeExif(file);
+    $("fileInfo").textContent += "\\nالأبعاد: جارٍ قراءة أبعاد الصورة...";
+    $("imagePreview").onload = () => {
+      $("fileInfo").textContent = $("fileInfo").textContent.replace(
+        "الأبعاد: جارٍ قراءة أبعاد الصورة...",
+        "أبعاد الصورة: " + $("imagePreview").naturalWidth + " × " + $("imagePreview").naturalHeight + " بكسل"
+      );
+    };
+    $("exifInfo").textContent = "اضغط «تحليل الصورة» لبدء فحص البيانات الوصفية.";
   }
 
   if (isVideo) {
@@ -898,13 +917,39 @@ async function analyzeExif(file) {
     });
 
     if (!found) {
-      output.textContent = "لم يتم العثور على بيانات EXIF.";
+      output.textContent = "لم يتم العثور على بيانات EXIF. قد تكون الصورة قد فقدت بياناتها الوصفية أو لم تتضمنها أصلاً.";
     }
+    return true;
 
   } catch (error) {
     output.textContent = "تعذر تحليل EXIF: " + error.message;
+    return false;
   }
 }
+
+// زر بدء تحليل الصورة يدوياً
+$("analyzeImage").addEventListener("click", async () => {
+  if (!selectedImageFile) {
+    $("exifInfo").textContent = "اختر صورة أولاً."; 
+    return;
+  }
+
+  const button = $("analyzeImage");
+  button.disabled = true;
+  button.textContent = "جارٍ تحليل الصورة...";
+
+  try {
+    const ok = await analyzeExif(selectedImageFile);
+    if (ok) {
+      $("exifInfo").scrollIntoView({behavior:"smooth", block:"nearest"});
+      button.textContent = "إعادة تحليل الصورة";
+    } else {
+      button.textContent = "إعادة المحاولة";
+    }
+  } finally {
+    button.disabled = false;
+  }
+});
 
 // استخراج إطارات الفيديو
 $("captureFrames").addEventListener("click", async () => {
@@ -1005,6 +1050,9 @@ $("reset").addEventListener("click", () => {
   $("channel").value = "";
   $("video").value = "";
   $("file").value = "";
+  selectedImageFile = null;
+  $("analyzeImage").disabled = true;
+  $("analyzeImage").textContent = "اختر صورة أولاً لتحليلها";
 
   $("result").style.display = "none";
   $("report").replaceChildren();
@@ -1029,7 +1077,7 @@ $("reset").addEventListener("click", () => {
   }
 
   extractedFrames = [];
-  status("VIRIFIXO 5.0 جاهز لفحص جديد.");
+  status("VIRIFIXO 5.4 جاهز لفحص جديد.");
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
