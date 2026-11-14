@@ -703,26 +703,61 @@ $("verify").addEventListener("click", async () => {
       throw new Error(data.error || ("خادم الفحص أعاد الحالة: " + response.status));
     }
 
-    const stats = data.statistics || {};
+    const stats = data.statistics || data.stats || {};
+
+    // Read both the current API shape (statistics.<field>.value)
+    // and legacy flat fields without assuming either one is present.
+    const firstAvailable = (...values) => {
+      for (const value of values) {
+        if (value === undefined || value === null || value === "") continue;
+        if (typeof value === "object" &&
+            !Array.isArray(value) &&
+            Object.prototype.hasOwnProperty.call(value, "value")) {
+          if (value.available === false || value.value == null || value.value === "") continue;
+          return value;
+        }
+        return value;
+      }
+      return null;
+    };
+
+    const sourceValue = firstAvailable(
+      data.source,
+      data.sources,
+      data.provider
+    );
 
     report("نتائج فحص YouTube", {
       "نوع الفحص": channel ? "قناة" : "فيديو",
       "الرابط": target,
-      "العنوان": data.title || data.channelTitle,
-      "اسم القناة": data.channelTitle || data.title,
+      "العنوان": firstAvailable(data.title, data.channelTitle),
+      "اسم القناة": firstAvailable(data.channelTitle, data.authorName, data.title),
       "معرف القناة": data.channelId,
       "معرف الفيديو": data.videoId,
-      "تاريخ إنشاء القناة": channel ? stats.joinedDate : null,
-      "تاريخ النشر": channel ? null : (stats.publishDate || data.publishedAt),
-      "عدد المشتركين": channel ? stats.subscribers : null,
-      "عدد الفيديوهات": channel ? stats.videoCount : null,
-      "إجمالي مشاهدات القناة": channel ? stats.totalViews : null,
-      "مشاهدات الفيديو": channel ? null : (stats.views || data.viewCount),
-      "مدة الفيديو بالثواني": channel ? null : stats.durationSeconds,
-      "الإعجابات": channel ? null : (stats.likes || data.likeCount),
-      "التعليقات": channel ? null : (stats.comments || data.commentCount),
+      "تاريخ إنشاء القناة": channel
+        ? firstAvailable(stats.joinedDate, stats.createdAt, data.joinedDate)
+        : null,
+      "تاريخ النشر": channel ? null
+        : firstAvailable(stats.publishDate, stats.publishedAt, data.publishedAt, data.publishDate),
+      "عدد المشتركين": channel
+        ? firstAvailable(stats.subscribers, stats.subscriberCount, data.subscriberCount)
+        : null,
+      "عدد الفيديوهات": channel
+        ? firstAvailable(stats.videoCount, stats.videos, data.videoCount)
+        : null,
+      "إجمالي مشاهدات القناة": channel
+        ? firstAvailable(stats.totalViews, stats.viewCount, data.viewCount)
+        : null,
+      "مشاهدات الفيديو": channel ? null
+        : firstAvailable(stats.views, stats.viewCount, data.viewCount),
+      "مدة الفيديو بالثواني": channel ? null
+        : firstAvailable(stats.durationSeconds, stats.duration, data.durationSeconds),
+      "الإعجابات": channel ? null
+        : firstAvailable(stats.likes, stats.likeCount, data.likeCount),
+      "التعليقات": channel ? null
+        : firstAvailable(stats.comments, stats.commentCount, data.commentCount),
       "الوصف": data.description,
-      "المصدر": data.source,
+      "المصدر": sourceValue,
       "ملاحظة": data.note
     }, data.thumbnailUrl);
 
