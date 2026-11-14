@@ -496,7 +496,6 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     controls playsinline preload="metadata"></video>
 
   <img id="imagePreview" class="preview" alt="معاينة الصورة">
-  <button id="analyzeImage" class="primary hidden" type="button">تحليل الصورة</button>
 
   <div id="frameSection" class="hidden">
     <h3>🎞️ استخراج إطارات الفيديو</h3>
@@ -516,8 +515,11 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
     إذا كانت هذه البيانات موجودة داخل الصورة.
   </p>
-  <div id="exifInfo" class="status">
-    بانتظار اختيار صورة.
+  <button id="analyzeImage" class="primary hidden" type="button" style="display:block;margin:14px 0">
+    تحليل الصورة الآن
+  </button>
+  <div id="exifInfo" class="status" aria-live="polite">
+    اختر صورة من القسم السابق، ثم اضغط «تحليل الصورة الآن».
   </div>
 </section>
 
