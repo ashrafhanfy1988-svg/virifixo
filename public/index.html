@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1220">
 <meta name="description" content="VIRIFIXO منصة متقدمة للتحقق الإعلامي وتحليل الصور والفيديوهات والمصادر الرقمية.">
 <meta name="color-scheme" content="dark">
-<title>VIRIFIXO 4.2 | Advanced Media Verification</title>
+<title>VIRIFIXO 4.3 | Advanced Media Verification</title>
 
 <script defer src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
 
@@ -368,7 +368,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <div class="subtitle">
     منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
   </div>
-  <p class="version">VERSION 4.2 · ADVANCED MEDIA VERIFICATION</p>
+  <p class="version">VERSION 4.3 · ADVANCED MEDIA VERIFICATION</p>
 </header>
 
   <p class="hero-copy">منصة مساعدة للتحقق الإعلامي وتحليل المحتوى الرقمي، تهدف إلى تنظيم المؤشرات المتاحة ومساندة الصحفيين والمؤسسات في مراجعة الصور والفيديوهات ومصادرها.</p>
@@ -472,7 +472,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   </button>
 
   <div class="status" id="status" role="status" aria-live="polite">
-    VIRIFIXO 4.2 جاهز لاستقبال طلب الفحص.
+    VIRIFIXO 4.3 جاهز لاستقبال طلب الفحص.
   </div>
 </section>
 
@@ -558,7 +558,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 <footer>
   VIRIFIXO © 2026
   <br>
-  Advanced Media Verification · Version 4.2
+  Advanced Media Verification · Version 4.3
 </footer>
 </div>
 
@@ -641,11 +641,9 @@ $("verify").addEventListener("click", async () => {
   status("جارٍ الاتصال بخادم VIRIFIXO...", "loading");
 
   try {
-    if (location.hostname.endsWith("github.io")) {
-      throw new Error("خدمة فحص YouTube الخلفية غير منشورة بعد. أدوات الملفات المحلية تعمل من المتصفح، أما فحص الروابط فيحتاج إلى ربط خادم VIRIFIXO.");
-    }
+    const API_BASE = "https://virifixo-1.onrender.com";
 
-    const response = await fetch("/api/verify", {
+    const response = await fetch(API_BASE + "/api/verify", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
@@ -654,11 +652,11 @@ $("verify").addEventListener("click", async () => {
       })
     });
 
-    if (!response.ok) {
-      throw new Error("خادم الفحص غير متاح: " + response.status);
-    }
-
     const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || ("خادم الفحص أعاد الحالة: " + response.status));
+    }
 
     report("نتائج فحص YouTube", {
       "نوع الفحص": channel ? "قناة" : "فيديو",
@@ -931,7 +929,7 @@ $("reset").addEventListener("click", () => {
   }
 
   extractedFrames = [];
-  status("VIRIFIXO 4.2 جاهز لفحص جديد.");
+  status("VIRIFIXO 4.3 جاهز لفحص جديد.");
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
