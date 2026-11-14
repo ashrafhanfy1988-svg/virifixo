@@ -5,7 +5,7 @@ const express = require("express");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
-const VERSION = "5.2";
+const VERSION = "5.3";
 
 const ALLOWED_ORIGINS = new Set([
   "https://ashrafhanfy1988-svg.github.io"
@@ -456,6 +456,47 @@ function findChannelId(object) {
   return "";
 }
 
+function extractChannelIdFromHtml(html) {
+  if (typeof html !== "string" || !html) return "";
+
+  const patterns = [
+    /"externalChannelId"\s*:\s*"((?:UC)[a-zA-Z0-9_-]{22})"/,
+    /"channelId"\s*:\s*"((?:UC)[a-zA-Z0-9_-]{22})"/,
+    /\/channel\/(UC[a-zA-Z0-9_-]{22})/
+  ];
+
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+    if (match) return match[1];
+  }
+
+  return "";
+}
+
+function extractFirstMeta(html, names) {
+  for (const name of names) {
+    const value = extractMeta(html, name);
+    if (available(value)) return value;
+  }
+  return "";
+}
+
+function parseIsoDuration(value) {
+  if (typeof value !== "string") return null;
+
+  const match = value.match(
+    /^PT(?:(\\d+(?:\\.\\d+)?)H)?(?:(\\d+(?:\\.\\d+)?)M)?(?:(\\d+(?:\\.\\d+)?)S)?$/i
+  );
+  if (!match) return null;
+
+  const hours = Number(match[1] || 0);
+  const minutes = Number(match[2] || 0);
+  const seconds = Number(match[3] || 0);
+  const total = Math.round(hours * 3600 + minutes * 60 + seconds);
+
+  return Number.isFinite(total) && total >= 0 ? total : null;
+}
+
 // ==================================================
 // 7. DATA AVAILABILITY
 // ==================================================
@@ -687,6 +728,7 @@ async function verifyVideo(url, videoId) {
   const channelId =
     details.channelId ||
     findChannelId(pageData) ||
+    extractChannelIdFromHtml(pageHtml) ||
     "";
 
   const channelUrl =
@@ -708,21 +750,35 @@ async function verifyVideo(url, videoId) {
   const publishDate =
     microformat.publishDate ||
     microformat.uploadDate ||
-    extractMeta(pageHtml, "datePublished") ||
-    extractMeta(pageHtml, "uploadDate");
+    extractFirstMeta(pageHtml, [
+      "datePublished",
+      "uploadDate",
+      "publishDate",
+      "date"
+    ]) ||
+    "";
 
   const viewCount =
     details.viewCount ??
     microformat.viewCount ??
+    extractFirstMeta(pageHtml, [
+      "interactionCount",
+      "og:video:views",
+      "viewCount"
+    ]) ??
     null;
 
   const durationSeconds =
     details.lengthSeconds ??
     microformat.lengthSeconds ??
+    parseIsoDuration(extractMeta(pageHtml, "duration")) ??
     null;
 
   const sources = ["YouTube oEmbed"];
   if (pageSource) sources.push(pageSource);
+  if (channelId && !details.channelId && !findChannelId(pageData)) {
+    sources.push("YouTube public page HTML metadata");
+  }
 
   const pageUnavailableNote = pageSource
     ? ""
