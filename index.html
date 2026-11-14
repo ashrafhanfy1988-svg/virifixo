@@ -500,7 +500,7 @@ $("verify").addEventListener("click", async () => {
   status("جارٍ الاتصال بخادم VIRIFIXO...", "loading");
 
   try {
-    const response = await fetch("/api/verify", {
+    const response = await fetch("https://virifixo-1.onrender.com/api/verify", {
       method: "POST",
       headers: {"Content-Type":"application/json"},
       body: JSON.stringify({
