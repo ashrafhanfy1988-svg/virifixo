@@ -560,5 +560,385 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <br>
   Advanced Media Verification · Version 4.2
 </footer>
-
 </div>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+let currentFileURL = null;
+let extractedFrames = [];
+
+function status(message, type = "") {
+  const el = $("status");
+  el.textContent = message;
+  el.className = "status " + type;
+}
+
+function bytes(size) {
+  if (size < 1024) return size + " Bytes";
+  if (size < 1048576) return (size / 1024).toFixed(2) + " KB";
+  return (size / 1048576).toFixed(2) + " MB";
+}
+
+function report(title, data) {
+  $("result").style.display = "block";
+  $("report").replaceChildren();
+
+  const heading = document.createElement("h3");
+  heading.textContent = title;
+  $("channelHeader").replaceChildren(heading);
+
+  Object.entries(data).forEach(([key, value]) => {
+    const item = document.createElement("div");
+    item.className = "item";
+
+    const strong = document.createElement("strong");
+    strong.textContent = key + ": ";
+
+    const span = document.createElement("span");
+    span.textContent = value || "غير متوفر";
+
+    item.append(strong, span);
+    $("report").appendChild(item);
+  });
+
+  $("reportTime").textContent =
+    "تاريخ التقرير: " + new Date().toLocaleString("ar-SA");
+
+  $("result").scrollIntoView({behavior:"smooth"});
+}
+
+// فحص روابط YouTube
+$("verify").addEventListener("click", async () => {
+  const channel = $("channel").value.trim();
+  const video = $("video").value.trim();
+
+  if ((!channel && !video) || (channel && video)) {
+    status("أدخل رابط قناة أو فيديو واحداً فقط.", "error");
+    return;
+  }
+
+  const target = channel || video;
+
+  try {
+    const url = new URL(target);
+    const host = url.hostname.replace(/^www\./, "");
+
+    if (!["youtube.com", "m.youtube.com", "youtu.be",
+          "youtube-nocookie.com"].includes(host)) {
+      throw new Error("الرابط ليس رابط YouTube صالحاً.");
+    }
+  } catch (error) {
+    status(error.message || "الرابط غير صالح.", "error");
+    return;
+  }
+
+  const button = $("verify");
+  button.disabled = true;
+
+  status("جارٍ الاتصال بخادم VIRIFIXO...", "loading");
+
+  try {
+    if (location.hostname.endsWith("github.io")) {
+      throw new Error("خدمة فحص YouTube الخلفية غير منشورة بعد. أدوات الملفات المحلية تعمل من المتصفح، أما فحص الروابط فيحتاج إلى ربط خادم VIRIFIXO.");
+    }
+
+    const response = await fetch("/api/verify", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        type: channel ? "channel" : "video",
+        url: target
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("خادم الفحص غير متاح: " + response.status);
+    }
+
+    const data = await response.json();
+
+    report("نتائج فحص YouTube", {
+      "نوع الفحص": channel ? "قناة" : "فيديو",
+      "الرابط": target,
+      "العنوان": data.title,
+      "اسم القناة": data.channelTitle,
+      "معرف القناة": data.channelId,
+      "معرف الفيديو": data.videoId,
+      "تاريخ النشر": data.publishedAt,
+      "المشاهدات": data.viewCount,
+      "المشتركون": data.subscriberCount,
+      "الإعجابات": data.likeCount,
+      "التعليقات": data.commentCount,
+      "الوصف": data.description,
+      "المصدر": data.source
+    });
+
+    status("اكتمل الفحص واستلام البيانات.", "success");
+
+  } catch (error) {
+    status(
+      "تعذر الفحص: " + error.message +
+      ". تحقق من إعداد خادم /api/verify.",
+      "error"
+    );
+  } finally {
+    button.disabled = false;
+  }
+});
+
+// تحليل الملفات المحلية
+$("file").addEventListener("change", async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const isImage = file.type.startsWith("image/");
+  const isVideo = file.type.startsWith("video/");
+
+  if (!isImage && !isVideo) {
+    $("fileInfo").textContent = "نوع الملف غير مدعوم.";
+    return;
+  }
+
+  if (file.size > 500 * 1024 * 1024) {
+    $("fileInfo").textContent = "حجم الملف يتجاوز 500 MB.";
+    return;
+  }
+
+  if (currentFileURL) URL.revokeObjectURL(currentFileURL);
+
+  currentFileURL = URL.createObjectURL(file);
+  extractedFrames = [];
+
+  $("frames").replaceChildren();
+  $("frameSection").classList.toggle("hidden", !isVideo);
+
+  $("fileInfo").textContent =
+    "اسم الملف: " + file.name +
+    "\nالنوع: " + file.type +
+    "\nالحجم: " + bytes(file.size) +
+    "\nتاريخ التعديل: " + new Date(file.lastModified).toLocaleString("ar-SA");
+
+  $("imagePreview").style.display = "none";
+  $("videoPreview").style.display = "none";
+
+  if (isImage) {
+    $("imagePreview").src = currentFileURL;
+    $("imagePreview").style.display = "block";
+    analyzeExif(file);
+  }
+
+  if (isVideo) {
+    const video = $("videoPreview");
+    video.src = currentFileURL;
+    video.style.display = "block";
+
+    video.onloadedmetadata = () => {
+      $("fileInfo").textContent +=
+        "\nمدة الفيديو: " + video.duration.toFixed(2) + " ثانية" +
+        "\nالعرض: " + video.videoWidth +
+        "\nالارتفاع: " + video.videoHeight;
+    };
+
+    $("exifInfo").textContent =
+      "تم اختيار فيديو. بيانات EXIF الخاصة بالصور غير متاحة لهذا الملف.";
+  }
+});
+
+// تحليل EXIF
+async function analyzeExif(file) {
+  const output = $("exifInfo");
+  output.textContent = "جارٍ تحليل البيانات الوصفية...";
+
+  try {
+    if (!window.ExifReader) {
+      throw new Error("مكتبة EXIF غير متاحة.");
+    }
+
+    const tags = await ExifReader.load(file, {expanded:true});
+    const data = tags.exif || {};
+    const gps = tags.gps || {};
+
+    const fields = {
+      "الشركة المصنعة": data.Make,
+      "طراز الكاميرا": data.Model,
+      "تاريخ الالتقاط": data.DateTimeOriginal,
+      "تاريخ الإنشاء": data.DateTime,
+      "البرنامج المستخدم": data.Software,
+      "البعد البؤري": data.FocalLength,
+      "فتحة العدسة": data.FNumber,
+      "سرعة الغالق": data.ExposureTime,
+      "ISO": data.ISOSpeedRatings,
+      "خط العرض": gps.Latitude,
+      "خط الطول": gps.Longitude
+    };
+
+    output.replaceChildren();
+
+    let found = false;
+
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value === undefined || value === null) return;
+
+      found = true;
+
+      const item = document.createElement("div");
+      item.className = "item";
+
+      const strong = document.createElement("strong");
+      strong.textContent = key + ": ";
+
+      const span = document.createElement("span");
+      span.textContent = typeof value === "object"
+        ? JSON.stringify(value)
+        : String(value);
+
+      item.append(strong, span);
+      output.appendChild(item);
+    });
+
+    if (!found) {
+      output.textContent = "لم يتم العثور على بيانات EXIF.";
+    }
+
+  } catch (error) {
+    output.textContent = "تعذر تحليل EXIF: " + error.message;
+  }
+}
+
+// استخراج إطارات الفيديو
+$("captureFrames").addEventListener("click", async () => {
+  const video = $("videoPreview");
+
+  if (!video.src || !Number.isFinite(video.duration) ||
+      video.duration <= 0) {
+    $("fileInfo").textContent = "اختر فيديو صالحاً أولاً.";
+    return;
+  }
+
+  const button = $("captureFrames");
+  button.disabled = true;
+  button.textContent = "جارٍ استخراج الإطارات...";
+
+  const canvas = document.createElement("canvas");
+  const maxWidth = 480;
+  const ratio = Math.min(1, maxWidth / video.videoWidth);
+
+  canvas.width = Math.max(1, Math.round(video.videoWidth * ratio));
+  canvas.height = Math.max(1, Math.round(video.videoHeight * ratio));
+
+  const context = canvas.getContext("2d");
+  const originalTime = video.currentTime;
+
+  $("frames").replaceChildren();
+  extractedFrames = [];
+
+  try {
+    for (let i = 1; i <= 5; i++) {
+      const time = video.duration * i / 6;
+
+      video.currentTime = time;
+
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error("انتهت مهلة استخراج الإطار."));
+        }, 10000);
+
+        const cleanup = () => {
+          clearTimeout(timeout);
+          video.removeEventListener("seeked", done);
+          video.removeEventListener("error", failed);
+        };
+
+        const done = () => {
+          cleanup();
+          resolve();
+        };
+
+        const failed = () => {
+          cleanup();
+          reject(new Error("تعذر قراءة إطار الفيديو."));
+        };
+
+        video.addEventListener("seeked", done, {once:true});
+        video.addEventListener("error", failed, {once:true});
+      });
+
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const image = canvas.toDataURL("image/jpeg", 0.85);
+      extractedFrames.push(image);
+
+      const card = document.createElement("div");
+      card.className = "frame-card";
+
+      const img = document.createElement("img");
+      img.src = image;
+      img.alt = "إطار " + i;
+
+      const label = document.createElement("small");
+      label.textContent = "الإطار " + i + " · " + time.toFixed(2) + " ثانية";
+
+      card.append(img, label);
+      $("frames").appendChild(card);
+    }
+
+    video.currentTime = originalTime;
+    $("fileInfo").textContent = "اكتمل استخراج 5 إطارات.";
+
+  } catch (error) {
+    $("fileInfo").textContent = "تعذر استخراج الإطارات: " + error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = "استخراج الإطارات";
+  }
+});
+
+// الطباعة
+$("printReport").addEventListener("click", () => {
+  window.print();
+});
+
+// بدء فحص جديد
+$("reset").addEventListener("click", () => {
+  $("channel").value = "";
+  $("video").value = "";
+  $("file").value = "";
+
+  $("result").style.display = "none";
+  $("report").replaceChildren();
+  $("channelHeader").replaceChildren();
+
+  $("imagePreview").removeAttribute("src");
+  $("imagePreview").style.display = "none";
+
+  $("videoPreview").pause();
+  $("videoPreview").removeAttribute("src");
+  $("videoPreview").load();
+  $("videoPreview").style.display = "none";
+
+  $("frameSection").classList.add("hidden");
+  $("frames").replaceChildren();
+  $("exifInfo").textContent = "بانتظار اختيار صورة.";
+  $("fileInfo").textContent = "لم يتم اختيار ملف.";
+
+  if (currentFileURL) {
+    URL.revokeObjectURL(currentFileURL);
+    currentFileURL = null;
+  }
+
+  extractedFrames = [];
+  status("VIRIFIXO 4.2 جاهز لفحص جديد.");
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+window.addEventListener("pagehide", () => {
+  if (currentFileURL) URL.revokeObjectURL(currentFileURL);
+});
+</script>
+
+</body>
+</html>
