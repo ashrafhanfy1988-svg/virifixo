@@ -522,7 +522,7 @@ async function verifyChannel(url) {
 
   try {
     const aboutUrl = new URL(extractCanonical(html, url));
-    aboutUrl.pathname = aboutUrl.pathname.replace(/\\/$/, "") + "/about";
+    aboutUrl.pathname = aboutUrl.pathname.replace(/\/$/, "") + "/about";
     const aboutResponse = await fetchText(aboutUrl.toString());
     const aboutHtml = await aboutResponse.text();
     aboutData = extractEmbeddedJson(aboutHtml, "ytInitialData");
