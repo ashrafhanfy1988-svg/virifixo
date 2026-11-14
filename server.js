@@ -485,7 +485,7 @@ function parseIsoDuration(value) {
   if (typeof value !== "string") return null;
 
   const match = value.match(
-    /^PT(?:(\\d+(?:\\.\\d+)?)H)?(?:(\\d+(?:\\.\\d+)?)M)?(?:(\\d+(?:\\.\\d+)?)S)?$/i
+    /^PT(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?$/i
   );
   if (!match) return null;
 
