@@ -496,6 +496,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     controls playsinline preload="metadata"></video>
 
   <img id="imagePreview" class="preview" alt="معاينة الصورة">
+  <button id="analyzeImage" class="primary hidden" type="button">تحليل الصورة</button>
 
   <div id="frameSection" class="hidden">
     <h3>🎞️ استخراج إطارات الفيديو</h3>
@@ -568,6 +569,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 const $ = id => document.getElementById(id);
 
 let currentFileURL = null;
+let selectedImageFile = null;
 let extractedFrames = [];
 
 function status(message, type = "") {
@@ -809,6 +811,10 @@ $("file").addEventListener("change", async event => {
 
   currentFileURL = URL.createObjectURL(file);
   extractedFrames = [];
+  selectedImageFile = isImage ? file : null;
+  $("analyzeImage").classList.toggle("hidden", !isImage);
+  $("analyzeImage").disabled = false;
+  $("analyzeImage").textContent = "تحليل الصورة";
 
   $("frames").replaceChildren();
   $("frameSection").classList.toggle("hidden", !isVideo);
@@ -825,7 +831,14 @@ $("file").addEventListener("change", async event => {
   if (isImage) {
     $("imagePreview").src = currentFileURL;
     $("imagePreview").style.display = "block";
-    analyzeExif(file);
+    $("fileInfo").textContent += "\\nالأبعاد: جارٍ قراءة أبعاد الصورة...";
+    $("imagePreview").onload = () => {
+      $("fileInfo").textContent = $("fileInfo").textContent.replace(
+        "الأبعاد: جارٍ قراءة أبعاد الصورة...",
+        "أبعاد الصورة: " + $("imagePreview").naturalWidth + " × " + $("imagePreview").naturalHeight + " بكسل"
+      );
+    };
+    $("exifInfo").textContent = "اضغط «تحليل الصورة» لبدء فحص البيانات الوصفية.";
   }
 
   if (isVideo) {
@@ -898,13 +911,39 @@ async function analyzeExif(file) {
     });
 
     if (!found) {
-      output.textContent = "لم يتم العثور على بيانات EXIF.";
+      output.textContent = "لم يتم العثور على بيانات EXIF. قد تكون الصورة قد فقدت بياناتها الوصفية أو لم تتضمنها أصلاً.";
     }
+    return true;
 
   } catch (error) {
     output.textContent = "تعذر تحليل EXIF: " + error.message;
+    return false;
   }
 }
+
+// زر بدء تحليل الصورة يدوياً
+$("analyzeImage").addEventListener("click", async () => {
+  if (!selectedImageFile) {
+    $("exifInfo").textContent = "اختر صورة أولاً."; 
+    return;
+  }
+
+  const button = $("analyzeImage");
+  button.disabled = true;
+  button.textContent = "جارٍ تحليل الصورة...";
+
+  try {
+    const ok = await analyzeExif(selectedImageFile);
+    if (ok) {
+      $("exifInfo").scrollIntoView({behavior:"smooth", block:"nearest"});
+      button.textContent = "إعادة تحليل الصورة";
+    } else {
+      button.textContent = "إعادة المحاولة";
+    }
+  } finally {
+    button.disabled = false;
+  }
+});
 
 // استخراج إطارات الفيديو
 $("captureFrames").addEventListener("click", async () => {
@@ -1005,6 +1044,10 @@ $("reset").addEventListener("click", () => {
   $("channel").value = "";
   $("video").value = "";
   $("file").value = "";
+  selectedImageFile = null;
+  $("analyzeImage").classList.add("hidden");
+  $("analyzeImage").disabled = false;
+  $("analyzeImage").textContent = "تحليل الصورة";
 
   $("result").style.display = "none";
   $("report").replaceChildren();
