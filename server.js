@@ -5,7 +5,7 @@ const express = require("express");
 
 const app = express();
 const PORT = Number(process.env.PORT) || 10000;
-const VERSION = "5.3";
+const VERSION = "5.4";
 
 const ALLOWED_ORIGINS = new Set([
   "https://ashrafhanfy1988-svg.github.io"
@@ -507,10 +507,12 @@ function available(value) {
     String(value).trim() !== "";
 }
 
-function field(value) {
+function field(value, status) {
+  const hasValue = available(value);
   return {
-    value: available(value) ? value : null,
-    available: available(value)
+    value: hasValue ? value : null,
+    available: hasValue,
+    status: hasValue ? "extracted" : (status || "unavailable")
   };
 }
 
@@ -560,6 +562,7 @@ async function verifyChannel(url) {
   // for some channel layouts, exposes total views and join date only
   // on the About tab. Read that public tab as a secondary source.
   let aboutData = null;
+  let aboutFetchFailed = false;
 
   try {
     const aboutUrl = new URL(extractCanonical(html, url));
@@ -568,6 +571,7 @@ async function verifyChannel(url) {
     const aboutHtml = await aboutResponse.text();
     aboutData = extractEmbeddedJson(aboutHtml, "ytInitialData");
   } catch (error) {
+    aboutFetchFailed = true;
     console.warn("VIRIFIXO channel About data unavailable:", error.message);
   }
 
@@ -633,8 +637,8 @@ async function verifyChannel(url) {
     statistics: {
       subscribers: field(subscribers),
       videoCount: field(videoCount),
-      totalViews: field(totalViews),
-      joinedDate: field(joinedDate)
+      totalViews: field(totalViews, aboutFetchFailed ? "fetch_failed" : "unavailable"),
+      joinedDate: field(joinedDate, aboutFetchFailed ? "fetch_failed" : "unavailable")
     },
 
     source: "YouTube public channel page",
@@ -798,12 +802,12 @@ async function verifyVideo(url, videoId) {
     description,
 
     statistics: {
-      views: field(viewCount),
-      durationSeconds: field(durationSeconds),
-      publishDate: field(publishDate),
-      // Likes and comments are not consistently exposed in public page metadata.
-      likes: field(null),
-      comments: field(null)
+      views: field(viewCount, pageSource ? "unavailable" : "fetch_failed"),
+      durationSeconds: field(durationSeconds, pageSource ? "unavailable" : "fetch_failed"),
+      publishDate: field(publishDate, pageSource ? "unavailable" : "fetch_failed"),
+      // YouTube does not consistently expose these values in public page metadata.
+      likes: field(null, "unavailable"),
+      comments: field(null, "unavailable")
     },
 
     source: sources.join(" + "),
