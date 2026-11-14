@@ -515,7 +515,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
     إذا كانت هذه البيانات موجودة داخل الصورة.
   </p>
-  <button id="analyzeImage" class="primary hidden" type="button" style="display:block;margin:14px 0">
+  <button id="analyzeImage" class="primary" type="button" disabled style="display:block;margin:14px 0">
     تحليل الصورة الآن
   </button>
   <div id="exifInfo" class="status" aria-live="polite">
@@ -815,8 +815,7 @@ $("file").addEventListener("change", async event => {
   currentFileURL = URL.createObjectURL(file);
   extractedFrames = [];
   selectedImageFile = isImage ? file : null;
-  $("analyzeImage").classList.toggle("hidden", !isImage);
-  $("analyzeImage").disabled = false;
+  $("analyzeImage").disabled = !isImage;
   $("analyzeImage").textContent = "تحليل الصورة";
 
   $("frames").replaceChildren();
