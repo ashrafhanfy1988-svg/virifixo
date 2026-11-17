@@ -662,12 +662,13 @@ async function verifyVideo(url, videoId) {
   const oembedResponse = await fetchText(endpoint);
   const oembed = await oembedResponse.json();
 
+  // Score each public page independently. Do not keep an early HTTP 200
+  // consent/challenge page when a later candidate contains real metadata.
   let pageData = {};
   let pageHtml = "";
   let pageSource = "";
+  let bestScore = -1;
 
-  // Try both public page formats. Some server environments can
-  // access the embed page even when the watch page is unavailable.
   const pageCandidates = [
     {
       url: "https://www.youtube.com/watch?v=" + videoId,
@@ -683,29 +684,41 @@ async function verifyVideo(url, videoId) {
     try {
       const pageResponse = await fetchText(candidate.url);
       const candidateHtml = await pageResponse.text();
-
       const candidateData =
         extractEmbeddedJson(candidateHtml, "ytInitialPlayerResponse") ||
         extractEmbeddedJson(candidateHtml, "playerResponse") ||
         {};
 
-      // Keep the first fetched HTML as a metadata fallback, but continue
-      // when it contains no player details so the embed page gets a chance.
-      if (!pageHtml) {
+      const candidateDetails = candidateData.videoDetails || {};
+      const candidateTitle =
+        cleanText(candidateDetails.title || "") ||
+        extractFirstMeta(candidateHtml, ["og:title", "twitter:title"]);
+      const candidateAuthor =
+        cleanText(candidateDetails.author || "") ||
+        extractFirstMeta(candidateHtml, ["author"]);
+      const candidateChannelId =
+        candidateDetails.channelId ||
+        findChannelId(candidateData) ||
+        extractChannelIdFromHtml(candidateHtml);
+      const candidateDescription =
+        cleanText(candidateDetails.shortDescription || "") ||
+        extractFirstMeta(candidateHtml, ["og:description", "description"]);
+
+      const score =
+        (candidateTitle ? 4 : 0) +
+        (candidateAuthor ? 3 : 0) +
+        (candidateChannelId ? 3 : 0) +
+        (candidateDescription ? 1 : 0) +
+        (candidateData.microformat?.playerMicroformatRenderer ? 2 : 0);
+
+      if (score > bestScore) {
+        bestScore = score;
         pageHtml = candidateHtml;
         pageData = candidateData;
-        pageSource = candidate.source;
+        pageSource = score > 0 ? candidate.source : "";
       }
 
-      if (
-        candidateData.videoDetails ||
-        candidateData.microformat?.playerMicroformatRenderer
-      ) {
-        pageHtml = candidateHtml;
-        pageData = candidateData;
-        pageSource = candidate.source;
-        break;
-      }
+      if (score >= 8) break;
     } catch (error) {
       console.warn(
         "VIRIFIXO video page source unavailable:",
@@ -721,12 +734,12 @@ async function verifyVideo(url, videoId) {
 
   const title =
     cleanText(details.title || "") ||
-    extractMeta(pageHtml, "og:title") ||
+    extractFirstMeta(pageHtml, ["og:title", "twitter:title"]) ||
     cleanText(oembed.title || "");
 
   const channelTitle =
     cleanText(details.author || "") ||
-    extractMeta(pageHtml, "author") ||
+    extractFirstMeta(pageHtml, ["author"]) ||
     cleanText(oembed.author_name || "");
 
   const channelId =
@@ -742,14 +755,13 @@ async function verifyVideo(url, videoId) {
 
   const thumbnail =
     details.thumbnail?.thumbnails?.slice(-1)[0]?.url ||
-    extractMeta(pageHtml, "og:image") ||
+    extractFirstMeta(pageHtml, ["og:image", "twitter:image"]) ||
     oembed.thumbnail_url ||
     "";
 
   const description =
     cleanText(details.shortDescription || "") ||
-    extractMeta(pageHtml, "og:description") ||
-    extractMeta(pageHtml, "description");
+    extractFirstMeta(pageHtml, ["og:description", "description"]);
 
   const publishDate =
     microformat.publishDate ||
@@ -775,10 +787,20 @@ async function verifyVideo(url, videoId) {
   const durationSeconds =
     details.lengthSeconds ??
     microformat.lengthSeconds ??
-    parseIsoDuration(extractMeta(pageHtml, "duration")) ??
+    parseIsoDuration(extractFirstMeta(pageHtml, ["duration", "video:duration"])) ??
     null;
 
-  const sources = ["YouTube oEmbed"];
+  if (!title && !channelTitle && !channelId && !description) {
+    throw new Error(
+      "وصل رد من YouTube لكن لم تتضمن الاستجابة بيانات تعريفية قابلة للقراءة. " +
+      "قد تكون صفحة الفيديو محجوبة مؤقتاً أو تغيّر تنسيق البيانات العامة."
+    );
+  }
+
+  const sources = [];
+  if (available(oembed.title) || available(oembed.author_name)) {
+    sources.push("YouTube oEmbed");
+  }
   if (pageSource) sources.push(pageSource);
   if (channelId && !details.channelId && !findChannelId(pageData)) {
     sources.push("YouTube public page HTML metadata");
@@ -786,7 +808,7 @@ async function verifyVideo(url, videoId) {
 
   const pageUnavailableNote = pageSource
     ? ""
-    : " تعذر الوصول إلى صفحة الفيديو العامة من الخادم؛ لذلك قد لا تتوفر المشاهدات والمدة وتاريخ النشر.";
+    : " تعذر استخراج تفاصيل صفحة الفيديو؛ لذلك قد لا تتوفر المشاهدات والمدة وتاريخ النشر.";
 
   return {
     ok: true,
@@ -805,12 +827,11 @@ async function verifyVideo(url, videoId) {
       views: field(viewCount, pageSource ? "unavailable" : "fetch_failed"),
       durationSeconds: field(durationSeconds, pageSource ? "unavailable" : "fetch_failed"),
       publishDate: field(publishDate, pageSource ? "unavailable" : "fetch_failed"),
-      // YouTube does not consistently expose these values in public page metadata.
       likes: field(null, "unavailable"),
       comments: field(null, "unavailable")
     },
 
-    source: sources.join(" + "),
+    source: sources.join(" + ") || "YouTube public metadata",
 
     note:
       "هذه بيانات تعريفية وعامة للفيديو. " +
