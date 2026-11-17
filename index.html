@@ -407,7 +407,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     </article>
     <article class="roadmap-card future">
       <span class="tag">رؤية تطويرية مقترحة</span>
-      <h3>VIRIFIXO 5.0 · Future Roadmap</h3>
+      <h3>VIRIFIXO · Future Roadmap</h3>
       <ul>
         <li>دمج تقنيات الذكاء الاصطناعي لرصد مؤشرات التلاعب بالصور والفيديو.</li>
         <li>تحليل أعمق للبيانات الوصفية ومؤشرات المصدر والسياق الزمني والجغرافي عند توافر الأدلة.</li>
@@ -717,10 +717,16 @@ $("verify").addEventListener("click", async () => {
       body: JSON.stringify({
         type: channel ? "channel" : "video",
         url: target
-      })
+      }),
+      signal: AbortSignal.timeout(25000)
     });
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("استجابة خادم VIRIFIXO غير صالحة (HTTP " + response.status + ").");
+    }
 
     if (!response.ok) {
       throw new Error(data.error || ("خادم الفحص أعاد الحالة: " + response.status));
@@ -786,11 +792,11 @@ $("verify").addEventListener("click", async () => {
     status("اكتمل الفحص واستلام البيانات.", "success");
 
   } catch (error) {
-    status(
-      "تعذر الفحص: " + error.message +
-      ". تحقق من إعداد خادم /api/verify.",
-      "error"
-    );
+    const message =
+      error.name === "TimeoutError" || error.name === "AbortError"
+        ? "انتهت مهلة الاتصال بخادم VIRIFIXO بعد 25 ثانية. تحقق من تشغيل خدمة Render."
+        : error.message;
+    status("تعذر الفحص: " + message, "error");
   } finally {
     button.disabled = false;
   }
@@ -837,7 +843,7 @@ $("file").addEventListener("change", async event => {
   if (isImage) {
     $("imagePreview").src = currentFileURL;
     $("imagePreview").style.display = "block";
-    $("fileInfo").textContent += "\\nالأبعاد: جارٍ قراءة أبعاد الصورة...";
+    $("fileInfo").textContent += "\nالأبعاد: جارٍ قراءة أبعاد الصورة...";
     $("imagePreview").onload = () => {
       $("fileInfo").textContent = $("fileInfo").textContent.replace(
         "الأبعاد: جارٍ قراءة أبعاد الصورة...",
