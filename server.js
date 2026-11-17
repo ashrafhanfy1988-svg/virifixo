@@ -791,9 +791,27 @@ async function verifyVideo(url, videoId) {
     null;
 
   if (!title && !channelTitle && !channelId && !description) {
+    // Diagnostic log intentionally records only response shape and booleans,
+    // never the requested URL, cookies, tokens, or raw page contents.
+    console.warn("VIRIFIXO YouTube metadata diagnostics:", JSON.stringify({
+      videoId,
+      oembedKeys: oembed && typeof oembed === "object" ? Object.keys(oembed) : [],
+      oembedHasTitle: available(oembed?.title),
+      oembedHasAuthor: available(oembed?.author_name),
+      oembedHasThumbnail: available(oembed?.thumbnail_url),
+      watchPageLength: pageSource === "YouTube public video page" ? pageHtml.length : 0,
+      embedPageLength: pageSource === "YouTube public embed page" ? pageHtml.length : 0,
+      pageSource: pageSource || "none",
+      hasPlayerDetails: Boolean(pageData.videoDetails),
+      hasMicroformat: Boolean(pageData.microformat?.playerMicroformatRenderer),
+      hasTitle: Boolean(title),
+      hasChannelTitle: Boolean(channelTitle),
+      hasChannelId: Boolean(channelId),
+      hasDescription: Boolean(description)
+    }));
     throw new Error(
       "وصل رد من YouTube لكن لم تتضمن الاستجابة بيانات تعريفية قابلة للقراءة. " +
-      "قد تكون صفحة الفيديو محجوبة مؤقتاً أو تغيّر تنسيق البيانات العامة."
+      "تم تسجيل مؤشرات تشخيصية آمنة في سجل الخادم لتحديد مصدر المشكلة."
     );
   }
 
