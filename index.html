@@ -293,6 +293,15 @@ footer {
   a { color:#174b85; }
 }
 
+/* Print only the verification report when requested. */
+@media print {
+  body.print-report .container > :not(#result) { display:none!important; }
+  body.print-report #result { display:block!important; margin:0; padding:0; border:0; box-shadow:none; }
+  body.print-report #result .warning { break-inside:avoid; }
+  body.print-report #result .item { break-inside:avoid; }
+  body.print-report #result h2, body.print-report #result h3 { color:#111; }
+}
+
 /* VIRIFIXO presentation layer */
 :root{--cyan:#59d5ff;--violet:#8b8cff;--surface:#111d30;--surface2:#0d1727}
 body{padding:0;background:radial-gradient(ellipse at 50% -15%,#1d3a61 0%,#0b1220 48%);font-family:Tahoma,Arial,sans-serif}
@@ -377,7 +386,6 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     <a class="outline" href="#about-project">اكتشف فرصة الشراكة</a>
   </div>
 
-
 <section class="investment" id="about-project" aria-labelledby="project-title">
   <div class="section-intro">
     <span class="eyebrow">MEDIA VERIFICATION TECHNOLOGY</span>
@@ -444,7 +452,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     <div><h3>نبحث عن شركاء يؤمنون بأهمية التحقق الإعلامي</h3><p>فرصة للتعاون مع المستثمرين والشركات التقنية والمؤسسات الإعلامية في تطوير VIRIFIXO واختبار تطبيقاته.</p></div>
     <a href="#workspace">جرّب النسخة الحالية</a>
   </div>
-  <p class="muted" style="font-size:12px;margin-top:14px">ملاحظة مهنية: نتائج البيانات الوصفية أو معلومات المنصة مؤشرات مساعدة وليست دليلاً قاطعاً على أصالة المحتوى أو زيفه. كما أن خصائص الإصدار 5.0 أعلاه تمثل خارطة تطوير مستقبلية وليست ادعاءً بأنها متاحة حالياً.</p>
+  <p class="muted" style="font-size:12px;margin-top:14px">ملاحظة مهنية: نتائج البيانات الوصفية أو معلومات المنصة مؤشرات مساعدة وليست دليلاً قاطعاً على أصالة المحتوى أو زيفه. كما أن الخصائص الواردة في خارطة التطوير تمثل مقترحات مستقبلية وليست ادعاءً بأنها متاحة حالياً.</p>
 </section>
 
 
@@ -728,7 +736,7 @@ $("verify").addEventListener("click", async () => {
       throw new Error("استجابة خادم VIRIFIXO غير صالحة (HTTP " + response.status + ").");
     }
 
-    if (!response.ok) {
+    if (!response.ok || data.ok === false) {
       throw new Error(data.error || ("خادم الفحص أعاد الحالة: " + response.status));
     }
 
@@ -789,7 +797,27 @@ $("verify").addEventListener("click", async () => {
       "ملاحظة": data.note
     }, data.thumbnailUrl);
 
-    status("اكتمل الفحص واستلام البيانات.", "success");
+    const hasValue = value => {
+      if (value === undefined || value === null || value === "") return false;
+      if (typeof value === "object" && !Array.isArray(value) &&
+          Object.prototype.hasOwnProperty.call(value, "value")) {
+        return value.value !== undefined && value.value !== null && value.value !== "";
+      }
+      return true;
+    };
+    const coreFields = channel
+      ? [data.title, data.channelTitle, data.channelId, data.description]
+      : [data.title, data.channelTitle, data.channelId, data.description,
+         stats.views, stats.durationSeconds, stats.publishDate];
+    const extractedCoreCount = coreFields.filter(hasValue).length;
+
+    if (extractedCoreCount === 0) {
+      status("وصل رد من الخادم، لكن تعذر استخراج البيانات الأساسية للفحص. راجع حالة الخدمة ومصدر البيانات ثم أعد المحاولة.", "error");
+    } else if (extractedCoreCount < coreFields.length) {
+      status("اكتمل الفحص جزئياً. تم استخراج بعض البيانات، بينما بقيت حقول أخرى غير متاحة أو تعذر جلبها.", "loading");
+    } else {
+      status("اكتمل الفحص واستخراج البيانات الأساسية.", "success");
+    }
 
   } catch (error) {
     const message =
@@ -897,7 +925,6 @@ async function analyzeExif(file) {
       "خط العرض": gps.Latitude,
       "خط الطول": gps.Longitude
     };
-
     output.replaceChildren();
 
     let found = false;
@@ -1062,7 +1089,13 @@ $("captureFrames").addEventListener("click", async () => {
 
 // الطباعة
 $("printReport").addEventListener("click", () => {
+  document.body.classList.add("print-report");
+  window.addEventListener("afterprint", () => {
+    document.body.classList.remove("print-report");
+  }, {once:true});
   window.print();
+  // Fallback for browsers that do not dispatch afterprint reliably.
+  setTimeout(() => document.body.classList.remove("print-report"), 1500);
 });
 
 // بدء فحص جديد
