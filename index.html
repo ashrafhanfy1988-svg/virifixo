@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b1220">
-<meta name="description" content="VIRIFIXO منصة متقدمة للتحقق الإعلامي وتحليل الصور والفيديوهات والمصادر الرقمية.">
+<meta name="description" content="VIRIFIXO منصة مساعدة لمراجعة المصادر العامة وتحليل ملفات الصور والفيديو محلياً.">
+<meta name="robots" content="index,follow">
 <meta name="color-scheme" content="dark">
-<title>VIRIFIXO 5.4 | Advanced Media Verification</title>
+<title>VIRIFIXO 5.5 | Advanced Media Verification</title>
 
 <script defer src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
 
@@ -368,6 +369,8 @@ footer{border-top:1px solid #293b54;margin-top:30px}
     <a href="#roadmap">الإصدار الحالي والتطوير</a>
     <a href="#business-model">نموذج العمل</a>
     <a href="#workspace">جرّب المنصة</a>
+    <a href="privacy.html">الخصوصية</a>
+    <a href="terms.html">الشروط</a>
   </nav>
 </div>
 
@@ -377,7 +380,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <div class="subtitle">
     منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
   </div>
-  <p class="version">VERSION 5.4 · ADVANCED MEDIA VERIFICATION</p>
+  <p class="version">VERSION 5.5 · ADVANCED MEDIA VERIFICATION</p>
 </header>
 
   <p class="hero-copy">منصة مساعدة للتحقق الإعلامي وتحليل المحتوى الرقمي، تهدف إلى تنظيم المؤشرات المتاحة ومساندة الصحفيين والمؤسسات في مراجعة الصور والفيديوهات ومصادرها.</p>
@@ -405,7 +408,7 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <div class="roadmap">
     <article class="roadmap-card current">
       <span class="tag">متاح في النسخة التجريبية الحالية</span>
-      <h3>VIRIFIXO 5.4 · Media Demo</h3>
+      <h3>VIRIFIXO 5.5 · Media Demo</h3>
       <ul>
         <li>إرسال رابط قناة أو فيديو YouTube إلى نقطة الخدمة <bdi>/api/verify</bdi> واستقبال البيانات إذا كان الخادم مهيأً ويعمل.</li>
         <li>معاينة ملفات الصور والفيديو محلياً داخل المتصفح.</li>
@@ -471,16 +474,17 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 
   <p class="muted">
     أدخل رابط قناة أو فيديو واحداً فقط.
-    يتم جلب البيانات من خلال خادم VIRIFIXO.
-    لا يُطلب منك إدخال مفتاح YouTube API.
+    يتم جلب البيانات العامة عبر YouTube Data API v3 من خادم VIRIFIXO. لا تضع مفتاح API في هذه الصفحة.
   </p>
+  <p class="muted" style="font-size:13px">باستخدام فحص YouTube، أقر بأنني قرأت <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a> و<a href="terms.html" target="_blank" rel="noopener">شروط الاستخدام</a> وأوافق على الالتزام <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">بشروط خدمة YouTube</a>.</p>
+  <label style="display:flex;align-items:center;gap:9px;font-weight:normal"><input id="policyConsent" type="checkbox" style="width:18px;height:18px"> أوافق على المتابعة بعد قراءة السياسات والشروط</label>
 
   <button class="primary" id="verify" type="button">
     بدء الفحص والتحقق
   </button>
 
   <div class="status" id="status" role="status" aria-live="polite">
-    VIRIFIXO 5.4 جاهز لاستقبال طلب الفحص.
+    VIRIFIXO 5.5 جاهز لاستقبال طلب الفحص.
   </div>
 </section>
 
@@ -573,7 +577,9 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 <footer>
   VIRIFIXO © 2026
   <br>
-  Advanced Media Verification · Version 5.4
+  <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a> · <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">شروط YouTube</a>
+  <br>
+  Advanced Media Verification · Version 5.5
 </footer>
 </div>
 
@@ -677,6 +683,11 @@ function report(title, data, thumbnailUrl) {
 $("verify").addEventListener("click", async () => {
   const channel = $("channel").value.trim();
   const video = $("video").value.trim();
+
+  if (!$("policyConsent").checked) {
+    status("يرجى قراءة سياسة الخصوصية وشروط الاستخدام والموافقة قبل فحص YouTube.", "error");
+    return;
+  }
 
   if ((!channel && !video) || (channel && video)) {
     status("أدخل رابط قناة أو فيديو واحداً فقط.", "error");
@@ -1130,7 +1141,7 @@ $("reset").addEventListener("click", () => {
   }
 
   extractedFrames = [];
-  status("VIRIFIXO 5.4 جاهز لفحص جديد.");
+  status("VIRIFIXO 5.5 جاهز لفحص جديد.");
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
