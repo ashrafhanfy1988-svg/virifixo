@@ -580,6 +580,8 @@ footer{border-top:1px solid #293b54;margin-top:30px}
   <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a> · <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">شروط YouTube</a>
   <br>
   Advanced Media Verification · Version 5.5
+  <br>
+  <span id="siteToday" class="muted" aria-live="off">تاريخ اليوم: —</span>
 </footer>
 </div>
 
@@ -1148,6 +1150,21 @@ $("reset").addEventListener("click", () => {
 window.addEventListener("pagehide", () => {
   if (currentFileURL) URL.revokeObjectURL(currentFileURL);
 });
+// عرض تاريخ اليوم حسب توقيت السعودية دون إعادة نشر الموقع أو إجراء طلبات شبكة.
+function updateSiteToday() {
+  const dateElement = document.getElementById("siteToday");
+  if (!dateElement) return;
+  const today = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Riyadh"
+  }).format(new Date());
+  dateElement.textContent = "تاريخ اليوم: " + today;
+}
+updateSiteToday();
+setInterval(updateSiteToday, 60000);
+
 </script>
 
 </body>
