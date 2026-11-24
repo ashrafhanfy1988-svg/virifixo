@@ -519,7 +519,7 @@ html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
   <video id="videoPreview" class="preview"
     controls playsinline preload="metadata"></video>
 
-  <img id="imagePreview" class="preview" alt="معاينة الصورة">
+  <img id="imagePreview" class="preview" alt="Image preview | معاينة الصورة">
 
   <div id="frameSection" class="hidden">
     <h3>🎞️ Video Frame Extraction | استخراج إطارات الفيديو</h3>
@@ -1156,13 +1156,13 @@ window.addEventListener("pagehide", () => {
 function updateSiteToday() {
   const dateElement = document.getElementById("siteToday");
   if (!dateElement) return;
-  const today = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", {
+  const today = new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
     timeZone: "Asia/Riyadh"
   }).format(new Date());
-  dateElement.textContent = "Date: " + today + " | التاريخ";
+  dateElement.textContent = "Date | التاريخ: " + today;
 }
 updateSiteToday();
 setInterval(updateSiteToday, 60000);
