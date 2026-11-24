@@ -362,6 +362,11 @@ html[dir="ltr"] body { direction:ltr; }
 html[dir="ltr"] .roadmap-card ul { padding-left:20px; padding-right:0; }
 html[dir="ltr"] .item { border-right:1px solid #263851; border-left:3px solid var(--blue); }
 html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
+.url-field { margin:0 0 17px; }
+.url-field label { margin:0 0 7px; }
+.file-picker-group { margin-top:4px; }
+.file-picker-group > label { margin:0 0 7px; }
+.file-picker-group input[type="file"] { display:block; }
 .bilingual-note { color:var(--muted); font-size:12px; text-align:center; margin-top:8px; }
 </style>
 </head>
@@ -468,17 +473,21 @@ html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
 <section class="panel" id="workspace">
   <h2>🔎 YouTube Channel or Video Check | فحص قناة أو فيديو YouTube</h2>
 
-  <label for="channel">Channel URL | رابط القناة</label>
-  <input id="channel" type="url"
-    placeholder="https://www.youtube.com/@channel"
-    autocomplete="url">
+  <div class="url-field">
+    <label for="channel">Channel URL | رابط القناة</label>
+    <input id="channel" type="url"
+      placeholder="https://www.youtube.com/@channel"
+      autocomplete="url" aria-describedby="youtubeInputHelp">
+  </div>
 
-  <label for="video">Video URL | رابط الفيديو</label>
-  <input id="video" type="url"
-    placeholder="https://www.youtube.com/watch?v=..."
-    autocomplete="url">
+  <div class="url-field">
+    <label for="video">Video URL | رابط الفيديو</label>
+    <input id="video" type="url"
+      placeholder="https://www.youtube.com/watch?v=..."
+      autocomplete="url" aria-describedby="youtubeInputHelp">
+  </div>
 
-  <p class="muted">
+  <p class="muted" id="youtubeInputHelp">
     Enter one channel URL or one video URL only. | أدخل رابط قناة أو فيديو واحداً فقط.
     Public data is requested through YouTube Data API v3 by the VIRIFIXO server. Do not enter an API key on this page. | يتم جلب البيانات العامة عبر YouTube Data API v3 من خادم VIRIFIXO. لا تضع مفتاح API في هذه الصفحة.
   </p>
@@ -497,15 +506,18 @@ html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
 <section class="panel">
   <h2>📁 Image or Video File Analysis | تحليل ملف فيديو أو صورة</h2>
 
-  <label for="file">Select a File from Your Device | اختر ملفاً من جهازك</label>
-  <input id="file" type="file"
-    accept="video/*,image/jpeg,image/png,image/webp">
+  <div class="file-picker-group">
+    <label for="file">Choose an Image or Video File | اختر ملف صورة أو فيديو</label>
+    <input id="file" type="file"
+      accept="video/*,image/jpeg,image/png,image/webp"
+      aria-describedby="fileSelectionHelp">
+  </div>
 
   <button id="analyzeImage" class="primary" type="button" disabled
     style="display:block;width:100%;min-height:52px;margin:14px 0;background:#1677e8;color:#fff;font-size:17px;font-weight:bold;border:2px solid #79b6ff;border-radius:10px">
-    Select an image first | اختر صورة أولاً لتحليلها
+    Select an image to enable analysis | اختر صورة لتفعيل التحليل
   </button>
-  <p class="muted">After selecting an image, the image analysis button will be enabled here. | بعد اختيار صورة، سيتفعّل زر تحليل الصورة هنا مباشرة.</p>
+  <p class="muted" id="fileSelectionHelp">Choose one image to enable EXIF analysis, or a video to preview it and extract sample frames. | اختر صورة لتفعيل تحليل EXIF، أو فيديو لمعاينته واستخراج إطارات منه.</p>
 
   <p class="muted">
     Files are previewed and their basic information is analyzed locally in your browser. | تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
@@ -869,7 +881,7 @@ $("file").addEventListener("change", async event => {
   extractedFrames = [];
   selectedImageFile = isImage ? file : null;
   $("analyzeImage").disabled = !isImage;
-  $("analyzeImage").textContent = isImage ? "🔬 Analyze Image Now | تحليل الصورة الآن" : "Select an image first | اختر صورة أولاً لتحليلها";
+  $("analyzeImage").textContent = isImage ? "🔬 Analyze Image Now | تحليل الصورة الآن" : "Select an image to enable analysis | اختر صورة لتفعيل التحليل";
 
   $("frames").replaceChildren();
   $("frameSection").classList.toggle("hidden", !isVideo);
@@ -978,7 +990,7 @@ async function analyzeExif(file) {
 // زر بدء تحليل الصورة يدوياً
 $("analyzeImage").addEventListener("click", async () => {
   if (!selectedImageFile) {
-    $("exifInfo").textContent = "Select an image first. | اختر صورة أولاً."; 
+    $("exifInfo").textContent = "Select an image to enable analysis. | اختر صورة لتفعيل التحليل."; 
     return;
   }
 
@@ -1120,7 +1132,7 @@ $("reset").addEventListener("click", () => {
   $("file").value = "";
   selectedImageFile = null;
   $("analyzeImage").disabled = true;
-  $("analyzeImage").textContent = "Select an image first | اختر صورة أولاً لتحليلها";
+  $("analyzeImage").textContent = "Select an image to enable analysis | اختر صورة لتفعيل التحليل";
 
   $("result").style.display = "none";
   $("report").replaceChildren();
