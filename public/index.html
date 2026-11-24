@@ -497,7 +497,7 @@ html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
 </section>
 
 <section class="panel">
-  <h2>📁 تحليل ملف فيديو أو صورة</h2>
+  <h2>📁 Image or Video File Analysis | تحليل ملف فيديو أو صورة</h2>
 
   <label for="file">Select a File from Your Device | اختر ملفاً من جهازك</label>
   <input id="file" type="file"
@@ -507,11 +507,11 @@ html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
     style="display:block;width:100%;min-height:52px;margin:14px 0;background:#1677e8;color:#fff;font-size:17px;font-weight:bold;border:2px solid #79b6ff;border-radius:10px">
     Select an image first | اختر صورة أولاً لتحليلها
   </button>
-  <p class="muted">بعد اختيار صورة، سيتفعّل زر تحليل الصورة هنا مباشرة.</p>
+  <p class="muted">After selecting an image, the image analysis button will be enabled here. | بعد اختيار صورة، سيتفعّل زر تحليل الصورة هنا مباشرة.</p>
 
   <p class="muted">
-    تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
-    لا يتم رفع الملف إلى الخادم بواسطة هذه الصفحة.
+    Files are previewed and their basic information is analyzed locally in your browser. | تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
+    This page does not upload the selected file to the server. | لا يتم رفع الملف إلى الخادم بواسطة هذه الصفحة.
   </p>
 
   <div id="fileInfo" class="status">
@@ -524,9 +524,9 @@ html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
   <img id="imagePreview" class="preview" alt="معاينة الصورة">
 
   <div id="frameSection" class="hidden">
-    <h3>🎞️ استخراج إطارات الفيديو</h3>
+    <h3>🎞️ Video Frame Extraction | استخراج إطارات الفيديو</h3>
     <p class="muted">
-      استخراج عينات مرئية من الفيديو للمراجعة البشرية.
+      Extract visual samples from the video for human review. | استخراج عينات مرئية من الفيديو للمراجعة البشرية.
     </p>
     <div id="frames" class="frame-grid"></div>
     <button id="captureFrames" class="secondary" type="button">
@@ -536,10 +536,10 @@ html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
 </section>
 
 <section class="panel">
-  <h2>🔬 تحليل البيانات الوصفية EXIF</h2>
+  <h2>🔬 EXIF Metadata Analysis | تحليل البيانات الوصفية EXIF</h2>
   <p class="muted">
-    فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
-    إذا كانت هذه البيانات موجودة داخل الصورة.
+    Review camera, date, software, and geographic location fields | فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
+    when this information is embedded in the image. | إذا كانت هذه البيانات موجودة داخل الصورة.
   </p>
   <div id="exifInfo" class="status" aria-live="polite">
     اختر صورة من القسم السابق، ثم اضغط «تحليل الصورة الآن».
@@ -547,8 +547,8 @@ html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
 </section>
 
 <section class="panel result" id="result">
-  <h2>📋 تقرير VIRIFIXO</h2>
-  <p class="muted" id="reportScope">هذا التقرير خاص بفحص رابط YouTube. تحليل الصور والفيديوهات المحلية يتم بشكل مستقل في القسمين السابقين.</p>
+  <h2>📋 VIRIFIXO Verification Report | تقرير VIRIFIXO</h2>
+  <p class="muted" id="reportScope">This report covers the YouTube URL check. Local image and video analysis is handled separately above. | هذا التقرير خاص بفحص رابط YouTube. تحليل الصور والفيديوهات المحلية يتم بشكل مستقل في القسمين السابقين.</p>
   <div id="channelHeader" class="channel-header"></div>
   <div id="report"></div>
 
@@ -899,7 +899,7 @@ $("file").addEventListener("change", async event => {
         "أبعاد الصورة: " + $("imagePreview").naturalWidth + " × " + $("imagePreview").naturalHeight + " بكسل"
       );
     };
-    $("exifInfo").textContent = "اضغط «تحليل الصورة» لبدء فحص البيانات الوصفية.";
+    $("exifInfo").textContent = "Click Analyze Image to inspect metadata. | اضغط «تحليل الصورة» لبدء فحص البيانات الوصفية.";
   }
 
   if (isVideo) {
@@ -1087,7 +1087,7 @@ $("captureFrames").addEventListener("click", async () => {
       img.alt = "إطار " + i;
 
       const label = document.createElement("small");
-      label.textContent = "الإطار " + i + " · " + time.toFixed(2) + " ثانية";
+      label.textContent = "Frame " + i + " | الإطار " + i + " · " + time.toFixed(2) + " sec | ثانية";
 
       card.append(img, label);
       $("frames").appendChild(card);
@@ -1104,7 +1104,7 @@ $("captureFrames").addEventListener("click", async () => {
       // Keep the extraction result even if restoring playback position fails.
     }
     button.disabled = false;
-    button.textContent = "استخراج الإطارات";
+    button.textContent = "Extract Frames | استخراج الإطارات";
   }
 });
 
