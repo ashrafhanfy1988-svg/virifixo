@@ -695,12 +695,12 @@ $("verify").addEventListener("click", async () => {
   const video = $("video").value.trim();
 
   if (!$("policyConsent").checked) {
-    status("يرجى قراءة سياسة الخصوصية وشروط الاستخدام والموافقة قبل فحص YouTube.", "error");
+    status("Please review and accept the Privacy Policy and Terms of Use before checking YouTube. | يرجى قراءة سياسة الخصوصية وشروط الاستخدام والموافقة قبل فحص YouTube.", "error");
     return;
   }
 
   if ((!channel && !video) || (channel && video)) {
-    status("أدخل رابط قناة أو فيديو واحداً فقط.", "error");
+    status("Enter one channel URL or one video URL only. | أدخل رابط قناة أو فيديو واحداً فقط.", "error");
     return;
   }
 
@@ -728,7 +728,7 @@ $("verify").addEventListener("click", async () => {
 
     target = url.toString();
   } catch (error) {
-    status(error.message || "الرابط غير صالح.", "error");
+    status(error.message || "Invalid URL | الرابط غير صالح.", "error");
     return;
   }
 
@@ -833,7 +833,7 @@ $("verify").addEventListener("click", async () => {
     const extractedCoreCount = coreFields.filter(hasValue).length;
 
     if (extractedCoreCount === 0) {
-      status("وصل رد من الخادم، لكن تعذر استخراج البيانات الأساسية للفحص. راجع حالة الخدمة ومصدر البيانات ثم أعد المحاولة.", "error");
+      status("The server responded, but core verification data could not be extracted. Check the service and data source, then try again. | وصل رد من الخادم، لكن تعذر استخراج البيانات الأساسية للفحص. راجع حالة الخدمة ومصدر البيانات ثم أعد المحاولة.", "error");
     } else if (extractedCoreCount < coreFields.length) {
       status("Partial verification completed. Some data was extracted; other fields were unavailable. | اكتمل الفحص جزئياً. تم استخراج بعض البيانات، بينما بقيت حقول أخرى غير متاحة أو تعذر جلبها.", "loading");
     } else {
@@ -860,12 +860,12 @@ $("file").addEventListener("change", async event => {
   const isVideo = file.type.startsWith("video/");
 
   if (!isImage && !isVideo) {
-    $("fileInfo").textContent = "نوع الملف غير مدعوم.";
+    $("fileInfo").textContent = "Unsupported file type. | نوع الملف غير مدعوم.";
     return;
   }
 
   if (file.size > 500 * 1024 * 1024) {
-    $("fileInfo").textContent = "حجم الملف يتجاوز 500 MB.";
+    $("fileInfo").textContent = "File size exceeds 500 MB. | حجم الملف يتجاوز 500 MB.";
     return;
   }
 
@@ -875,7 +875,7 @@ $("file").addEventListener("change", async event => {
   extractedFrames = [];
   selectedImageFile = isImage ? file : null;
   $("analyzeImage").disabled = !isImage;
-  $("analyzeImage").textContent = isImage ? "🔬 تحليل الصورة الآن" : "اختر صورة أولاً لتحليلها";
+  $("analyzeImage").textContent = isImage ? "🔬 Analyze Image Now | تحليل الصورة الآن" : "Select an image first | اختر صورة أولاً لتحليلها";
 
   $("frames").replaceChildren();
   $("frameSection").classList.toggle("hidden", !isVideo);
@@ -922,7 +922,7 @@ $("file").addEventListener("change", async event => {
 // تحليل EXIF
 async function analyzeExif(file) {
   const output = $("exifInfo");
-  output.textContent = "جارٍ تحليل البيانات الوصفية...";
+  output.textContent = "Analyzing metadata... | جارٍ تحليل البيانات الوصفية...";
 
   try {
     if (!window.ExifReader) {
@@ -971,12 +971,12 @@ async function analyzeExif(file) {
     });
 
     if (!found) {
-      output.textContent = "لم يتم العثور على بيانات EXIF. قد تكون الصورة قد فقدت بياناتها الوصفية أو لم تتضمنها أصلاً.";
+      output.textContent = "No EXIF metadata found. The image may not contain metadata or it may have been removed. | لم يتم العثور على بيانات EXIF. قد تكون الصورة قد فقدت بياناتها الوصفية أو لم تتضمنها أصلاً.";
     }
     return true;
 
   } catch (error) {
-    output.textContent = "تعذر تحليل EXIF: " + error.message;
+    output.textContent = "EXIF analysis failed | تعذر تحليل EXIF: " + error.message;
     return false;
   }
 }
@@ -984,7 +984,7 @@ async function analyzeExif(file) {
 // زر بدء تحليل الصورة يدوياً
 $("analyzeImage").addEventListener("click", async () => {
   if (!selectedImageFile) {
-    $("exifInfo").textContent = "اختر صورة أولاً."; 
+    $("exifInfo").textContent = "Select an image first. | اختر صورة أولاً."; 
     return;
   }
 
@@ -1011,7 +1011,7 @@ $("captureFrames").addEventListener("click", async () => {
 
   if (!video.src || !Number.isFinite(video.duration) ||
       video.duration <= 0) {
-    $("fileInfo").textContent = "اختر فيديو صالحاً أولاً.";
+    $("fileInfo").textContent = "Select a valid video first. | اختر فيديو صالحاً أولاً.";
     return;
   }
 
@@ -1096,7 +1096,7 @@ $("captureFrames").addEventListener("click", async () => {
     $("fileInfo").textContent = "Five frames extracted successfully. | اكتمل استخراج 5 إطارات.";
 
   } catch (error) {
-    $("fileInfo").textContent = "تعذر استخراج الإطارات: " + error.message;
+    $("fileInfo").textContent = "Frame extraction failed | تعذر استخراج الإطارات: " + error.message;
   } finally {
     try {
       if (Number.isFinite(originalTime)) video.currentTime = originalTime;
@@ -1126,7 +1126,7 @@ $("reset").addEventListener("click", () => {
   $("file").value = "";
   selectedImageFile = null;
   $("analyzeImage").disabled = true;
-  $("analyzeImage").textContent = "اختر صورة أولاً لتحليلها";
+  $("analyzeImage").textContent = "Select an image first | اختر صورة أولاً لتحليلها";
 
   $("result").style.display = "none";
   $("report").replaceChildren();
@@ -1142,8 +1142,8 @@ $("reset").addEventListener("click", () => {
 
   $("frameSection").classList.add("hidden");
   $("frames").replaceChildren();
-  $("exifInfo").textContent = "بانتظار اختيار صورة.";
-  $("fileInfo").textContent = "لم يتم اختيار ملف.";
+  $("exifInfo").textContent = "Waiting for an image selection. | بانتظار اختيار صورة.";
+  $("fileInfo").textContent = "No file selected. | لم يتم اختيار ملف.";
 
   if (currentFileURL) {
     URL.revokeObjectURL(currentFileURL);
@@ -1168,7 +1168,7 @@ function updateSiteToday() {
     year: "numeric",
     timeZone: "Asia/Riyadh"
   }).format(new Date());
-  dateElement.textContent = "تاريخ اليوم: " + today;
+  dateElement.textContent = "Date: " + today + " | التاريخ";
 }
 updateSiteToday();
 setInterval(updateSiteToday, 60000);
