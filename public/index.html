@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b1220">
-<meta name="description" content="VIRIFIXO منصة مساعدة لمراجعة المصادر العامة وتحليل ملفات الصور والفيديو محلياً.">
+<meta name="description" content="VIRIFIXO is an independent media verification platform for reviewing public YouTube sources and analyzing image and video files locally.">
 <meta name="robots" content="index,follow">
 <meta name="color-scheme" content="dark">
-<title>VIRIFIXO 5.5 | Advanced Media Verification</title>
+<title>VIRIFIXO 6.0 | Bilingual Media Verification</title>
 
 <script defer src="https://cdn.jsdelivr.net/npm/exifreader@4.25.0/dist/exif-reader.min.js"></script>
 
@@ -356,6 +356,13 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 @media(max-width:760px){.feature-grid{grid-template-columns:1fr}.roadmap{grid-template-columns:1fr}.site-nav{align-items:flex-start;flex-direction:column}.site-nav nav{gap:14px}.container{padding:0 12px}header{padding:35px 8px 28px}}
 @media print{.site-nav,.hero-actions,.partnership a{display:none!important}.feature-card,.roadmap-card{break-inside:avoid;background:white;color:#111}.feature-card p,.roadmap-card ul{color:#333}.investment{break-inside:avoid}}
 
+
+/* Bilingual release: English-first navigation and mixed-language controls. */
+html[dir="ltr"] body { direction:ltr; }
+html[dir="ltr"] .roadmap-card ul { padding-left:20px; padding-right:0; }
+html[dir="ltr"] .item { border-right:1px solid #263851; border-left:3px solid var(--blue); }
+html[dir="ltr"] .revenue th, html[dir="ltr"] .revenue td { text-align:left; }
+.bilingual-note { color:var(--muted); font-size:12px; text-align:center; margin-top:8px; }
 </style>
 </head>
 
@@ -363,225 +370,220 @@ footer{border-top:1px solid #293b54;margin-top:30px}
 <div class="container">
 
 <div class="site-nav">
-  <div class="brand">VIRIFIXO</div>
-  <nav aria-label="التنقل الرئيسي">
-    <a href="#about-project">عن المشروع</a>
-    <a href="#roadmap">الإصدار الحالي والتطوير</a>
-    <a href="#business-model">نموذج العمل</a>
-    <a href="#workspace">جرّب المنصة</a>
-    <a href="privacy.html">الخصوصية</a>
-    <a href="terms.html">الشروط</a>
+  <div class="brand">VIRIFIXO <span style="font-size:11px;color:var(--muted)">EN | AR</span></div>
+  <nav aria-label="Main navigation | التنقل الرئيسي">
+    <a href="#about-project">About | عن المشروع</a>
+    <a href="#roadmap">Roadmap | خارطة التطوير</a>
+    <a href="#business-model">Business Model | نموذج العمل</a>
+    <a href="#workspace">Try VIRIFIXO | جرّب المنصة</a>
+    <a href="privacy-policy.html">Privacy | الخصوصية</a>
+    <a href="terms-of-service.html">Terms | الشروط</a>
+    <a href="review-guide.html">Technical Review Guide | دليل المراجعة الفنية</a>
   </nav>
 </div>
 
 
 <header>
   <div class="logo">VIRIFIXO</div>
-  <div class="subtitle">
-    منصة التحقق من الفيديوهات والصور والمصادر الإعلامية
-  </div>
-  <p class="version">VERSION 5.5 · ADVANCED MEDIA VERIFICATION</p>
+  <div class="subtitle">Video, Image &amp; Media Source Verification | منصة التحقق من الفيديوهات والصور والمصادر الإعلامية</div>
+  <p class="version">VERSION 6.0 · ENGLISH + ARABIC INTERFACE · ADVANCED MEDIA VERIFICATION</p>
 </header>
 
-  <p class="hero-copy">منصة مساعدة للتحقق الإعلامي وتحليل المحتوى الرقمي، تهدف إلى تنظيم المؤشرات المتاحة ومساندة الصحفيين والمؤسسات في مراجعة الصور والفيديوهات ومصادرها.</p>
+  <p class="hero-copy">An independent media verification platform that organizes available indicators and supports journalists and media organizations in reviewing images, videos, and their sources. | منصة مستقلة للتحقق الإعلامي وتنظيم المؤشرات المتاحة لمراجعة الصور والفيديوهات ومصادرها.</p>
   <div class="hero-actions">
-    <a href="#workspace">استكشف أدوات الفحص</a>
-    <a class="outline" href="#about-project">اكتشف فرصة الشراكة</a>
+    <a href="#workspace">Explore Verification Tools | استكشف أدوات الفحص</a>
+    <a class="outline" href="#about-project">Partnership Opportunity | اكتشف فرصة الشراكة</a>
   </div>
 
 <section class="investment" id="about-project" aria-labelledby="project-title">
   <div class="section-intro">
     <span class="eyebrow">MEDIA VERIFICATION TECHNOLOGY</span>
-    <h2 id="project-title">تقنية تساعد على فهم المحتوى قبل تداوله</h2>
-    <p>يجمع VIRIFIXO بين أدوات فحص أولية وواجهة منظمة لمراجعة بيانات المصادر والملفات، مع رؤية للتوسع نحو حلول تحقق إعلامي أكثر تقدماً.</p>
+    <h2 id="project-title">Understand Content Before Sharing | تقنية تساعد على فهم المحتوى قبل تداوله</h2>
+    <p>VIRIFIXO combines initial review tools with an organized interface for examining source and file information, with a roadmap for more advanced media verification solutions. | يجمع VIRIFIXO بين أدوات فحص أولية وواجهة منظمة لمراجعة بيانات المصادر والملفات.</p>
   </div>
   <div class="feature-grid">
-    <article class="feature-card"><div class="symbol">🔎</div><h3>مراجعة المصادر</h3><p>إدخال روابط قنوات وفيديوهات YouTube واستعراض البيانات التي يعيدها خادم الفحص عند توافره.</p></article>
-    <article class="feature-card"><div class="symbol">🖼️</div><h3>تحليل الملفات</h3><p>معاينة ملفات الصور والفيديو محلياً داخل المتصفح، وقراءة بيانات EXIF المتاحة للصور.</p></article>
-    <article class="feature-card"><div class="symbol">🎞️</div><h3>استخراج الإطارات</h3><p>استخراج عينات مرئية من الفيديو لتسهيل المراجعة البشرية ومقارنة محتوى اللقطات.</p></article>
+    <article class="feature-card"><div class="symbol">🔎</div><h3>Source Review | مراجعة المصادر</h3><p>Submit YouTube channel or video URLs and review data returned by the verification server when available. | إدخال روابط قنوات وفيديوهات YouTube واستعراض البيانات التي يعيدها خادم الفحص عند توافره.</p></article>
+    <article class="feature-card"><div class="symbol">🖼️</div><h3>File Analysis | تحليل الملفات</h3><p>Preview image and video files locally in the browser and read available image EXIF metadata. | معاينة ملفات الصور والفيديو محلياً داخل المتصفح، وقراءة بيانات EXIF المتاحة للصور.</p></article>
+    <article class="feature-card"><div class="symbol">🎞️</div><h3>Video Frame Extraction | استخراج إطارات الفيديو</h3><p>Extract visual samples from a video to support human review and frame comparison. | استخراج عينات مرئية من الفيديو لتسهيل المراجعة البشرية ومقارنة محتوى اللقطات.</p></article>
   </div>
   <div class="section-intro" id="roadmap" style="margin-top:38px">
     <span class="eyebrow">PRODUCT STATUS & ROADMAP</span>
-    <h2>من النسخة التجريبية إلى الرؤية المستقبلية</h2>
-    <p>نعرض هنا ما توفره الصفحة الحالية بشكل منفصل عن الخصائص المقترحة للتطوير.</p>
+    <h2>From Current Demo to Future Roadmap | من النسخة التجريبية إلى الرؤية المستقبلية</h2>
+    <p>This section distinguishes currently available demo features from proposed future capabilities. | نعرض هنا ما توفره الصفحة الحالية بشكل منفصل عن الخصائص المقترحة للتطوير.</p>
   </div>
   <div class="roadmap">
     <article class="roadmap-card current">
-      <span class="tag">متاح في النسخة التجريبية الحالية</span>
-      <h3>VIRIFIXO 5.5 · Media Demo</h3>
+      <span class="tag">Available in Current Demo | متاح في النسخة التجريبية الحالية</span>
+      <h3>VIRIFIXO 5.5 · Current Demo Engine | محرك النسخة التجريبية الحالية</h3>
       <ul>
-        <li>إرسال رابط قناة أو فيديو YouTube إلى نقطة الخدمة <bdi>/api/verify</bdi> واستقبال البيانات إذا كان الخادم مهيأً ويعمل.</li>
-        <li>معاينة ملفات الصور والفيديو محلياً داخل المتصفح.</li>
-        <li>قراءة بيانات EXIF المتاحة في الصور، بما فيها بيانات الكاميرا والتاريخ والموقع عند وجودها.</li>
-        <li>استخراج خمس عينات إطارات من الفيديو للمراجعة البصرية.</li>
+        <li>Submit a YouTube channel or video URL to <bdi>/api/verify</bdi> and receive returned data when the server is configured and available. | إرسال رابط قناة أو فيديو YouTube إلى نقطة الخدمة واستقبال البيانات إذا كان الخادم مهيأً ويعمل.</li>
+        <li>Preview image and video files locally in the browser. | معاينة ملفات الصور والفيديو محلياً داخل المتصفح.</li>
+        <li>Read available image EXIF metadata, including camera, date, and location fields when present. | قراءة بيانات EXIF المتاحة في الصور، بما فيها بيانات الكاميرا والتاريخ والموقع عند وجودها.</li>
+        <li>Extract five sample video frames for visual review. | استخراج خمس عينات إطارات من الفيديو للمراجعة البصرية.</li>
       </ul>
     </article>
     <article class="roadmap-card future">
-      <span class="tag">رؤية تطويرية مقترحة</span>
+      <span class="tag">Proposed Future Development | رؤية تطويرية مقترحة</span>
       <h3>VIRIFIXO · Future Roadmap</h3>
       <ul>
-        <li>دمج تقنيات الذكاء الاصطناعي لرصد مؤشرات التلاعب بالصور والفيديو.</li>
-        <li>تحليل أعمق للبيانات الوصفية ومؤشرات المصدر والسياق الزمني والجغرافي عند توافر الأدلة.</li>
-        <li>تحليل الإطارات والمقاطع وإنتاج تقارير تحقق منظمة.</li>
-        <li>واجهات API وتكاملات مخصصة للمؤسسات الإعلامية والجهات المهنية.</li>
+        <li>Integrate AI techniques to identify potential image and video manipulation indicators. | دمج تقنيات الذكاء الاصطناعي لرصد مؤشرات التلاعب بالصور والفيديو.</li>
+        <li>Conduct deeper metadata, source, temporal, and geographic-context analysis when supporting evidence is available. | تحليل أعمق للبيانات الوصفية ومؤشرات المصدر والسياق الزمني والجغرافي عند توافر الأدلة.</li>
+        <li>Analyze frames and clips and produce structured verification reports. | تحليل الإطارات والمقاطع وإنتاج تقارير تحقق منظمة.</li>
+        <li>Provide APIs and tailored integrations for media organizations and professional users. | واجهات API وتكاملات مخصصة للمؤسسات الإعلامية والجهات المهنية.</li>
       </ul>
     </article>
   </div>
   <div class="section-intro" id="business-model" style="margin-top:38px">
     <span class="eyebrow">INVESTMENT & PARTNERSHIP</span>
-    <h2>فرص الاستثمار والشراكة</h2>
-    <p>يستهدف المشروع بناء تعاون تقني وإعلامي واستثماري لتطوير المنتج واختباره وتوسيع نطاق استخدامه.</p>
+    <h2>Investment & Partnership Opportunities | فرص الاستثمار والشراكة</h2>
+    <p>VIRIFIXO seeks technical, media, and investment collaboration to develop the product, test it, and expand its use. | يستهدف المشروع بناء تعاون تقني وإعلامي واستثماري لتطوير المنتج واختباره وتوسيع نطاق استخدامه.</p>
   </div>
   <div class="feature-grid">
-    <article class="feature-card"><div class="symbol">🤝</div><h3>شراكة تقنية</h3><p>تطوير مشترك للبنية التقنية وخدمات التحليل والتحقق، وفق نطاق عمل وحقوق ملكية محددة.</p></article>
-    <article class="feature-card"><div class="symbol">📡</div><h3>شراكة إعلامية</h3><p>تجربة الأدوات مع غرف الأخبار والفرق الصحفية، وجمع الملاحظات لتحديد احتياجات الاستخدام الفعلية.</p></article>
-    <article class="feature-card"><div class="symbol">📈</div><h3>استثمار وتوسع</h3><p>بحث فرص التمويل والتوسع التجاري وبناء منتج مؤسسي قابل للتطوير وفق نتائج الاختبار والسوق.</p></article>
+    <article class="feature-card"><div class="symbol">🤝</div><h3>Technology Partnership | شراكة تقنية</h3><p>Joint development of the technical infrastructure and verification services under a defined scope and IP agreement. | تطوير مشترك للبنية التقنية وخدمات التحليل والتحقق، وفق نطاق عمل وحقوق ملكية محددة.</p></article>
+    <article class="feature-card"><div class="symbol">📡</div><h3>Media Partnership | شراكة إعلامية</h3><p>Testing with newsrooms and journalism teams to identify practical workflow needs. | تجربة الأدوات مع غرف الأخبار والفرق الصحفية، وجمع الملاحظات لتحديد احتياجات الاستخدام الفعلية.</p></article>
+    <article class="feature-card"><div class="symbol">📈</div><h3>Investment &amp; Growth | استثمار وتوسع</h3><p>Exploring funding and commercial growth opportunities based on product testing and market feedback. | بحث فرص التمويل والتوسع التجاري وبناء منتج مؤسسي قابل للتطوير وفق نتائج الاختبار والسوق.</p></article>
   </div>
   <div class="revenue-wrap">
     <table class="revenue">
-      <thead><tr><th>الخدمة المقترحة</th><th>نموذج الإيراد</th></tr></thead>
+      <thead><tr><th>Proposed Service | الخدمة المقترحة</th><th>Revenue Model | نموذج الإيراد</th></tr></thead>
       <tbody>
-        <tr><td>الاستخدام الفردي</td><td>اشتراكات شهرية وسنوية</td></tr>
-        <tr><td>المؤسسات الإعلامية</td><td>تراخيص مؤسسية</td></tr>
-        <tr><td>خدمات التحقق المتقدمة</td><td>رسوم حسب الاستخدام</td></tr>
-        <tr><td>التكامل التقني API</td><td>عقود وتراخيص</td></tr>
-        <tr><td>التقارير المتخصصة</td><td>رسوم مقابل الخدمة</td></tr>
-        <tr><td>الحلول المخصصة</td><td>عقود تطوير وتشغيل</td></tr>
+        <tr><td>Individual Use | الاستخدام الفردي</td><td>Monthly and annual subscriptions | اشتراكات شهرية وسنوية</td></tr>
+        <tr><td>Media Organizations | المؤسسات الإعلامية</td><td>Enterprise licenses | تراخيص مؤسسية</td></tr>
+        <tr><td>Advanced Verification Services | خدمات التحقق المتقدمة</td><td>Usage-based fees | رسوم حسب الاستخدام</td></tr>
+        <tr><td>API Integration | التكامل التقني API</td><td>Contracts and licenses | عقود وتراخيص</td></tr>
+        <tr><td>Specialized Reports | التقارير المتخصصة</td><td>Per-service fees | رسوم مقابل الخدمة</td></tr>
+        <tr><td>Custom Solutions | الحلول المخصصة</td><td>Development and operation contracts | عقود تطوير وتشغيل</td></tr>
       </tbody>
     </table>
   </div>
-  <div class="ip-note"><strong>الملكية الفكرية والحقوق:</strong> تشمل الأصول التي يملكها المشروع الاسم والهوية والتصميمات والواجهات والأكواد التي يملك حقوقها والوثائق والتطويرات المستقلة. وتُحدد حقوق أي تطوير مشترك أو ترخيص أو مساهمة تقنية بعقود مكتوبة قبل بدء التعاون.</div>
+  <div class="ip-note"><strong>Intellectual Property &amp; Rights | الملكية الفكرية والحقوق:</strong> Project assets include the name, identity, designs, interfaces, code owned by the project, documentation, and independent developments. Rights to any joint development, license, or technical contribution must be defined in written agreements before work begins. | تشمل الأصول التي يملكها المشروع الاسم والهوية والتصميمات والواجهات والأكواد التي يملك حقوقها والوثائق والتطويرات المستقلة، وتُحدد الحقوق بعقود مكتوبة قبل بدء التعاون.</div>
   <div class="partnership">
-    <div><h3>نبحث عن شركاء يؤمنون بأهمية التحقق الإعلامي</h3><p>فرصة للتعاون مع المستثمرين والشركات التقنية والمؤسسات الإعلامية في تطوير VIRIFIXO واختبار تطبيقاته.</p></div>
-    <a href="#workspace">جرّب النسخة الحالية</a>
+    <div><h3>Seeking Partners for Media Verification | نبحث عن شركاء يؤمنون بأهمية التحقق الإعلامي</h3><p>An opportunity to work with investors, technology companies, and media organizations to develop VIRIFIXO and test its applications. | فرصة للتعاون مع المستثمرين والشركات التقنية والمؤسسات الإعلامية في تطوير VIRIFIXO واختبار تطبيقاته.</p></div>
+    <a href="#workspace">Try the Current Demo | جرّب النسخة الحالية</a>
   </div>
-  <p class="muted" style="font-size:12px;margin-top:14px">ملاحظة مهنية: نتائج البيانات الوصفية أو معلومات المنصة مؤشرات مساعدة وليست دليلاً قاطعاً على أصالة المحتوى أو زيفه. كما أن الخصائص الواردة في خارطة التطوير تمثل مقترحات مستقبلية وليست ادعاءً بأنها متاحة حالياً.</p>
+  <p class="muted" style="font-size:12px;margin-top:14px">Professional note: Metadata and platform information are supporting indicators, not conclusive proof that content is authentic or false. Roadmap items are proposed future capabilities and are not represented as currently available. | ملاحظة مهنية: نتائج البيانات الوصفية أو معلومات المنصة مؤشرات مساعدة وليست دليلاً قاطعاً على أصالة المحتوى أو زيفه. والخصائص الواردة في خارطة التطوير مقترحات مستقبلية وليست متاحة حالياً.</p>
 </section>
 
 
 <section class="panel" id="workspace">
-  <h2>🔎 فحص قناة أو فيديو YouTube</h2>
+  <h2>🔎 YouTube Channel or Video Check | فحص قناة أو فيديو YouTube</h2>
 
-  <label for="channel">رابط القناة</label>
+  <label for="channel">Channel URL | رابط القناة</label>
   <input id="channel" type="url"
     placeholder="https://www.youtube.com/@channel"
     autocomplete="url">
 
-  <label for="video">رابط الفيديو</label>
+  <label for="video">Video URL | رابط الفيديو</label>
   <input id="video" type="url"
     placeholder="https://www.youtube.com/watch?v=..."
     autocomplete="url">
 
   <p class="muted">
-    أدخل رابط قناة أو فيديو واحداً فقط.
-    يتم جلب البيانات العامة عبر YouTube Data API v3 من خادم VIRIFIXO. لا تضع مفتاح API في هذه الصفحة.
+    Enter one channel URL or one video URL only. | أدخل رابط قناة أو فيديو واحداً فقط.
+    Public data is requested through YouTube Data API v3 by the VIRIFIXO server. Do not enter an API key on this page. | يتم جلب البيانات العامة عبر YouTube Data API v3 من خادم VIRIFIXO. لا تضع مفتاح API في هذه الصفحة.
   </p>
-  <p class="muted" style="font-size:13px">باستخدام فحص YouTube، أقر بأنني قرأت <a href="privacy.html" target="_blank" rel="noopener">سياسة الخصوصية</a> و<a href="terms.html" target="_blank" rel="noopener">شروط الاستخدام</a> وأوافق على الالتزام <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">بشروط خدمة YouTube</a>.</p>
-  <label style="display:flex;align-items:center;gap:9px;font-weight:normal"><input id="policyConsent" type="checkbox" style="width:18px;height:18px"> أوافق على المتابعة بعد قراءة السياسات والشروط</label>
+  <p class="muted" style="font-size:13px">باستخدام فحص YouTube، أقر بأنني قرأت <a href="privacy-policy.html" target="_blank" rel="noopener">Privacy Policy | سياسة الخصوصية</a> و<a href="terms-of-service.html" target="_blank" rel="noopener">Terms of Use | شروط الاستخدام</a> وأوافق على الالتزام <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms of Service | شروط خدمة YouTube</a>.</p>
+  <label style="display:flex;align-items:center;gap:9px;font-weight:normal"><input id="policyConsent" type="checkbox" style="width:18px;height:18px"> I agree to continue after reviewing the policies and terms | أوافق على المتابعة بعد قراءة السياسات والشروط</label>
 
   <button class="primary" id="verify" type="button">
-    بدء الفحص والتحقق
+    Start Verification | بدء الفحص والتحقق
   </button>
 
   <div class="status" id="status" role="status" aria-live="polite">
-    VIRIFIXO 5.5 جاهز لاستقبال طلب الفحص.
+    VIRIFIXO is ready to receive a verification request. | VIRIFIXO جاهز لاستقبال طلب الفحص.
   </div>
 </section>
 
 <section class="panel">
-  <h2>📁 تحليل ملف فيديو أو صورة</h2>
+  <h2>📁 Image or Video File Analysis | تحليل ملف فيديو أو صورة</h2>
 
-  <label for="file">اختر ملفاً من جهازك</label>
+  <label for="file">Select a File from Your Device | اختر ملفاً من جهازك</label>
   <input id="file" type="file"
     accept="video/*,image/jpeg,image/png,image/webp">
 
   <button id="analyzeImage" class="primary" type="button" disabled
     style="display:block;width:100%;min-height:52px;margin:14px 0;background:#1677e8;color:#fff;font-size:17px;font-weight:bold;border:2px solid #79b6ff;border-radius:10px">
-    اختر صورة أولاً لتحليلها
+    Select an image first | اختر صورة أولاً لتحليلها
   </button>
-  <p class="muted">بعد اختيار صورة، سيتفعّل زر تحليل الصورة هنا مباشرة.</p>
+  <p class="muted">After selecting an image, the image analysis button will be enabled here. | بعد اختيار صورة، سيتفعّل زر تحليل الصورة هنا مباشرة.</p>
 
   <p class="muted">
-    تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
-    لا يتم رفع الملف إلى الخادم بواسطة هذه الصفحة.
+    Files are previewed and their basic information is analyzed locally in your browser. | تتم معاينة الملفات وتحليل بياناتها الأساسية محلياً داخل المتصفح.
+    This page does not upload the selected file to the server. | لا يتم رفع الملف إلى الخادم بواسطة هذه الصفحة.
   </p>
 
   <div id="fileInfo" class="status">
-    لم يتم اختيار ملف.
+    No file selected. | لم يتم اختيار ملف.
   </div>
 
   <video id="videoPreview" class="preview"
     controls playsinline preload="metadata"></video>
 
-  <img id="imagePreview" class="preview" alt="معاينة الصورة">
+  <img id="imagePreview" class="preview" alt="Image preview | معاينة الصورة">
 
   <div id="frameSection" class="hidden">
-    <h3>🎞️ استخراج إطارات الفيديو</h3>
+    <h3>🎞️ Video Frame Extraction | استخراج إطارات الفيديو</h3>
     <p class="muted">
-      استخراج عينات مرئية من الفيديو للمراجعة البشرية.
+      Extract visual samples from the video for human review. | استخراج عينات مرئية من الفيديو للمراجعة البشرية.
     </p>
     <div id="frames" class="frame-grid"></div>
     <button id="captureFrames" class="secondary" type="button">
-      استخراج الإطارات
+      Extract Frames | استخراج الإطارات
     </button>
   </div>
 </section>
 
 <section class="panel">
-  <h2>🔬 تحليل البيانات الوصفية EXIF</h2>
+  <h2>🔬 EXIF Metadata Analysis | تحليل البيانات الوصفية EXIF</h2>
   <p class="muted">
-    فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
-    إذا كانت هذه البيانات موجودة داخل الصورة.
+    Review camera, date, software, and geographic location fields | فحص بيانات الكاميرا والتاريخ والبرنامج المستخدم والموقع الجغرافي
+    when this information is embedded in the image. | إذا كانت هذه البيانات موجودة داخل الصورة.
   </p>
   <div id="exifInfo" class="status" aria-live="polite">
-    اختر صورة من القسم السابق، ثم اضغط «تحليل الصورة الآن».
+    Select an image in the section above, then click “Analyze Image Now”. | اختر صورة من القسم السابق، ثم اضغط «تحليل الصورة الآن».
   </div>
 </section>
 
 <section class="panel result" id="result">
-  <h2>📋 تقرير VIRIFIXO</h2>
-  <p class="muted" id="reportScope">هذا التقرير خاص بفحص رابط YouTube. تحليل الصور والفيديوهات المحلية يتم بشكل مستقل في القسمين السابقين.</p>
+  <h2>📋 VIRIFIXO Verification Report | تقرير VIRIFIXO</h2>
+  <p class="muted" id="reportScope">This report covers the YouTube URL check. Local image and video analysis is handled separately above. | هذا التقرير خاص بفحص رابط YouTube. تحليل الصور والفيديوهات المحلية يتم بشكل مستقل في القسمين السابقين.</p>
   <div id="channelHeader" class="channel-header"></div>
   <div id="report"></div>
 
   <div class="warning">
-    تنبيه مهني: جلب بيانات المنصة أو وجود بيانات EXIF
-    لا يثبتان وحدهما أصالة المحتوى. كما أن غياب البيانات الوصفية
-    لا يعني بالضرورة أن الصورة مزيفة.
+    Professional note: Platform data or EXIF metadata alone do not prove content authenticity. Missing metadata does not necessarily mean an image is fake. | تنبيه مهني: جلب بيانات المنصة أو وجود بيانات EXIF لا يثبتان وحدهما أصالة المحتوى، كما أن غياب البيانات الوصفية لا يعني بالضرورة أن الصورة مزيفة.
   </div>
 
   <p class="muted" id="reportTime"></p>
 
   <div class="actions no-print">
     <button class="secondary" id="printReport" type="button">
-      طباعة تقرير الفحص فقط
+      Print Verification Report | طباعة تقرير الفحص فقط
     </button>
     <button class="secondary" id="reset" type="button">
-      بدء فحص جديد
+      Start New Check | بدء فحص جديد
     </button>
   </div>
 </section>
 
 <section class="panel">
-  <h2>ℹ️ عن VIRIFIXO</h2>
+  <h2>ℹ️ About VIRIFIXO | عن VIRIFIXO</h2>
   <p>
-    VIRIFIXO منصة مساعدة للتحقق الإعلامي والتحليل الرقمي،
-    تهدف إلى مساعدة الصحفيين والمؤسسات الإعلامية على جمع
-    المؤشرات المتعلقة بمصادر الصور والفيديوهات ومراجعتها.
+    VIRIFIXO is a media verification and digital analysis support platform designed to help journalists and media organizations collect and review indicators about image and video sources. | VIRIFIXO منصة مساعدة للتحقق الإعلامي والتحليل الرقمي، تهدف إلى مساعدة الصحفيين والمؤسسات الإعلامية على جمع المؤشرات المتعلقة بمصادر الصور والفيديوهات ومراجعتها.
   </p>
   <p class="muted">
-    النتائج مؤشرات مساعدة وليست حكماً آلياً نهائياً على المصداقية.
+    Results are supporting indicators, not a final automated credibility judgment. | النتائج مؤشرات مساعدة وليست حكماً آلياً نهائياً على المصداقية.
   </p>
 </section>
 
 <footer>
   VIRIFIXO © 2026
   <br>
-  <a href="privacy.html">سياسة الخصوصية</a> · <a href="terms.html">شروط الاستخدام</a> · <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">شروط YouTube</a>
+  <a href="privacy-policy.html">Privacy Policy | سياسة الخصوصية</a> · <a href="terms-of-service.html">Terms of Use | شروط الاستخدام</a> · <a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube Terms | شروط YouTube</a>
   <br>
-  Advanced Media Verification · Version 5.5
+  Advanced Media Verification · Version 6.0
   <br>
-  <span id="siteToday" class="muted" aria-live="off">تاريخ اليوم: —</span>
+  <span id="siteToday" class="muted" aria-live="off">Date | التاريخ: —</span>
 </footer>
 </div>
 
@@ -626,14 +628,14 @@ function displayValue(value) {
   if (value && typeof value === "object" &&
       Object.prototype.hasOwnProperty.call(value, "value")) {
     if (value.value == null || value.value === "") {
-      if (value.status === "fetch_failed") return "تعذر جلب البيانات من المصدر";
-      if (value.status === "unavailable") return "غير متاح علنياً";
-      return "غير متوفر";
+      if (value.status === "fetch_failed") return "Source data could not be retrieved | تعذر جلب البيانات من المصدر";
+      if (value.status === "unavailable") return "Not publicly available | غير متاح علنياً";
+      return "Not available | غير متوفر";
     }
     value = value.value;
   }
 
-  if (value == null || value === "") return "غير متوفر";
+  if (value == null || value === "") return "Not available | غير متوفر";
 
   if (Array.isArray(value)) return value.join("، ");
 
@@ -653,7 +655,7 @@ function report(title, data, thumbnailUrl) {
   if (thumbnailUrl) {
     const image = document.createElement("img");
     image.src = thumbnailUrl;
-    image.alt = "صورة القناة أو الفيديو";
+    image.alt = "Channel or video thumbnail | صورة القناة أو الفيديو";
     image.referrerPolicy = "no-referrer";
     image.onerror = () => image.remove();
     header.appendChild(image);
@@ -676,7 +678,7 @@ function report(title, data, thumbnailUrl) {
   });
 
   $("reportTime").textContent =
-    "تاريخ التقرير: " + new Date().toLocaleString("ar-SA");
+    "Report date | تاريخ التقرير: " + new Date().toLocaleString("en-GB");
 
   $("result").scrollIntoView({behavior:"smooth"});
 }
@@ -687,12 +689,12 @@ $("verify").addEventListener("click", async () => {
   const video = $("video").value.trim();
 
   if (!$("policyConsent").checked) {
-    status("يرجى قراءة سياسة الخصوصية وشروط الاستخدام والموافقة قبل فحص YouTube.", "error");
+    status("Please review and accept the Privacy Policy and Terms of Use before checking YouTube. | يرجى قراءة سياسة الخصوصية وشروط الاستخدام والموافقة قبل فحص YouTube.", "error");
     return;
   }
 
   if ((!channel && !video) || (channel && video)) {
-    status("أدخل رابط قناة أو فيديو واحداً فقط.", "error");
+    status("Enter one channel URL or one video URL only. | أدخل رابط قناة أو فيديو واحداً فقط.", "error");
     return;
   }
 
@@ -715,19 +717,19 @@ $("verify").addEventListener("click", async () => {
       !["youtube.com", "m.youtube.com", "youtu.be",
         "youtube-nocookie.com"].includes(host)
     ) {
-      throw new Error("الرابط ليس رابط YouTube صالحاً.");
+      throw new Error("This is not a valid YouTube URL. | الرابط ليس رابط YouTube صالحاً.");
     }
 
     target = url.toString();
   } catch (error) {
-    status(error.message || "الرابط غير صالح.", "error");
+    status(error.message || "Invalid URL | الرابط غير صالح.", "error");
     return;
   }
 
   const button = $("verify");
   button.disabled = true;
 
-  status("جارٍ الاتصال بخادم VIRIFIXO...", "loading");
+  status("Connecting to VIRIFIXO server... | جارٍ الاتصال بخادم VIRIFIXO...", "loading");
 
   try {
     const API_BASE = "https://virifixo-1.onrender.com";
@@ -746,11 +748,11 @@ $("verify").addEventListener("click", async () => {
     try {
       data = await response.json();
     } catch {
-      throw new Error("استجابة خادم VIRIFIXO غير صالحة (HTTP " + response.status + ").");
+      throw new Error("Invalid VIRIFIXO server response (HTTP | استجابة خادم VIRIFIXO غير صالحة (HTTP " + response.status + ").");
     }
 
     if (!response.ok || data.ok === false) {
-      throw new Error(data.error || ("خادم الفحص أعاد الحالة: " + response.status));
+      throw new Error(data.error || ("Verification server returned status | خادم الفحص أعاد الحالة: " + response.status));
     }
 
     const stats = data.statistics || data.stats || {};
@@ -776,38 +778,38 @@ $("verify").addEventListener("click", async () => {
       data.provider
     );
 
-    report("نتائج فحص YouTube", {
-      "نوع الفحص": channel ? "قناة" : "فيديو",
-      "الرابط": target,
-      "العنوان": firstAvailable(data.title, data.channelTitle),
-      "اسم القناة": firstAvailable(data.channelTitle, data.authorName, data.title),
-      "معرف القناة": data.channelId,
-      "معرف الفيديو": data.videoId,
-      "تاريخ إنشاء القناة": channel
+    report("YouTube Verification Results | نتائج فحص YouTube", {
+      "Check Type": channel ? "Channel | قناة" : "Video | فيديو",
+      "URL | الرابط": target,
+      "Title | العنوان": firstAvailable(data.title, data.channelTitle),
+      "Channel Name | اسم القناة": firstAvailable(data.channelTitle, data.authorName, data.title),
+      "Channel ID | معرف القناة": data.channelId,
+      "Video ID | معرف الفيديو": data.videoId,
+      "Channel Creation Date | تاريخ إنشاء القناة": channel
         ? firstAvailable(stats.joinedDate, stats.createdAt, data.joinedDate)
         : null,
-      "تاريخ النشر": channel ? null
+      "Publication Date | تاريخ النشر": channel ? null
         : firstAvailable(stats.publishDate, stats.publishedAt, data.publishedAt, data.publishDate),
-      "عدد المشتركين": channel
+      "Subscriber Count | عدد المشتركين": channel
         ? firstAvailable(stats.subscribers, stats.subscriberCount, data.subscriberCount)
         : null,
-      "عدد الفيديوهات": channel
+      "Video Count | عدد الفيديوهات": channel
         ? firstAvailable(stats.videoCount, stats.videos, data.videoCount)
         : null,
-      "إجمالي مشاهدات القناة": channel
+      "Total Channel Views | إجمالي مشاهدات القناة": channel
         ? firstAvailable(stats.totalViews, stats.viewCount, data.viewCount)
         : null,
-      "مشاهدات الفيديو": channel ? null
+      "Video Views | مشاهدات الفيديو": channel ? null
         : firstAvailable(stats.views, stats.viewCount, data.viewCount),
-      "مدة الفيديو بالثواني": channel ? null
+      "Video Duration (seconds) | مدة الفيديو بالثواني": channel ? null
         : firstAvailable(stats.durationSeconds, stats.duration, data.durationSeconds),
-      "الإعجابات": channel ? null
+      "Likes | الإعجابات": channel ? null
         : firstAvailable(stats.likes, stats.likeCount, data.likeCount),
-      "التعليقات": channel ? null
+      "Comments | التعليقات": channel ? null
         : firstAvailable(stats.comments, stats.commentCount, data.commentCount),
-      "الوصف": data.description,
-      "المصدر": sourceValue,
-      "ملاحظة": data.note
+      "Description | الوصف": data.description,
+      "Data Source | المصدر": sourceValue,
+      "Note | ملاحظة": data.note
     }, data.thumbnailUrl);
 
     const hasValue = value => {
@@ -825,19 +827,19 @@ $("verify").addEventListener("click", async () => {
     const extractedCoreCount = coreFields.filter(hasValue).length;
 
     if (extractedCoreCount === 0) {
-      status("وصل رد من الخادم، لكن تعذر استخراج البيانات الأساسية للفحص. راجع حالة الخدمة ومصدر البيانات ثم أعد المحاولة.", "error");
+      status("The server responded, but core verification data could not be extracted. Check the service and data source, then try again. | وصل رد من الخادم، لكن تعذر استخراج البيانات الأساسية للفحص. راجع حالة الخدمة ومصدر البيانات ثم أعد المحاولة.", "error");
     } else if (extractedCoreCount < coreFields.length) {
-      status("اكتمل الفحص جزئياً. تم استخراج بعض البيانات، بينما بقيت حقول أخرى غير متاحة أو تعذر جلبها.", "loading");
+      status("Partial verification completed. Some data was extracted; other fields were unavailable. | اكتمل الفحص جزئياً. تم استخراج بعض البيانات، بينما بقيت حقول أخرى غير متاحة أو تعذر جلبها.", "loading");
     } else {
-      status("اكتمل الفحص واستخراج البيانات الأساسية.", "success");
+      status("Verification completed; core data extracted. | اكتمل الفحص واستخراج البيانات الأساسية.", "success");
     }
 
   } catch (error) {
     const message =
       error.name === "TimeoutError" || error.name === "AbortError"
-        ? "انتهت مهلة الاتصال بخادم VIRIFIXO بعد 25 ثانية. تحقق من تشغيل خدمة Render."
+        ? "VIRIFIXO server connection timed out after 25 seconds. Check the Render service. | انتهت مهلة الاتصال بخادم VIRIFIXO بعد 25 ثانية. تحقق من تشغيل خدمة Render."
         : error.message;
-    status("تعذر الفحص: " + message, "error");
+    status("Verification failed | تعذر الفحص: " + message, "error");
   } finally {
     button.disabled = false;
   }
@@ -852,12 +854,12 @@ $("file").addEventListener("change", async event => {
   const isVideo = file.type.startsWith("video/");
 
   if (!isImage && !isVideo) {
-    $("fileInfo").textContent = "نوع الملف غير مدعوم.";
+    $("fileInfo").textContent = "Unsupported file type. | نوع الملف غير مدعوم.";
     return;
   }
 
   if (file.size > 500 * 1024 * 1024) {
-    $("fileInfo").textContent = "حجم الملف يتجاوز 500 MB.";
+    $("fileInfo").textContent = "File size exceeds 500 MB. | حجم الملف يتجاوز 500 MB.";
     return;
   }
 
@@ -867,16 +869,16 @@ $("file").addEventListener("change", async event => {
   extractedFrames = [];
   selectedImageFile = isImage ? file : null;
   $("analyzeImage").disabled = !isImage;
-  $("analyzeImage").textContent = isImage ? "🔬 تحليل الصورة الآن" : "اختر صورة أولاً لتحليلها";
+  $("analyzeImage").textContent = isImage ? "🔬 Analyze Image Now | تحليل الصورة الآن" : "Select an image first | اختر صورة أولاً لتحليلها";
 
   $("frames").replaceChildren();
   $("frameSection").classList.toggle("hidden", !isVideo);
 
   $("fileInfo").textContent =
-    "اسم الملف: " + file.name +
-    "\nالنوع: " + file.type +
-    "\nالحجم: " + bytes(file.size) +
-    "\nتاريخ التعديل: " + new Date(file.lastModified).toLocaleString("ar-SA");
+    "File name | اسم الملف: " + file.name +
+    "\nType | النوع: " + file.type +
+    "\nSize | الحجم: " + bytes(file.size) +
+    "\nLast modified | تاريخ التعديل: " + new Date(file.lastModified).toLocaleString("en-GB");
 
   $("imagePreview").style.display = "none";
   $("videoPreview").style.display = "none";
@@ -884,14 +886,14 @@ $("file").addEventListener("change", async event => {
   if (isImage) {
     $("imagePreview").src = currentFileURL;
     $("imagePreview").style.display = "block";
-    $("fileInfo").textContent += "\nالأبعاد: جارٍ قراءة أبعاد الصورة...";
+    $("fileInfo").textContent += "\nImage dimensions pending | الأبعاد: جارٍ قراءة أبعاد الصورة...";
     $("imagePreview").onload = () => {
       $("fileInfo").textContent = $("fileInfo").textContent.replace(
-        "الأبعاد: جارٍ قراءة أبعاد الصورة...",
-        "أبعاد الصورة: " + $("imagePreview").naturalWidth + " × " + $("imagePreview").naturalHeight + " بكسل"
+        "Image dimensions pending | الأبعاد: جارٍ قراءة أبعاد الصورة...",
+        "Image dimensions | أبعاد الصورة: " + $("imagePreview").naturalWidth + " × " + $("imagePreview").naturalHeight + " px | بكسل"
       );
     };
-    $("exifInfo").textContent = "اضغط «تحليل الصورة» لبدء فحص البيانات الوصفية.";
+    $("exifInfo").textContent = "Click Analyze Image to inspect metadata. | اضغط «تحليل الصورة» لبدء فحص البيانات الوصفية.";
   }
 
   if (isVideo) {
@@ -901,20 +903,20 @@ $("file").addEventListener("change", async event => {
 
     video.onloadedmetadata = () => {
       $("fileInfo").textContent +=
-        "\nمدة الفيديو: " + video.duration.toFixed(2) + " ثانية" +
-        "\nالعرض: " + video.videoWidth +
-        "\nالارتفاع: " + video.videoHeight;
+        "\nDuration | مدة الفيديو: " + video.duration.toFixed(2) + " sec | ثانية" +
+        "\nWidth | العرض: " + video.videoWidth +
+        "\nHeight | الارتفاع: " + video.videoHeight;
     };
 
     $("exifInfo").textContent =
-      "تم اختيار فيديو. بيانات EXIF الخاصة بالصور غير متاحة لهذا الملف.";
+      "Video selected. Image EXIF metadata does not apply to this file. | تم اختيار فيديو. بيانات EXIF الخاصة بالصور غير متاحة لهذا الملف.";
   }
 });
 
 // تحليل EXIF
 async function analyzeExif(file) {
   const output = $("exifInfo");
-  output.textContent = "جارٍ تحليل البيانات الوصفية...";
+  output.textContent = "Analyzing metadata... | جارٍ تحليل البيانات الوصفية...";
 
   try {
     if (!window.ExifReader) {
@@ -926,17 +928,17 @@ async function analyzeExif(file) {
     const gps = tags.gps || {};
 
     const fields = {
-      "الشركة المصنعة": data.Make,
-      "طراز الكاميرا": data.Model,
-      "تاريخ الالتقاط": data.DateTimeOriginal,
-      "تاريخ الإنشاء": data.DateTime,
-      "البرنامج المستخدم": data.Software,
-      "البعد البؤري": data.FocalLength,
-      "فتحة العدسة": data.FNumber,
-      "سرعة الغالق": data.ExposureTime,
+      "Camera Manufacturer | الشركة المصنعة": data.Make,
+      "Camera Model | طراز الكاميرا": data.Model,
+      "Capture Date | تاريخ الالتقاط": data.DateTimeOriginal,
+      "Date Created | تاريخ الإنشاء": data.DateTime,
+      "Software | البرنامج المستخدم": data.Software,
+      "Focal Length | البعد البؤري": data.FocalLength,
+      "Aperture | فتحة العدسة": data.FNumber,
+      "Shutter Speed | سرعة الغالق": data.ExposureTime,
       "ISO": data.ISOSpeedRatings,
-      "خط العرض": gps.Latitude,
-      "خط الطول": gps.Longitude
+      "Latitude | خط العرض": gps.Latitude,
+      "Longitude | خط الطول": gps.Longitude
     };
     output.replaceChildren();
 
@@ -963,12 +965,12 @@ async function analyzeExif(file) {
     });
 
     if (!found) {
-      output.textContent = "لم يتم العثور على بيانات EXIF. قد تكون الصورة قد فقدت بياناتها الوصفية أو لم تتضمنها أصلاً.";
+      output.textContent = "No EXIF metadata found. The image may not contain metadata or it may have been removed. | لم يتم العثور على بيانات EXIF. قد تكون الصورة قد فقدت بياناتها الوصفية أو لم تتضمنها أصلاً.";
     }
     return true;
 
   } catch (error) {
-    output.textContent = "تعذر تحليل EXIF: " + error.message;
+    output.textContent = "EXIF analysis failed | تعذر تحليل EXIF: " + error.message;
     return false;
   }
 }
@@ -976,21 +978,21 @@ async function analyzeExif(file) {
 // زر بدء تحليل الصورة يدوياً
 $("analyzeImage").addEventListener("click", async () => {
   if (!selectedImageFile) {
-    $("exifInfo").textContent = "اختر صورة أولاً."; 
+    $("exifInfo").textContent = "Select an image first. | اختر صورة أولاً."; 
     return;
   }
 
   const button = $("analyzeImage");
   button.disabled = true;
-  button.textContent = "جارٍ تحليل الصورة...";
+  button.textContent = "Analyzing image... | جارٍ تحليل الصورة...";
 
   try {
     const ok = await analyzeExif(selectedImageFile);
     if (ok) {
       $("exifInfo").scrollIntoView({behavior:"smooth", block:"nearest"});
-      button.textContent = "إعادة تحليل الصورة";
+      button.textContent = "Analyze Again | إعادة تحليل الصورة";
     } else {
-      button.textContent = "إعادة المحاولة";
+      button.textContent = "Try Again | إعادة المحاولة";
     }
   } finally {
     button.disabled = false;
@@ -1003,13 +1005,13 @@ $("captureFrames").addEventListener("click", async () => {
 
   if (!video.src || !Number.isFinite(video.duration) ||
       video.duration <= 0) {
-    $("fileInfo").textContent = "اختر فيديو صالحاً أولاً.";
+    $("fileInfo").textContent = "Select a valid video first. | اختر فيديو صالحاً أولاً.";
     return;
   }
 
   const button = $("captureFrames");
   button.disabled = true;
-  button.textContent = "جارٍ استخراج الإطارات...";
+  button.textContent = "Extracting frames... | جارٍ استخراج الإطارات...";
 
   const canvas = document.createElement("canvas");
   const maxWidth = 480;
@@ -1046,9 +1048,9 @@ $("captureFrames").addEventListener("click", async () => {
         };
 
         const done = () => finish();
-        const failed = () => finish(new Error("تعذر قراءة إطار الفيديو."));
+        const failed = () => finish(new Error("Could not read a video frame. | تعذر قراءة إطار الفيديو."));
         const timeout = setTimeout(
-          () => finish(new Error("انتهت مهلة استخراج الإطار.")),
+          () => finish(new Error("Frame extraction timed out. | انتهت مهلة استخراج الإطار.")),
           10000
         );
 
@@ -1076,19 +1078,19 @@ $("captureFrames").addEventListener("click", async () => {
 
       const img = document.createElement("img");
       img.src = image;
-      img.alt = "إطار " + i;
+      img.alt = "Video frame | إطار فيديو " + i;
 
       const label = document.createElement("small");
-      label.textContent = "الإطار " + i + " · " + time.toFixed(2) + " ثانية";
+      label.textContent = "Frame " + i + " | الإطار " + i + " · " + time.toFixed(2) + " sec | ثانية";
 
       card.append(img, label);
       $("frames").appendChild(card);
     }
 
-    $("fileInfo").textContent = "اكتمل استخراج 5 إطارات.";
+    $("fileInfo").textContent = "Five frames extracted successfully. | اكتمل استخراج 5 إطارات.";
 
   } catch (error) {
-    $("fileInfo").textContent = "تعذر استخراج الإطارات: " + error.message;
+    $("fileInfo").textContent = "Frame extraction failed | تعذر استخراج الإطارات: " + error.message;
   } finally {
     try {
       if (Number.isFinite(originalTime)) video.currentTime = originalTime;
@@ -1096,7 +1098,7 @@ $("captureFrames").addEventListener("click", async () => {
       // Keep the extraction result even if restoring playback position fails.
     }
     button.disabled = false;
-    button.textContent = "استخراج الإطارات";
+    button.textContent = "Extract Frames | استخراج الإطارات";
   }
 });
 
@@ -1118,7 +1120,7 @@ $("reset").addEventListener("click", () => {
   $("file").value = "";
   selectedImageFile = null;
   $("analyzeImage").disabled = true;
-  $("analyzeImage").textContent = "اختر صورة أولاً لتحليلها";
+  $("analyzeImage").textContent = "Select an image first | اختر صورة أولاً لتحليلها";
 
   $("result").style.display = "none";
   $("report").replaceChildren();
@@ -1134,8 +1136,8 @@ $("reset").addEventListener("click", () => {
 
   $("frameSection").classList.add("hidden");
   $("frames").replaceChildren();
-  $("exifInfo").textContent = "بانتظار اختيار صورة.";
-  $("fileInfo").textContent = "لم يتم اختيار ملف.";
+  $("exifInfo").textContent = "Waiting for an image selection. | بانتظار اختيار صورة.";
+  $("fileInfo").textContent = "No file selected. | لم يتم اختيار ملف.";
 
   if (currentFileURL) {
     URL.revokeObjectURL(currentFileURL);
@@ -1143,7 +1145,7 @@ $("reset").addEventListener("click", () => {
   }
 
   extractedFrames = [];
-  status("VIRIFIXO 5.5 جاهز لفحص جديد.");
+  status("VIRIFIXO is ready for a new check. | VIRIFIXO جاهز لفحص جديد.");
   window.scrollTo({top:0,behavior:"smooth"});
 });
 
@@ -1154,13 +1156,13 @@ window.addEventListener("pagehide", () => {
 function updateSiteToday() {
   const dateElement = document.getElementById("siteToday");
   if (!dateElement) return;
-  const today = new Intl.DateTimeFormat("ar-SA-u-ca-gregory-nu-latn", {
+  const today = new Intl.DateTimeFormat("en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
     timeZone: "Asia/Riyadh"
   }).format(new Date());
-  dateElement.textContent = "تاريخ اليوم: " + today;
+  dateElement.textContent = "Date | التاريخ: " + today;
 }
 updateSiteToday();
 setInterval(updateSiteToday, 60000);
