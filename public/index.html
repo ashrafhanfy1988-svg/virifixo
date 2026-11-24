@@ -655,7 +655,7 @@ function report(title, data, thumbnailUrl) {
   if (thumbnailUrl) {
     const image = document.createElement("img");
     image.src = thumbnailUrl;
-    image.alt = "صورة القناة أو الفيديو";
+    image.alt = "Channel or video thumbnail | صورة القناة أو الفيديو";
     image.referrerPolicy = "no-referrer";
     image.onerror = () => image.remove();
     header.appendChild(image);
@@ -717,7 +717,7 @@ $("verify").addEventListener("click", async () => {
       !["youtube.com", "m.youtube.com", "youtu.be",
         "youtube-nocookie.com"].includes(host)
     ) {
-      throw new Error("الرابط ليس رابط YouTube صالحاً.");
+      throw new Error("This is not a valid YouTube URL. | الرابط ليس رابط YouTube صالحاً.");
     }
 
     target = url.toString();
@@ -752,7 +752,7 @@ $("verify").addEventListener("click", async () => {
     }
 
     if (!response.ok || data.ok === false) {
-      throw new Error(data.error || ("خادم الفحص أعاد الحالة: " + response.status));
+      throw new Error(data.error || ("Verification server returned status | خادم الفحص أعاد الحالة: " + response.status));
     }
 
     const stats = data.statistics || data.stats || {};
@@ -886,10 +886,10 @@ $("file").addEventListener("change", async event => {
   if (isImage) {
     $("imagePreview").src = currentFileURL;
     $("imagePreview").style.display = "block";
-    $("fileInfo").textContent += "\nالأبعاد: جارٍ قراءة أبعاد الصورة...";
+    $("fileInfo").textContent += "\nImage dimensions pending | الأبعاد: جارٍ قراءة أبعاد الصورة...";
     $("imagePreview").onload = () => {
       $("fileInfo").textContent = $("fileInfo").textContent.replace(
-        "Image dimensions are being read... | الأبعاد: جارٍ قراءة أبعاد الصورة...",
+        "Image dimensions pending | الأبعاد: جارٍ قراءة أبعاد الصورة...",
         "Image dimensions | أبعاد الصورة: " + $("imagePreview").naturalWidth + " × " + $("imagePreview").naturalHeight + " px | بكسل"
       );
     };
@@ -1078,7 +1078,7 @@ $("captureFrames").addEventListener("click", async () => {
 
       const img = document.createElement("img");
       img.src = image;
-      img.alt = "إطار " + i;
+      img.alt = "Video frame | إطار فيديو " + i;
 
       const label = document.createElement("small");
       label.textContent = "Frame " + i + " | الإطار " + i + " · " + time.toFixed(2) + " sec | ثانية";
