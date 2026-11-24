@@ -104,3 +104,27 @@ These are proposals only; do not implement until the current backend structure a
 - Research provider API availability, terms, coverage, and cost.
 - Build a standalone front-end prototype on this branch only.
 - Implement no production changes until tests pass and the user approves promotion.
+
+
+## 11. Initial repository and provider assessment (2026-11-24)
+### Existing code boundaries
+- The current frontend is a single `index.html`; it already previews local media, reads EXIF, and extracts five video samples in-browser.
+- The current backend is a small Node.js/Express service in `server.js`, versioned 5.5, with a single `POST /api/verify` route for YouTube Data API v3.
+- `package.json` currently has Express as its only dependency. The public frontend calls the existing Render service at `https://virifixo-1.onrender.com`.
+- This supports a low-risk first step: reuse the browser-side media workflow in a standalone prototype, then evaluate a separately deployed v6 service. Do not alter the existing Render service or main branch.
+
+### Provider findings
+- **Google Cloud Vision Web Detection** is a documented public API. It can return full/partial matching image URLs, pages containing matching images, visually similar images, and web entities. Published list pricing shows the first 1,000 units per feature per month free, then USD $3.50 per 1,000 Web Detection units (pricing can change and must be rechecked before activation). It is a useful API candidate for frame-to-web discovery, but it does not promise the earliest post or complete coverage.
+- **TinEye API** searches TinEye's public index and is a possible second provider; obtain a current quote/bundle and verify permitted commercial use before choosing it. Do not confuse TinEye API with **MatchEngine**, which searches a customer's own image collection. TinEye's published MatchEngine page lists subscription tiers, but those prices are not the price of the public-index TinEye API.
+- **Bing Visual Search / Bing Search APIs** were officially retired on August 11, 2025. Do not build a new integration against the retired endpoint. Microsoft's replacement Grounding with Bing Search is not a direct reverse-image-search API.
+- **InVID-WeVerify** is a useful journalist workflow and benchmark for keyframe extraction and manual reverse-search handoff. Its project page describes the plugin as free, but it is not evidence that its hosted services are an embeddable/licensable API for VIRIFIXO.
+- **Google Lens, TinEye web search, and Yandex image search** can be offered as manual handoff destinations in the prototype; they must not be represented as automated integrations unless an approved API is available.
+
+### MVP provider recommendation
+Start with browser-side keyframe extraction plus an optional Google Cloud Vision Web Detection adapter, subject to explicit user consent before sending any frame to Google Cloud. Add TinEye only after receiving and approving current pricing/terms. Keep manual search handoff as a no-provider-key fallback.
+
+### Cost illustration (Google Cloud Vision Web Detection only)
+At the published rate, 1,000 billable Web Detection requests beyond the monthly free 1,000 would be approximately USD $3.50, before tax and any other Google Cloud charges. A six-frame search may consume six image requests; therefore the UI must show the estimated request count and require confirmation before a batch is submitted.
+
+### Immediate implementation constraint
+The first prototype must remain static and local: preview media, extract frames, download frame images, and open manual search destinations. It must not upload files, call any external API, or change the public 5.5 page.
