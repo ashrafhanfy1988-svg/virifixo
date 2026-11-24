@@ -102,7 +102,7 @@ These are proposals only; do not implement until the current backend structure a
 ## 10. Immediate next tasks
 - Inspect the current repository/backend layout and identify deployment boundaries.
 - Research provider API availability, terms, coverage, and cost.
-- Build a standalone front-end prototype on this branch only.
+- Build a standalone front-end prototype on this branch only. (Initial prototype now exists at `origin-tracker.html`: local image/video preview, up to six keyframes, frame downloads, manual reverse-search handoff, evidence log, and JSON export.)
 - Implement no production changes until tests pass and the user approves promotion.
 
 
