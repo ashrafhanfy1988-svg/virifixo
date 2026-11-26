@@ -942,8 +942,9 @@ async function analyzeExif(file) {
     const fields = {
       "Camera Manufacturer | الشركة المصنعة": data.Make,
       "Camera Model | طراز الكاميرا": data.Model,
-      "Capture Date | تاريخ الالتقاط": data.DateTimeOriginal,
-      "Date Created | تاريخ الإنشاء": data.DateTime,
+      "Original Capture Date (EXIF DateTimeOriginal) | تاريخ الالتقاط الأصلي": data.DateTimeOriginal,
+      "Digitization Date (EXIF DateTimeDigitized) | تاريخ الرقمنة": data.DateTimeDigitized,
+      "Image Date/Time (EXIF DateTime) | التاريخ والوقت المسجلان للصورة": data.DateTime,
       "Software | البرنامج المستخدم": data.Software,
       "Focal Length | البعد البؤري": data.FocalLength,
       "Aperture | فتحة العدسة": data.FNumber,
@@ -978,6 +979,11 @@ async function analyzeExif(file) {
 
     if (!found) {
       output.textContent = "No EXIF metadata found. The image may not contain metadata or it may have been removed. | لم يتم العثور على بيانات EXIF. قد تكون الصورة قد فقدت بياناتها الوصفية أو لم تتضمنها أصلاً.";
+    } else {
+      const note = document.createElement("p");
+      note.className = "muted";
+      note.textContent = "EXIF dates are embedded metadata and may be edited. The file's last-modified timestamp is shown separately and is not used as the original capture date. | تواريخ EXIF بيانات مضمّنة قابلة للتعديل، ويُعرض تاريخ تعديل الملف بشكل مستقل ولا يُستخدم بديلاً عن تاريخ الالتقاط الأصلي.";
+      output.appendChild(note);
     }
     return true;
 
